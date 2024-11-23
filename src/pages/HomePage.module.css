@@ -1,0 +1,25 @@
+/* Ensure the page fits the screen size */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+.homePage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    object-fit: cover;
+    width: 100%;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-image: url(../assets/background.webp);
+    background-size: cover;
+    /* Ensure the image covers the background */
+    background-position: center;
+    /* Center the background image */
+    background-repeat: no-repeat;
+    /* Prevent tiling */
+    overflow: hidden;
+    /* Prevent overflow issues */
+    box-sizing: border-box;
+    /* Ensure padding/borders are accounted for */
+}

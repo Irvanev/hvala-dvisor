@@ -1,54 +1,41 @@
-import React from 'react';
-import { Breadcrumb, Layout, Menu } from 'antd';
+import React, { useState } from 'react';
+import { handleSearch } from '../../utils/searchUtil'; // Import business logic
+import styles from './NavBar.module.css'; // Import CSS module
+import SearchBar from "../SearchBar/SearchBar.tsx";
 
-const { Header, Content } = Layout;
+const Navbar: React.FC = () => {
+  const [searchQuery, setSearchQuery] = useState('');
 
-const menuItems = new Array(3).fill(null).map((_, index) => ({
-  key: String(index + 1),
-  label: `nav ${index + 1}`,
-}));
+  const onSearch = () => {
+    handleSearch(searchQuery); // Call business logic function
+  };
 
-const NavBar: React.FC = () => {
   return (
-    <Layout>
-      <Header
-        style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 1,
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-        }}
-      >
-        <div className="demo-logo" />
-        <Menu
-          theme="dark"
-          mode="horizontal"
-          defaultSelectedKeys={['1']}
-          items={menuItems}
-          style={{ flex: 1, minWidth: 0 }}
+    <nav className={styles.navbar}>
+      <div className={styles.logo}>HvalaDviser</div>
+      <ul className={styles.navLinks}>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Pricing</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="#">Blog</a></li>
+      </ul>
+      <div className={styles.searchBar}>
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
         />
-      </Header>
-      <Content style={{ padding: '0 48px' }}>
-        <Breadcrumb style={{ margin: '16px 0' }}>
-          <Breadcrumb.Item>Home</Breadcrumb.Item>
-          <Breadcrumb.Item>List</Breadcrumb.Item>
-          <Breadcrumb.Item>App</Breadcrumb.Item>
-        </Breadcrumb>
-        <div
-          style={{
-            padding: 24,
-            minHeight: 380,
-            background: '#fff',
-            borderRadius: 8,
-          }}
-        >
-          Content goes here
-        </div>
-      </Content>
-    </Layout>
+        <button className={styles.searchButton} onClick={onSearch}>
+          <img
+            src="https://img.icons8.com/ios-glyphs/30/ffffff/search--v1.png"
+            alt="Search Icon"
+          />
+        </button>
+      </div>
+    </nav>
   );
 };
 
-export default NavBar;
+export default Navbar;

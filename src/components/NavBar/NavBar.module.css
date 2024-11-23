@@ -1,0 +1,81 @@
+/* Container to prevent stretching beyond the screen */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 50px;
+    background-color: transparent;
+    backdrop-filter: blur(10px);
+    position: fixed;
+    width: 100%;
+    /* Prevent overflow */
+    margin: 0 auto;
+    /* Center navbar horizontally */
+    top: 0;
+    z-index: 1000;
+    flex-wrap: wrap;
+    /* Ensure items wrap on smaller screens */
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Logo styling */
+.logo {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Navigation links */
+.navLinks {
+    display: flex;
+    list-style: none;
+    gap: 20px;
+    /* Ensure spacing between items */
+}
+
+.navLinks a {
+    text-decoration: none;
+    color: white;
+    font-size: 18px;
+    transition: color 0.3s;
+}
+
+.navLinks a:hover {
+    color: limegreen;
+}
+
+/* Search bar styling */
+.searchBar {
+    display: flex;
+    align-items: center;
+    background-color: #3a2e4f;
+    padding: 5px 20px;
+    border-radius: 20px;
+    max-width: 300px;
+    /* Prevent it from growing too large */
+    width: 100%;
+    /* Allow it to adapt to available space */
+    box-sizing: border-box;
+    margin-top: 10px;
+    /* Space for wrapping on smaller screens */
+}
+
+.searchBar input {
+    flex: 1;
+    /* Allow the input to take available space */
+    border: none;
+    background: none;
+    outline: none;
+    color: white;
+    margin-right: 10px;
+}
+
+.searchButton {
+    border: none;
+    background: none;
+    cursor: pointer;
+}
