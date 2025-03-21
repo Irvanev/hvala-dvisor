@@ -1,41 +1,97 @@
-import React, { useState } from 'react';
-import { handleSearch } from '../../utils/searchUtil'; // Import business logic
-import styles from './NavBar.module.css'; // Import CSS module
-import SearchBar from "../SearchBar/SearchBar.tsx";
+import React, { useState, useEffect } from 'react';
+import styles from './NavBar.module.css';
 
-const Navbar: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+// Иконка поиска
+const SearchIcon = ({ size = 20 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="11" cy="11" r="8" />
+    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+  </svg>
+);
 
-  const onSearch = () => {
-    handleSearch(searchQuery); // Call business logic function
+interface NavBarProps {
+  onSearch?: (query: string) => void;
+  onLanguageChange?: (language: string) => void;
+  currentLanguage?: 'en' | 'ru';
+  logoText?: string;
+  logoUrl?: string;
+}
+
+const NavBar: React.FC<NavBarProps> = ({
+  onSearch,
+  onLanguageChange,
+  currentLanguage = 'en',
+  logoText = 'HvalaDviser',
+  logoUrl = '/'
+}) => {
+  const [scrolled, setScrolled] = useState(false);
+  const [query, setQuery] = useState('');
+
+  // Обработчик события скролла
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      if (scrollPosition > 100) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+    if (onSearch) {
+      onSearch(e.target.value);
+    }
+  };
+
+  const toggleLanguage = () => {
+    if (onLanguageChange) {
+      onLanguageChange(currentLanguage === 'en' ? 'ru' : 'en');
+    }
   };
 
   return (
-    <nav className={styles.navbar}>
-      <div className={styles.logo}>HvalaDviser</div>
-      <ul className={styles.navLinks}>
-        <li><a href="#">Home</a></li>
-        <li><a href="#">About</a></li>
-        <li><a href="#">Pricing</a></li>
-        <li><a href="#">Contact</a></li>
-        <li><a href="#">Blog</a></li>
-      </ul>
-      <div className={styles.searchBar}>
-        <input
-          type="text"
-          placeholder="Search..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <button className={styles.searchButton} onClick={onSearch}>
-          <img
-            src="https://img.icons8.com/ios-glyphs/30/ffffff/search--v1.png"
-            alt="Search Icon"
+    <header className={`${styles.header} ${scrolled ? styles.headerScrolled : ''}`}>
+      <a href={logoUrl} className={styles.logo}>
+        {logoText}
+      </a>
+
+      <div className={styles.rightSection}>
+        <div className={styles.searchContainer}>
+          <input
+            type="text"
+            className={styles.searchInput}
+            placeholder="Поиск..."
+            value={query}
+            onChange={handleSearch}
           />
-        </button>
+          <span className={styles.searchIcon}>
+            <SearchIcon />
+          </span>
+        </div>
+
+        <div className={styles.languageToggle} onClick={toggleLanguage}>
+          en/ru
+        </div>
       </div>
-    </nav>
+    </header>
   );
 };
 
-export default Navbar;
+export default NavBar;

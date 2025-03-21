@@ -1,20 +1,17 @@
-import React from "react";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import HomePage from "./pages/HomePage";
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import './App.css';
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <HomePage />,
-  },
-  // {
-  //   path: "/",
-  //   element: <HomePage />,
-  // },
-]);
-
-function App() {
-  return <RouterProvider router={router} />;
-}
+const App: React.FC = () => {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        {/* Здесь можно добавить другие маршруты */}
+      </Routes>
+    </Router>
+  );
+};
 
 export default App;
