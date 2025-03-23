@@ -24,6 +24,8 @@ interface NavBarProps {
   currentLanguage?: 'en' | 'ru';
   logoText?: string;
   logoUrl?: string;
+  // Высота области, после которой показывать поиск
+  searchVisibilityThreshold?: number;
 }
 
 const NavBar: React.FC<NavBarProps> = ({
@@ -31,7 +33,9 @@ const NavBar: React.FC<NavBarProps> = ({
   onLanguageChange,
   currentLanguage = 'en',
   logoText = 'HvalaDviser',
-  logoUrl = '/'
+  logoUrl = '/',
+  // По умолчанию показываем поиск после прокрутки на 400px
+  searchVisibilityThreshold = 400
 }) => {
   const [scrolled, setScrolled] = useState(false);
   const [query, setQuery] = useState('');
@@ -40,7 +44,8 @@ const NavBar: React.FC<NavBarProps> = ({
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
-      if (scrollPosition > 100) {
+      // Показываем поиск только если прокрутили страницу достаточно далеко
+      if (scrollPosition > searchVisibilityThreshold) {
         setScrolled(true);
       } else {
         setScrolled(false);
@@ -51,7 +56,7 @@ const NavBar: React.FC<NavBarProps> = ({
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [searchVisibilityThreshold]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
