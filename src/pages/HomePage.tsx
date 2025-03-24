@@ -8,7 +8,6 @@ import FeaturedBanner from '../components/FeaturedBanner/FeaturedBanner';
 import styles from './HomePage.module.css';
 import backgroundImage from '../assets/background.webp';
 
-// Интерфейсы для данных
 interface Restaurant {
   id: string;
   title: string;
@@ -39,24 +38,22 @@ const CONSTANTS = {
 } as const;
 
 const HomePage: React.FC = () => {
-  // Состояния для данных
   const [loading, setLoading] = useState(true);
   const [userFavorites, setUserFavorites] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  // Временные данные (в будущем будут загружаться из Firebase)
   const featuredCards: FeaturedCard[] = [
     {
       id: "feat1",
       title: "Лучшие Рестораны 2024 Года",
       subtitle: "Спланируй Посещение Победителей Премии",
-      image: "https://placehold.jp/800x400.png" // Временный плейсхолдер
+      image: "https://placehold.jp/800x400.png"
     },
     {
       id: "feat2",
       title: "Лучшие Рестораны 2024 Года У Моря",
       subtitle: "Спланируй Посещение Победителей Премии",
-      image: "https://placehold.jp/800x400.png" // Временный плейсхолдер
+      image: "https://placehold.jp/800x400.png"
     }
   ];
 
@@ -66,28 +63,28 @@ const HomePage: React.FC = () => {
       title: "Au Bourguignon Du Marais",
       location: "Paris",
       rating: 4.9,
-      image: "https://placehold.jp/300x200.png" // Временный плейсхолдер
+      image: "https://placehold.jp/300x200.png"
     },
     {
       id: "rest2",
       title: "La Maison",
       location: "Paris",
       rating: 4.9,
-      image: "https://placehold.jp/300x200.png" // Временный плейсхолдер
+      image: "https://placehold.jp/300x200.png"
     },
     {
       id: "rest3",
       title: "Trattoria Italiana",
       location: "Rome",
       rating: 4.8,
-      image: "https://placehold.jp/300x200.png" // Временный плейсхолдер
+      image: "https://placehold.jp/300x200.png"
     },
     {
       id: "rest4",
       title: "El Tapas",
       location: "Barcelona",
       rating: 4.8,
-      image: "https://placehold.jp/300x200.png" // Временный плейсхолдер
+      image: "https://placehold.jp/300x200.png"
     }
   ];
 
@@ -95,35 +92,25 @@ const HomePage: React.FC = () => {
     {
       id: "country1",
       title: "Черногория",
-      image: "https://placehold.jp/400x300.png" // Временный плейсхолдер
+      image: "https://placehold.jp/400x300.png"
     },
     {
       id: "country2",
       title: "Хорватия",
-      image: "https://placehold.jp/400x300.png" // Временный плейсхолдер
+      image: "https://placehold.jp/400x300.png"
     },
     {
       id: "country3",
       title: "Албания",
-      image: "https://placehold.jp/400x300.png" // Временный плейсхолдер
+      image: "https://placehold.jp/400x300.png"
     }
   ];
 
   useEffect(() => {
-    // Здесь будет загрузка данных из Firebase
-    // Имитация загрузки данных и получения избранных элементов пользователя
     const fetchData = async () => {
       try {
-        // В будущем здесь будет код для работы с Firebase
-        // Например:
-        // const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-        // const favorites = userDoc.exists() ? userDoc.data().favorites || [] : [];
-
-        // Временно для демонстрации
         const demoFavorites = ["rest1", "rest3"];
         setUserFavorites(demoFavorites);
-
-        // Завершаем загрузку
         setLoading(false);
       } catch (error) {
         setError(error instanceof Error ? error.message : 'Произошла ошибка');
@@ -134,7 +121,6 @@ const HomePage: React.FC = () => {
     fetchData();
   }, []);
 
-  // Обработчик для добавления/удаления из избранного
   const handleSaveToggle = useCallback(async (id: string, isSaved: boolean) => {
     try {
       if (isSaved) {
@@ -144,7 +130,6 @@ const HomePage: React.FC = () => {
       }
     } catch (error) {
       console.error('Ошибка при обновлении избранного:', error);
-      // Откатываем изменения при ошибке
       if (isSaved) {
         setUserFavorites(prev => prev.filter(itemId => itemId !== id));
       } else {
@@ -153,7 +138,6 @@ const HomePage: React.FC = () => {
     }
   }, []);
 
-  // Обработчики для других функций
   const handleNavBarSearch = useCallback((query: string) => {
     console.log(`Поиск в NavBar: ${query}`);
   }, []);
@@ -166,7 +150,11 @@ const HomePage: React.FC = () => {
     console.log(`Язык изменен на: ${language}`);
   };
 
-  // Показываем состояние загрузки
+  const handleWelcomeClick = () => {
+    console.log('Переход на страницу авторизации');
+    // window.location.href = '/auth'; // Раскомментировать для реального редиректа
+  };
+
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -176,7 +164,6 @@ const HomePage: React.FC = () => {
     );
   }
 
-  // Показываем ошибку если она есть
   if (error) {
     return (
       <div className={styles.errorContainer}>
@@ -188,15 +175,14 @@ const HomePage: React.FC = () => {
 
   return (
     <div className={styles.homePage}>
-      {/* NavBar вверху страницы */}
       <NavBar
         onSearch={handleNavBarSearch}
         onLanguageChange={handleLanguageChange}
         currentLanguage="ru"
         logoText="HvalaDviser"
+        onWelcomeClick={handleWelcomeClick}
       />
 
-      {/* Секция героя */}
       <section className={styles.hero}>
         <div
           className={styles.heroBackground}
@@ -216,10 +202,8 @@ const HomePage: React.FC = () => {
         <div className={styles.curvyBottom}></div>
       </section>
 
-      {/* Секция с контентом */}
       <section className={styles.contentSection}>
         <div className={styles.contentContainer}>
-          {/* Большие карточки-баннеры в два ряда */}
           <div className={styles.featuredCardGrid}>
             {featuredCards.map(card => (
               <FeaturedBanner
@@ -234,11 +218,7 @@ const HomePage: React.FC = () => {
             ))}
           </div>
 
-          {/* Секция с ресторанами в карусели */}
-          <Section
-            title="Лучшие Рестораны 2024 Года"
-            showNavigation={true}
-          >
+          <Section title="Лучшие Рестораны 2024 Года" showNavigation={true}>
             <Carousel>
               {restaurants.map(restaurant => (
                 <Card
@@ -256,11 +236,7 @@ const HomePage: React.FC = () => {
             </Carousel>
           </Section>
 
-          {/* Секция с ресторанами у моря в карусели */}
-          <Section
-            title="Лучшие Рестораны 2024 Года У Моря"
-            showNavigation={true}
-          >
+          <Section title="Лучшие Рестораны 2024 Года У Моря" showNavigation={true}>
             <Carousel>
               {restaurants.map(restaurant => (
                 <Card
@@ -278,14 +254,14 @@ const HomePage: React.FC = () => {
             </Carousel>
           </Section>
 
-          {/* Секция с популярными странами */}
-          <Section
-            title="Популярные Страны"
-            showNavigation={true}
-          >
+          <Section title="Популярные Страны" showNavigation={true}>
             <div className={styles.countriesGrid}>
               {countries.map(country => (
-                <div key={country.id} className={styles.countryCard} onClick={() => console.log(`Clicked on ${country.title}`)}>
+                <div
+                  key={country.id}
+                  className={styles.countryCard}
+                  onClick={() => console.log(`Clicked on ${country.title}`)}
+                >
                   <img
                     src={country.image}
                     alt={country.title}
@@ -304,7 +280,6 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Футер */}
       <footer className={styles.footer}>
         <div className={styles.footerContainer}>
           <div className={styles.footerLogo}>

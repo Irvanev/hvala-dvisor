@@ -1,104 +1,103 @@
 .header {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 100;
-  padding: 1rem 2rem;
+  padding: 15px 30px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: transparent;
+  z-index: 100;
+  transition: all 0.3s ease;
+}
+
+.scrolled {
+  background: #2a6db0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 .logo {
   color: white;
   font-size: 1.5rem;
-  font-weight: 700;
-  text-decoration: none;
+  font-weight: bold;
 }
 
-.rightSection {
+.controls {
   display: flex;
   align-items: center;
+  gap: 20px;
 }
 
-.searchContainer {
+.search {
   position: relative;
-  width: 300px;
-  margin-right: 1.5rem;
   opacity: 0;
-  visibility: hidden;
-  transform: translateY(-10px);
-  transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+  transition: opacity 0.3s;
 }
 
-/* Показываем поиск только при прокрутке */
-.headerScrolled .searchContainer {
+.scrolled .search {
   opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
 }
 
-.searchInput {
-  width: 100%;
-  padding: 0.625rem 2.5rem 0.625rem 1rem;
+.search input {
+  padding: 8px 15px 8px 35px;
   border: none;
-  border-radius: 9999px;
-  background-color: white;
-  font-size: 0.875rem;
-  outline: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  width: 200px;
 }
 
-.searchIcon {
+.search svg {
   position: absolute;
-  right: 0.75rem;
+  left: 10px;
   top: 50%;
   transform: translateY(-50%);
-  color: #9ca3af;
+  color: #666;
 }
 
-.languageToggle {
+.welcomeBtn {
+  background: rgba(255,255,255,0.1);
+  border: none;
   color: white;
-  font-size: 0.875rem;
-  font-weight: 500;
+  padding: 8px 15px;
+  border-radius: 20px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s;
 }
 
-/* При прокрутке хедер становится фиксированным */
-.headerScrolled {
-  position: fixed;
-  background-color: #2a6db0;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  animation: slideDown 0.3s ease;
+.welcomeBtn:hover {
+  background: rgba(255,255,255,0.2);
+  transform: translateY(-1px);
 }
 
-@keyframes slideDown {
-  from {
-    transform: translateY(-100%);
-  }
-  to {
-    transform: translateY(0);
-  }
+.language {
+  color: white;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.language:hover {
+  background: rgba(255,255,255,0.1);
 }
 
 @media (max-width: 768px) {
   .header {
-    padding: 1rem;
+    padding: 10px 15px;
   }
   
-  .searchContainer {
-    width: 180px;
-    margin-right: 1rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .logo {
-    font-size: 1.2rem;
+  .search {
+    display: none;
   }
   
-  .searchContainer {
-    width: 150px;
+  .welcomeBtn span {
+    font-size: 0;
+  }
+  
+  .welcomeBtn span::before {
+    content: "👋";
+    font-size: 16px;
   }
 }

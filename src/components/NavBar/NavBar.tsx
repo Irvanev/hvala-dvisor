@@ -1,18 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styles from './NavBar.module.css';
 
-// Иконка поиска
-const SearchIcon = ({ size = 20 }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
+const SearchIcon = () => (
+  <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor">
     <circle cx="11" cy="11" r="8" />
     <line x1="21" y1="21" x2="16.65" y2="16.65" />
   </svg>
@@ -21,78 +11,51 @@ const SearchIcon = ({ size = 20 }) => (
 interface NavBarProps {
   onSearch?: (query: string) => void;
   onLanguageChange?: (language: string) => void;
-  currentLanguage?: 'en' | 'ru';
+  currentLanguage?: string;
   logoText?: string;
-  logoUrl?: string;
-  // Высота области, после которой показывать поиск
-  searchVisibilityThreshold?: number;
+  onWelcomeClick?: () => void;
 }
 
 const NavBar: React.FC<NavBarProps> = ({
   onSearch,
   onLanguageChange,
-  currentLanguage = 'en',
+  currentLanguage = 'ru',
   logoText = 'HvalaDviser',
-  logoUrl = '/',
-  // По умолчанию показываем поиск после прокрутки на 400px
-  searchVisibilityThreshold = 400
+  onWelcomeClick = () => {},
 }) => {
   const [scrolled, setScrolled] = useState(false);
   const [query, setQuery] = useState('');
 
-  // Обработчик события скролла
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      // Показываем поиск только если прокрутили страницу достаточно далеко
-      if (scrollPosition > searchVisibilityThreshold) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
-
+    const handleScroll = () => setScrolled(window.scrollY > 100);
     window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [searchVisibilityThreshold]);
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
-    if (onSearch) {
-      onSearch(e.target.value);
-    }
-  };
-
-  const toggleLanguage = () => {
-    if (onLanguageChange) {
-      onLanguageChange(currentLanguage === 'en' ? 'ru' : 'en');
-    }
-  };
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <header className={`${styles.header} ${scrolled ? styles.headerScrolled : ''}`}>
-      <a href={logoUrl} className={styles.logo}>
-        {logoText}
-      </a>
+    <header className={`${styles.header} ${scrolled ? styles.scrolled : ''}`}>
+      <div className={styles.logo}>{logoText}</div>
 
-      <div className={styles.rightSection}>
-        <div className={styles.searchContainer}>
+      <div className={styles.controls}>
+        <div className={styles.search}>
           <input
             type="text"
-            className={styles.searchInput}
             placeholder="Поиск..."
             value={query}
-            onChange={handleSearch}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              onSearch?.(e.target.value);
+            }}
           />
-          <span className={styles.searchIcon}>
-            <SearchIcon />
-          </span>
+          <SearchIcon />
         </div>
 
-        <div className={styles.languageToggle} onClick={toggleLanguage}>
-          en/ru
+        <button className={styles.welcomeBtn} onClick={onWelcomeClick}>
+          <span>Welcome 👋</span>
+        </button>
+
+        <div className={styles.language} onClick={() => onLanguageChange?.(currentLanguage)}>
+          {currentLanguage.toUpperCase()}
         </div>
       </div>
     </header>
