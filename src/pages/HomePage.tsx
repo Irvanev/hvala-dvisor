@@ -4,7 +4,9 @@ import SearchBar from '../components/SearchBar/SearchBar';
 import Card from '../components/Card/Card';
 import Section from '../components/Section/Section';
 import Carousel from '../components/Carousel/Carousel';
+import FeaturedBanner from '../components/FeaturedBanner/FeaturedBanner';
 import styles from './HomePage.module.css';
+import backgroundImage from '../assets/background.webp';
 
 // Интерфейсы для данных
 interface Restaurant {
@@ -41,7 +43,7 @@ const HomePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [userFavorites, setUserFavorites] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Временные данные (в будущем будут загружаться из Firebase)
   const featuredCards: FeaturedCard[] = [
     {
@@ -116,11 +118,11 @@ const HomePage: React.FC = () => {
         // Например:
         // const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
         // const favorites = userDoc.exists() ? userDoc.data().favorites || [] : [];
-        
+
         // Временно для демонстрации
         const demoFavorites = ["rest1", "rest3"];
         setUserFavorites(demoFavorites);
-        
+
         // Завершаем загрузку
         setLoading(false);
       } catch (error) {
@@ -128,7 +130,7 @@ const HomePage: React.FC = () => {
         setLoading(false);
       }
     };
-    
+
     fetchData();
   }, []);
 
@@ -193,56 +195,48 @@ const HomePage: React.FC = () => {
         currentLanguage="ru"
         logoText="HvalaDviser"
       />
-      
+
       {/* Секция героя */}
       <section className={styles.hero}>
-        <div className={styles.heroBackground}>
-          <img 
-            src="https://placehold.jp/1500x800.png" // Временный плейсхолдер
-            alt="Montenegro" 
-            className={styles.heroImage}
-          />
-        </div>
-        
+        <div
+          className={styles.heroBackground}
+          style={{ backgroundImage: `url(${backgroundImage})` }}
+        ></div>
+
         <div className={styles.heroContent}>
           <h1 className={styles.heroTitle}>EXPLORE MONTENEGRO</h1>
-          
-          {/* Основная строка поиска */}
+
           <SearchBar
             onSearch={handleMainSearch}
-            placeholder="Что-То Для Чего-То"
+            placeholder="Поиск"
             defaultLocation="Paris"
           />
         </div>
-        
-        {/* Закругленный переход вместо волны */}
+
         <div className={styles.curvyBottom}></div>
       </section>
-      
+
       {/* Секция с контентом */}
       <section className={styles.contentSection}>
         <div className={styles.contentContainer}>
           {/* Большие карточки-баннеры в два ряда */}
           <div className={styles.featuredCardGrid}>
             {featuredCards.map(card => (
-              <Card
+              <FeaturedBanner
                 key={card.id}
                 id={card.id}
-                image={card.image}
                 title={card.title}
                 subtitle={card.subtitle}
-                location=""
+                image={card.image}
                 onClick={() => console.log(`Clicked on featured ${card.title}`)}
-                size="featured"
-                showButton={true}
                 buttonText="Посмотреть Список"
               />
             ))}
           </div>
 
           {/* Секция с ресторанами в карусели */}
-          <Section 
-            title="Лучшие Рестораны 2024 Года" 
+          <Section
+            title="Лучшие Рестораны 2024 Года"
             showNavigation={true}
           >
             <Carousel>
@@ -263,8 +257,8 @@ const HomePage: React.FC = () => {
           </Section>
 
           {/* Секция с ресторанами у моря в карусели */}
-          <Section 
-            title="Лучшие Рестораны 2024 Года У Моря" 
+          <Section
+            title="Лучшие Рестораны 2024 Года У Моря"
             showNavigation={true}
           >
             <Carousel>
@@ -285,16 +279,16 @@ const HomePage: React.FC = () => {
           </Section>
 
           {/* Секция с популярными странами */}
-          <Section 
-            title="Популярные Страны" 
+          <Section
+            title="Популярные Страны"
             showNavigation={true}
           >
             <div className={styles.countriesGrid}>
               {countries.map(country => (
                 <div key={country.id} className={styles.countryCard} onClick={() => console.log(`Clicked on ${country.title}`)}>
-                  <img 
-                    src={country.image} 
-                    alt={country.title} 
+                  <img
+                    src={country.image}
+                    alt={country.title}
                     className={styles.countryImage}
                     loading="lazy"
                     onError={(e) => {
@@ -309,7 +303,7 @@ const HomePage: React.FC = () => {
           </Section>
         </div>
       </section>
-      
+
       {/* Футер */}
       <footer className={styles.footer}>
         <div className={styles.footerContainer}>
@@ -317,7 +311,7 @@ const HomePage: React.FC = () => {
             <h3>HvalaDviser</h3>
             <p>© 2024 Все права защищены</p>
           </div>
-          
+
           <div className={styles.footerLinks}>
             <div className={styles.footerColumn}>
               <h4>О нас</h4>
@@ -328,7 +322,7 @@ const HomePage: React.FC = () => {
                 <li>Контакты</li>
               </ul>
             </div>
-            
+
             <div className={styles.footerColumn}>
               <h4>Помощь</h4>
               <ul>
@@ -338,7 +332,7 @@ const HomePage: React.FC = () => {
                 <li>Политика конфиденциальности</li>
               </ul>
             </div>
-            
+
             <div className={styles.footerColumn}>
               <h4>Присоединяйтесь</h4>
               <ul>
