@@ -1,0 +1,228 @@
+.profilePage {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.profileContainer {
+  flex: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  padding-top: 100px; /* Account for fixed navbar */
+}
+
+.profileHeader {
+  display: flex;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.avatarContainer {
+  margin-right: 30px;
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profileInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.userName {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  color: #333;
+}
+
+.userLocation {
+  font-size: 16px;
+  color: #666;
+  margin: 0 0 8px;
+}
+
+.userAdditionalInfo {
+  font-size: 14px;
+  color: #777;
+  margin: 0;
+}
+
+.editButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 6px 15px;
+  background-color: transparent;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  font-size: 14px;
+  transition: color 0.3s;
+}
+
+.editButton:hover {
+  color: #2a6db0;
+  text-decoration: underline;
+}
+
+.profileContent {
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.reviewsTitle {
+  font-size: 18px;
+  margin: 0 0 20px;
+  color: #444;
+  font-weight: 600;
+}
+
+.reviewsList {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.reviewItem {
+  background-color: white;
+  border-radius: 6px;
+  padding: 20px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.restaurantName {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: #2a6db0;
+}
+
+.reviewDate {
+  font-size: 13px;
+  color: #999;
+}
+
+.starsContainer {
+  margin-bottom: 12px;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.star {
+  color: #ffca28;
+  margin-right: 2px;
+}
+
+.emptyStar {
+  color: #e0e0e0;
+  margin-right: 2px;
+}
+
+.reviewText {
+  margin: 0;
+  color: #555;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+.noReviews {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  padding: 25px 0;
+}
+
+.profileActions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.actionButton {
+  padding: 12px 22px;
+  background-color: #2a6db0;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.actionButton:hover {
+  background-color: #1e5c9a;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .profileHeader {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .avatarContainer {
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+  
+  .editButton {
+    position: static;
+    margin-top: 15px;
+  }
+  
+  .profileActions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .actionButton {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .profileContainer {
+    padding: 15px;
+    padding-top: 85px;
+  }
+  
+  .profileHeader, .profileContent {
+    padding: 20px;
+  }
+  
+  .avatar {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .userName {
+    font-size: 20px;
+  }
+}
