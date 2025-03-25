@@ -5,8 +5,9 @@ import styles from './ProfilePage.module.css';
 
 interface UserProfile {
   name: string;
+  username: string;
   city: string;
-  additionalInfo: string;
+  bio: string;
   avatar: string;
   reviews: {
     id: string;
@@ -15,46 +16,42 @@ interface UserProfile {
     comment: string;
     date: string;
   }[];
+  favorites: number;
 }
 
 const ProfilePage: React.FC = () => {
   // Пример данных пользователя (в реальном приложении будут загружаться с сервера)
   const [profile, setProfile] = useState<UserProfile>({
     name: 'Имя Фамилия',
+    username: 'username',
     city: 'Город',
-    additionalInfo: 'Еще Данные Из Сущ',
+    bio: '',
     avatar: 'https://placehold.jp/300x300.png',
     reviews: [
       {
         id: '1',
         restaurant: 'La Maison',
         rating: 4.5,
-        comment: 'Отличное место с прекрасной атмосферой и вкусной едой.',
+        comment: 'Отличное место с прекрасной атмосферой и вкусной едой. Рекомендую попробовать фирменные блюда шеф-повара, особенно десерты.',
         date: '15.02.2024'
       },
       {
         id: '2',
         restaurant: 'Trattoria Italiana',
         rating: 5,
-        comment: 'Невероятная итальянская кухня. Паста просто восхитительна!',
+        comment: 'Невероятная итальянская кухня. Паста просто восхитительна! Аутентичные рецепты и отличный сервис.',
         date: '03.03.2024'
       }
-    ]
+    ],
+    favorites: 14
   });
+
+  // Активная вкладка
+  const [activeTab, setActiveTab] = useState<'reviews' | 'favorites' | 'activity'>('reviews');
 
   const handleEditProfile = () => {
     console.log('Редактировать профиль');
     // Здесь будет логика для редактирования профиля
-  };
-
-  const handleAddReview = () => {
-    console.log('Оставить отзыв');
-    // Здесь будет логика для добавления отзыва
-  };
-
-  const handleLinkAccount = () => {
-    console.log('Связать аккаунт');
-    // Здесь будет логика для связывания аккаунта
   };
 
   const renderStars = (rating: number) => {
@@ -75,6 +72,19 @@ const ProfilePage: React.FC = () => {
     );
   };
 
+  // Генерация фейкового графика активности
+  const generateActivityGraph = () => {
+    return (
+      <div className={styles.contributionsGraph}>
+        <img 
+          src="https://placehold.jp/800x120.png" 
+          alt="График активности" 
+          style={{ width: '100%', height: 'auto' }} 
+        />
+      </div>
+    );
+  };
+
   return (
     <div className={styles.profilePage}>
       <NavBar
@@ -87,52 +97,100 @@ const ProfilePage: React.FC = () => {
       />
 
       <div className={styles.profileContainer}>
-        <div className={styles.profileHeader}>
-          <div className={styles.avatarContainer}>
-            <img src={profile.avatar} alt="Аватар пользователя" className={styles.avatar} />
-          </div>
-          
-          <div className={styles.profileInfo}>
-            <h1 className={styles.userName}>{profile.name}</h1>
-            <p className={styles.userLocation}>{profile.city}</p>
-            <p className={styles.userAdditionalInfo}>{profile.additionalInfo}</p>
-            
-            <button onClick={handleEditProfile} className={styles.editButton}>
-              Редактировать
-            </button>
-          </div>
-        </div>
-        
-        <div className={styles.profileContent}>
-          <h2 className={styles.reviewsTitle}>История Отзывов</h2>
-          
-          {profile.reviews.length > 0 ? (
-            <div className={styles.reviewsList}>
-              {profile.reviews.map(review => (
-                <div key={review.id} className={styles.reviewItem}>
-                  <div className={styles.reviewHeader}>
-                    <h3 className={styles.restaurantName}>{review.restaurant}</h3>
-                    <span className={styles.reviewDate}>{review.date}</span>
-                  </div>
-                  
-                  {renderStars(review.rating)}
-                  
-                  <p className={styles.reviewText}>{review.comment}</p>
-                </div>
-              ))}
+        <div className={styles.mainContent}>
+          {/* Левая колонка с информацией о пользователе */}
+          <div className={styles.leftColumn}>
+            <div className={styles.avatarContainer}>
+              <img src={profile.avatar} alt="Аватар пользователя" className={styles.avatar} />
+              <div className={styles.statusBadge}>😊</div>
             </div>
-          ) : (
-            <p className={styles.noReviews}>У вас пока нет отзывов</p>
-          )}
-        </div>
-        
-        <div className={styles.profileActions}>
-          <button onClick={handleAddReview} className={styles.actionButton}>
-            Оставить Отзыв
-          </button>
-          <button onClick={handleLinkAccount} className={styles.actionButton}>
-            Связать Аккаунт
-          </button>
+            
+            <div className={styles.userInfo}>
+              <h1 className={styles.userName}>{profile.name}</h1>
+              <p className={styles.userLogin}>{profile.username}</p>
+              <button onClick={handleEditProfile} className={styles.editButton}>
+                Редактировать профиль
+              </button>
+            </div>
+            
+            <div className={styles.additionalInfo}>
+              <div className={styles.infoItem}>
+                <svg className={styles.infoIcon} viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+                  <path d="M11.536 3.464a5 5 0 0 1 0 7.072L8 14.07l-3.536-3.535a5 5 0 1 1 7.072-7.072v.001zm1.06 8.132a6.5 6.5 0 1 0-9.192 0l3.535 3.536a1.5 1.5 0 0 0 2.122 0l3.535-3.536zM8 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
+                </svg>
+                <span>{profile.city}</span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Правая колонка с контентом */}
+          <div className={styles.rightColumn}>
+            {/* Вкладки */}
+            <div className={styles.tabs}>
+              <button 
+                className={`${styles.tab} ${activeTab === 'reviews' ? styles.active : ''}`}
+                onClick={() => setActiveTab('reviews')}
+              >
+                Отзывы
+                <span className={styles.tabCount}>{profile.reviews.length}</span>
+              </button>
+              <button 
+                className={`${styles.tab} ${activeTab === 'favorites' ? styles.active : ''}`}
+                onClick={() => setActiveTab('favorites')}
+              >
+                Избранное
+                <span className={styles.tabCount}>{profile.favorites}</span>
+              </button>
+              <button 
+                className={`${styles.tab} ${activeTab === 'activity' ? styles.active : ''}`}
+                onClick={() => setActiveTab('activity')}
+              >
+                Активность
+              </button>
+            </div>
+            
+            {/* Контент вкладки */}
+            {activeTab === 'reviews' && (
+              <>
+                
+                {profile.reviews.length > 0 ? (
+                  <div className={styles.reviewsList}>
+                    {profile.reviews.map(review => (
+                      <div key={review.id} className={styles.reviewItem}>
+                        <div className={styles.reviewHeader}>
+                          <div className={styles.reviewLeft}>
+                            <h3 className={styles.restaurantName}>{review.restaurant}</h3>
+                            {renderStars(review.rating)}
+                          </div>
+                          <span className={styles.reviewDate}>{review.date}</span>
+                        </div>
+                        
+                        <p className={styles.reviewText}>{review.comment}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className={styles.noReviews}>Пока нет отзывов</p>
+                )}
+              </>
+            )}
+            
+            {activeTab === 'favorites' && (
+              <p className={styles.noReviews}>Список избранных ресторанов будет доступен скоро</p>
+            )}
+            
+            {activeTab === 'activity' && (
+              <div className={styles.contributionsBlock}>
+                <div className={styles.contributionsHeader}>
+                  76 отзывов за последний год
+                </div>
+                {generateActivityGraph()}
+                <div style={{ padding: '8px 16px', fontSize: '12px', color: '#57606a', textAlign: 'center' }}>
+                  Узнайте, как мы считаем отзывы
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

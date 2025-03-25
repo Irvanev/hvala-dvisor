@@ -2,227 +2,294 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: #f8f9fa;
+  background-color: #f6f8fa;
+  color: #24292f;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 }
 
 .profileContainer {
-  flex: 1;
-  max-width: 800px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 30px 20px;
-  padding-top: 100px; /* Account for fixed navbar */
+  width: 100%;
+  padding: 0 16px;
+  padding-top: 90px; /* Учитываем высоту navbar */
 }
 
-.profileHeader {
-  display: flex;
-  background-color: #f0f0f0;
-  border-radius: 8px;
-  padding: 30px;
-  margin-bottom: 30px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+/* Основной контент профиля - двухколоночный макет */
+.mainContent {
+  display: grid;
+  grid-template-columns: 296px 1fr;
+  gap: 24px;
+}
+
+/* Левая колонка с инфо профиля */
+.leftColumn {
+  width: 100%;
+}
+
+/* Правая колонка с контентом */
+.rightColumn {
+  width: 100%;
+}
+
+/* Аватар пользователя */
+.avatarContainer {
+  margin-bottom: 16px;
   position: relative;
 }
 
-.avatarContainer {
-  margin-right: 30px;
-}
-
 .avatar {
-  width: 120px;
-  height: 120px;
+  width: 100%;
+  max-width: 296px;
   border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #d0d7de;
 }
 
-.profileInfo {
-  flex: 1;
+.statusBadge {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #f6f8fa;
+  border: 1px solid #d0d7de;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
+  color: #57606a;
+  cursor: pointer;
+}
+
+.statusBadge:hover {
+  background-color: #f3f4f6;
+}
+
+/* Информация пользователя */
+.userInfo {
+  margin-bottom: 16px;
 }
 
 .userName {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 600;
-  margin: 0 0 8px;
-  color: #333;
+  margin: 0 0 4px;
+  color: #24292f;
+  line-height: 1.25;
 }
 
-.userLocation {
-  font-size: 16px;
-  color: #666;
-  margin: 0 0 8px;
-}
-
-.userAdditionalInfo {
-  font-size: 14px;
-  color: #777;
-  margin: 0;
+.userLogin {
+  font-size: 20px;
+  font-weight: 300;
+  color: #57606a;
+  margin: 0 0 16px;
 }
 
 .editButton {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  padding: 6px 15px;
-  background-color: transparent;
-  border: none;
-  color: #666;
-  cursor: pointer;
+  width: 100%;
+  padding: 5px 16px;
   font-size: 14px;
-  transition: color 0.3s;
+  font-weight: 500;
+  line-height: 20px;
+  color: #24292f;
+  background-color: #f6f8fa;
+  border: 1px solid rgba(27, 31, 36, 0.15);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .editButton:hover {
-  color: #2a6db0;
-  text-decoration: underline;
+  background-color: #f3f4f6;
+  border-color: rgba(27, 31, 36, 0.15);
 }
 
-.profileContent {
-  background-color: #f0f0f0;
-  border-radius: 8px;
-  padding: 25px;
-  margin-bottom: 30px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+/* Удалены стили для блока статистики */
+
+/* Дополнительная информация о пользователе */
+.additionalInfo {
+  font-size: 14px;
+  color: #57606a;
+  margin-bottom: 16px;
 }
 
-.reviewsTitle {
-  font-size: 18px;
-  margin: 0 0 20px;
-  color: #444;
+.infoItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.infoIcon {
+  margin-right: 8px;
+  color: #57606a;
+  flex-shrink: 0;
+}
+
+/* Вкладки навигации */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #d0d7de;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.tab {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #24292f;
+  border: none;
+  background: none;
+  cursor: pointer;
+  position: relative;
+  margin-right: 8px;
+}
+
+.tab.active {
+  border-bottom: 2px solid #fd8c73;
   font-weight: 600;
+}
+
+.tab:hover:not(.active) {
+  border-bottom: 2px solid #d0d7de;
+}
+
+.tabCount {
+  background-color: #f3f4f6;
+  color: #57606a;
+  border-radius: 10px;
+  padding: 0 6px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+/* Блок с отзывами */
+.reviewsHeader {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #d0d7de;
 }
 
 .reviewsList {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 16px;
 }
 
 .reviewItem {
-  background-color: white;
+  background-color: #ffffff;
+  border: 1px solid #d0d7de;
   border-radius: 6px;
-  padding: 20px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  padding: 16px;
 }
 
 .reviewHeader {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.reviewLeft {
+  display: flex;
+  flex-direction: column;
 }
 
 .restaurantName {
   font-size: 16px;
   font-weight: 600;
-  margin: 0;
-  color: #2a6db0;
+  margin: 0 0 4px;
+  color: #0969da;
 }
 
-.reviewDate {
-  font-size: 13px;
-  color: #999;
+.restaurantName:hover {
+  text-decoration: underline;
 }
 
 .starsContainer {
-  margin-bottom: 12px;
-  font-size: 16px;
-  line-height: 1;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #e3b341;
 }
 
 .star {
-  color: #ffca28;
-  margin-right: 2px;
+  color: #e3b341;
 }
 
 .emptyStar {
-  color: #e0e0e0;
-  margin-right: 2px;
+  color: #d0d7de;
+}
+
+.reviewDate {
+  font-size: 12px;
+  color: #57606a;
 }
 
 .reviewText {
   margin: 0;
-  color: #555;
+  color: #24292f;
   line-height: 1.5;
   font-size: 14px;
 }
 
 .noReviews {
   text-align: center;
-  color: #888;
+  color: #57606a;
   font-style: italic;
-  padding: 25px 0;
+  padding: 32px 16px;
+  background-color: #ffffff;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
 }
 
-.profileActions {
-  display: flex;
-  gap: 15px;
-  justify-content: center;
+/* Блок с графиком активности */
+.contributionsBlock {
+  margin-top: 24px;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  background-color: #ffffff;
+  overflow: hidden;
 }
 
-.actionButton {
-  padding: 12px 22px;
-  background-color: #2a6db0;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s;
+.contributionsHeader {
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  border-bottom: 1px solid #d0d7de;
 }
 
-.actionButton:hover {
-  background-color: #1e5c9a;
+.contributionsGraph {
+  padding: 16px;
 }
 
-/* Responsive design */
+/* Мобильная версия */
 @media (max-width: 768px) {
-  .profileHeader {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  
-  .avatarContainer {
-    margin-right: 0;
-    margin-bottom: 20px;
-  }
-  
-  .editButton {
-    position: static;
-    margin-top: 15px;
-  }
-  
-  .profileActions {
-    flex-direction: column;
-    width: 100%;
-  }
-  
-  .actionButton {
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .profileContainer {
-    padding: 15px;
-    padding-top: 85px;
-  }
-  
-  .profileHeader, .profileContent {
-    padding: 20px;
+  .mainContent {
+    grid-template-columns: 1fr;
   }
   
   .avatar {
-    width: 100px;
-    height: 100px;
+    max-width: 200px;
+    display: block;
+    margin: 0 auto;
   }
   
-  .userName {
-    font-size: 20px;
+  .userInfo {
+    text-align: center;
+  }
+  
+  .stats {
+    justify-content: center;
+  }
+  
+  .additionalInfo {
+    max-width: 300px;
+    margin: 0 auto 16px;
+  }
+  
+  .editButton {
+    max-width: 300px;
+    margin: 0 auto;
   }
 }
