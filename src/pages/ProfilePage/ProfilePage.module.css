@@ -2,13 +2,13 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: #f6f8fa;
-  color: #24292f;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background-color: #fff;
+  color: #333;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 .profileContainer {
-  max-width: 1280px;
+  max-width: 1200px;
   margin: 0 auto;
   width: 100%;
   padding: 0 16px;
@@ -18,8 +18,9 @@
 /* Основной контент профиля - двухколоночный макет */
 .mainContent {
   display: grid;
-  grid-template-columns: 296px 1fr;
+  grid-template-columns: 300px 1fr;
   gap: 24px;
+  margin-bottom: 30px;
 }
 
 /* Левая колонка с инфо профиля */
@@ -40,135 +41,126 @@
 
 .avatar {
   width: 100%;
-  max-width: 296px;
-  border-radius: 50%;
-  border: 1px solid #d0d7de;
-}
-
-.statusBadge {
-  position: absolute;
-  bottom: 12px;
-  right: 12px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background-color: #f6f8fa;
-  border: 1px solid #d0d7de;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #57606a;
-  cursor: pointer;
-}
-
-.statusBadge:hover {
-  background-color: #f3f4f6;
+  max-width: 280px;
+  border-radius: 6px;
+  border: 1px solid #e5e5e5;
+  transition: transform 0.2s ease;
 }
 
 /* Информация пользователя */
 .userInfo {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .userName {
   font-size: 24px;
   font-weight: 600;
-  margin: 0 0 4px;
-  color: #24292f;
+  margin: 0 0 8px;
+  color: #2a6db0;
   line-height: 1.25;
 }
 
 .userLogin {
-  font-size: 20px;
-  font-weight: 300;
-  color: #57606a;
+  font-size: 16px;
+  color: #666;
   margin: 0 0 16px;
 }
 
 .editButton {
   width: 100%;
-  padding: 5px 16px;
+  padding: 8px 16px;
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
-  color: #24292f;
-  background-color: #f6f8fa;
-  border: 1px solid rgba(27, 31, 36, 0.15);
-  border-radius: 6px;
+  color: #fff;
+  background-color: #2a6db0;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
 .editButton:hover {
-  background-color: #f3f4f6;
-  border-color: rgba(27, 31, 36, 0.15);
+  background-color: #245a94;
 }
-
-/* Удалены стили для блока статистики */
 
 /* Дополнительная информация о пользователе */
 .additionalInfo {
-  font-size: 14px;
-  color: #57606a;
-  margin-bottom: 16px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
 }
 
 .infoItem {
   display: flex;
   align-items: center;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
+  color: #555;
+  font-size: 14px;
 }
 
 .infoIcon {
   margin-right: 8px;
-  color: #57606a;
+  color: #2a6db0;
   flex-shrink: 0;
 }
 
 /* Вкладки навигации */
 .tabs {
   display: flex;
-  border-bottom: 1px solid #d0d7de;
-  margin-bottom: 16px;
+  border-bottom: 1px solid #e5e5e5;
+  margin-bottom: 20px;
   position: relative;
+  background-color: #f8f9fa;
+  border-radius: 6px 6px 0 0;
+  overflow: hidden;
 }
 
 .tab {
-  padding: 8px 16px;
+  padding: 12px 20px;
   font-size: 14px;
   font-weight: 500;
-  color: #24292f;
+  color: #555;
   border: none;
   background: none;
   cursor: pointer;
   position: relative;
-  margin-right: 8px;
+  transition: all 0.2s ease;
 }
 
 .tab.active {
-  border-bottom: 2px solid #fd8c73;
+  color: #2a6db0;
+  background-color: #fff;
   font-weight: 600;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
 }
 
 .tab:hover:not(.active) {
-  border-bottom: 2px solid #d0d7de;
+  background-color: #f0f0f0;
 }
 
 .tabCount {
-  background-color: #f3f4f6;
-  color: #57606a;
+  background-color: #e9ecef;
+  color: #555;
   border-radius: 10px;
-  padding: 0 6px;
+  padding: 2px 8px;
   font-size: 12px;
   font-weight: 500;
-  margin-left: 4px;
+  margin-left: 6px;
 }
 
 /* Блок с отзывами */
-.reviewsHeader {
-  margin-bottom: 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #d0d7de;
+.reviewsContainer {
+  background-color: #fff;
+  border-radius: 0 0 6px 6px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .reviewsList {
@@ -178,17 +170,24 @@
 }
 
 .reviewItem {
-  background-color: #ffffff;
-  border: 1px solid #d0d7de;
+  position: relative;
+  background-color: #f8f9fa;
   border-radius: 6px;
   padding: 16px;
+  border-left: 3px solid #2a6db0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reviewItem:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .reviewHeader {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .reviewLeft {
@@ -200,7 +199,7 @@
   font-size: 16px;
   font-weight: 600;
   margin: 0 0 4px;
-  color: #0969da;
+  color: #2a6db0;
 }
 
 .restaurantName:hover {
@@ -210,57 +209,117 @@
 .starsContainer {
   margin-bottom: 8px;
   font-size: 14px;
-  color: #e3b341;
+  color: #ffc107;
 }
 
 .star {
-  color: #e3b341;
+  color: #ffc107;
 }
 
 .emptyStar {
-  color: #d0d7de;
+  color: #ddd;
 }
 
 .reviewDate {
   font-size: 12px;
-  color: #57606a;
+  color: #777;
 }
 
 .reviewText {
   margin: 0;
-  color: #24292f;
+  color: #555;
   line-height: 1.5;
   font-size: 14px;
 }
 
 .noReviews {
   text-align: center;
-  color: #57606a;
+  color: #777;
   font-style: italic;
   padding: 32px 16px;
-  background-color: #ffffff;
-  border: 1px solid #d0d7de;
+  background-color: #f8f9fa;
   border-radius: 6px;
 }
 
 /* Блок с графиком активности */
 .contributionsBlock {
   margin-top: 24px;
-  border: 1px solid #d0d7de;
+  border: 1px solid #e5e5e5;
   border-radius: 6px;
-  background-color: #ffffff;
+  background-color: #fff;
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .contributionsHeader {
-  padding: 16px;
+  padding: 15px;
   font-size: 16px;
   font-weight: 600;
-  border-bottom: 1px solid #d0d7de;
+  color: #2a6db0;
+  border-bottom: 1px solid #e5e5e5;
+  background-color: #f8f9fa;
 }
 
 .contributionsGraph {
   padding: 16px;
+}
+
+/* Блок "В избранном" */
+.favoriteButton {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: #f43f5e;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.favoriteButton:hover {
+  background-color: #e11d48;
+}
+
+.favoriteIcon {
+  margin-right: 6px;
+}
+
+/* Секции с ресторанами */
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navigationButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.navButton {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e5e5e5;
+  border-radius: 50%;
+  background-color: white;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.navButton:hover {
+  background-color: #f5f5f5;
+  color: #2a6db0;
 }
 
 /* Мобильная версия */
@@ -279,17 +338,17 @@
     text-align: center;
   }
   
-  .stats {
-    justify-content: center;
-  }
-  
   .additionalInfo {
     max-width: 300px;
     margin: 0 auto 16px;
   }
   
-  .editButton {
-    max-width: 300px;
-    margin: 0 auto;
+  .tabs {
+    overflow-x: auto;
+  }
+  
+  .tab {
+    padding: 12px 16px;
+    white-space: nowrap;
   }
 }

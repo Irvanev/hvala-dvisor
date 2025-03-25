@@ -7,7 +7,6 @@ interface UserProfile {
   name: string;
   username: string;
   city: string;
-  bio: string;
   avatar: string;
   reviews: {
     id: string;
@@ -25,7 +24,6 @@ const ProfilePage: React.FC = () => {
     name: 'Имя Фамилия',
     username: 'username',
     city: 'Город',
-    bio: '',
     avatar: 'https://placehold.jp/300x300.png',
     reviews: [
       {
@@ -72,19 +70,6 @@ const ProfilePage: React.FC = () => {
     );
   };
 
-  // Генерация фейкового графика активности
-  const generateActivityGraph = () => {
-    return (
-      <div className={styles.contributionsGraph}>
-        <img 
-          src="https://placehold.jp/800x120.png" 
-          alt="График активности" 
-          style={{ width: '100%', height: 'auto' }} 
-        />
-      </div>
-    );
-  };
-
   return (
     <div className={styles.profilePage}>
       <NavBar
@@ -102,12 +87,11 @@ const ProfilePage: React.FC = () => {
           <div className={styles.leftColumn}>
             <div className={styles.avatarContainer}>
               <img src={profile.avatar} alt="Аватар пользователя" className={styles.avatar} />
-              <div className={styles.statusBadge}>😊</div>
             </div>
             
             <div className={styles.userInfo}>
               <h1 className={styles.userName}>{profile.name}</h1>
-              <p className={styles.userLogin}>{profile.username}</p>
+              <p className={styles.userLogin}>@{profile.username}</p>
               <button onClick={handleEditProfile} className={styles.editButton}>
                 Редактировать профиль
               </button>
@@ -139,7 +123,6 @@ const ProfilePage: React.FC = () => {
                 onClick={() => setActiveTab('favorites')}
               >
                 Избранное
-                <span className={styles.tabCount}>{profile.favorites}</span>
               </button>
               <button 
                 className={`${styles.tab} ${activeTab === 'activity' ? styles.active : ''}`}
@@ -151,8 +134,7 @@ const ProfilePage: React.FC = () => {
             
             {/* Контент вкладки */}
             {activeTab === 'reviews' && (
-              <>
-                
+              <div className={styles.reviewsContainer}>
                 {profile.reviews.length > 0 ? (
                   <div className={styles.reviewsList}>
                     {profile.reviews.map(review => (
@@ -172,26 +154,33 @@ const ProfilePage: React.FC = () => {
                 ) : (
                   <p className={styles.noReviews}>Пока нет отзывов</p>
                 )}
-              </>
+              </div>
             )}
             
             {activeTab === 'favorites' && (
-              <p className={styles.noReviews}>Список избранных ресторанов будет доступен скоро</p>
+              <div className={styles.reviewsContainer}>
+                <p className={styles.noReviews}>Список избранных ресторанов</p>
+
+              </div>
             )}
             
             {activeTab === 'activity' && (
               <div className={styles.contributionsBlock}>
                 <div className={styles.contributionsHeader}>
-                  76 отзывов за последний год
+                  Активность за последний год
                 </div>
-                {generateActivityGraph()}
-                <div style={{ padding: '8px 16px', fontSize: '12px', color: '#57606a', textAlign: 'center' }}>
-                  Узнайте, как мы считаем отзывы
+                <div className={styles.contributionsGraph}>
+                  <img 
+                    src="https://placehold.jp/800x120.png" 
+                    alt="График активности" 
+                    style={{ width: '100%', height: 'auto' }} 
+                  />
                 </div>
               </div>
             )}
           </div>
         </div>
+        
       </div>
 
       <Footer />
