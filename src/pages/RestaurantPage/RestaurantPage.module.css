@@ -1,0 +1,527 @@
+.restaurantPage {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  padding-top: 0; /* Убираем отступ */
+}
+
+.loadingContainer,
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  padding: 2rem;
+}
+
+.loadingSpinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: #3498db;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.errorMessage {
+  color: #e74c3c;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.backButton {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.backButton:hover {
+  background-color: #2980b9;
+}
+
+.restaurantContentWrapper {
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  margin-top: 0; /* Убираем верхний отступ */
+}
+
+/* Hero Section */
+.restaurantHero {
+  position: relative;
+  overflow: hidden;
+  margin-top: 0; /* Убираем отрицательный отступ */
+}
+
+.heroImageContainer {
+  position: relative;
+  height: 350px;
+  overflow: hidden;
+}
+
+.heroImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.heroOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.6));
+}
+
+.restaurantInfo {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  color: white;
+  z-index: 2;
+}
+
+.restaurantName h1 {
+  font-size: 2.5rem;
+  margin: 0 0 0.5rem;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.restaurantMeta {
+  display: flex;
+  align-items: center;
+  font-size: 1.1rem;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+}
+
+.ratingValue {
+  color: #f9ca24;
+  font-weight: bold;
+  margin-right: 0.25rem;
+}
+
+.reviewCount {
+  margin-right: 0.5rem;
+}
+
+/* Tab Navigation */
+.tabNavigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 0 1rem;
+  background-color: white;
+}
+
+.tabList {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tabItem {
+  padding: 1.25rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+  color: #555;
+  position: relative;
+  border-bottom: 3px solid transparent;
+}
+
+.tabItem:hover {
+  color: #000;
+}
+
+.tabItem.active {
+  color: #000;
+  border-bottom-color: #e74c3c;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 10px;
+}
+
+.shareButton,
+.favoriteButton {
+  padding: 0.5rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+}
+
+.shareButton:hover {
+  background-color: #f8f9fa;
+}
+
+.favoriteButton {
+  background-color: white;
+  color: #333;
+}
+
+.favoriteButton:hover {
+  background-color: #f8f9fa;
+}
+
+.favoriteButton.active {
+  background-color: #e74c3c;
+  color: white;
+  border-color: #e74c3c;
+}
+
+/* Main Content Area */
+.mainContent {
+  padding: 2rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  margin: 0 0 1.5rem;
+  color: #333;
+}
+
+.descriptionText {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #555;
+  margin-bottom: 2rem;
+}
+
+.addressText {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 2rem;
+}
+
+.featuresList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem;
+  color: #555;
+}
+
+.featuresList li {
+  margin-bottom: 0.5rem;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.featuresList li:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #e74c3c;
+}
+
+.mapContainer {
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.mapImage {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Menu Tab Content */
+.menuContent {
+  padding: 1rem 0;
+}
+
+.menuCategory {
+  margin-bottom: 2rem;
+}
+
+.categoryTitle {
+  font-size: 1.3rem;
+  margin: 0 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.menuItems {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.menuItem {
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.menuItemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.menuItemName {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.menuItemPrice {
+  font-weight: bold;
+  color: #e74c3c;
+}
+
+.menuItemDescription {
+  color: #777;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* Reviews Tab Content */
+.reviewsContent {
+  padding: 1rem 0;
+}
+
+.reviewsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.writeReviewButton {
+  padding: 0.6rem 1.2rem;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.writeReviewButton:hover {
+  background-color: #c0392b;
+}
+
+.reviewsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.reviewItem {
+  padding: 1.5rem;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.reviewAuthor {
+  font-weight: bold;
+  color: #333;
+}
+
+.reviewDate {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.reviewRating {
+  color: #f9ca24;
+  margin-bottom: 0.8rem;
+  font-size: 1.2rem;
+}
+
+.reviewText {
+  color: #555;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Photos Tab Content */
+.photosContent {
+  padding: 1rem 0;
+}
+
+.photoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.photoItem {
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.photo:hover {
+  transform: scale(1.05);
+}
+
+/* Contact Tab Content */
+.contactContent {
+  padding: 1rem 0;
+}
+
+.contactDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.contactItem {
+  margin-bottom: 1rem;
+}
+
+.contactLabel {
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+  color: #333;
+}
+
+.contactValue {
+  color: #555;
+  margin: 0;
+}
+
+.contactLink {
+  color: #3498db;
+  text-decoration: none;
+}
+
+.contactLink:hover {
+  text-decoration: underline;
+}
+
+.openingHours {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.openingHoursRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.openingDay {
+  font-weight: bold;
+  color: #555;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .tabNavigation {
+    flex-direction: column;
+    padding: 0;
+  }
+  
+  .tabList {
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+  }
+  
+  .tabList::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
+  }
+  
+  .tabItem {
+    padding: 1rem;
+  }
+  
+  .actionButtons {
+    width: 100%;
+    padding: 1rem;
+    justify-content: space-around;
+  }
+  
+  .restaurantName h1 {
+    font-size: 2rem;
+  }
+  
+  .menuItems {
+    grid-template-columns: 1fr;
+  }
+  
+  .photoGrid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+  
+  .mainContent {
+    padding: 1.5rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroImageContainer {
+    height: 250px;
+  }
+  
+  .restaurantName h1 {
+    font-size: 1.8rem;
+  }
+  
+  .restaurantMeta {
+    font-size: 0.9rem;
+  }
+  
+  .writeReviewButton {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .photoGrid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+}

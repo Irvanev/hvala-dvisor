@@ -43,8 +43,8 @@ interface SearchBarProps {
 
 const SearchBar: React.FC<SearchBarProps> = ({
   onSearch,
-  placeholder = "Что-То Для Чего-То",
-  defaultLocation = "Paris"
+  placeholder = "Поиск",
+  defaultLocation = "Montenegro"
 }) => {
   const [query, setQuery] = useState('');
   const [location, setLocation] = useState(defaultLocation);

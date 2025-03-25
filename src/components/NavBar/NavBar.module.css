@@ -10,17 +10,28 @@
   background: transparent;
   z-index: 100;
   transition: all 0.3s ease;
+  height: 60px; /* Фиксированная высота */
 }
 
+/* Стиль для прокрученного состояния */
 .scrolled {
   background: #2a6db0;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Стиль для статичного navbar (на странице ресторана) */
+.static {
+  background: #2a6db0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  position: relative; /* Меняем на relative - важное изменение! */
+  top: auto; /* Убираем top: 0 */
 }
 
 .logo {
   color: white;
   font-size: 1.5rem;
   font-weight: bold;
+  text-decoration: none;
 }
 
 .controls {
@@ -35,7 +46,7 @@
   transition: opacity 0.3s;
 }
 
-.scrolled .search {
+.scrolled .search, .static .search {
   opacity: 1;
 }
 

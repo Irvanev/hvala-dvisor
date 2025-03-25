@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom'; // Добавляем импорт useNavigate
 import NavBar from '../components/NavBar/NavBar';
 import SearchBar from '../components/SearchBar/SearchBar';
 import Card from '../components/Card/Card';
@@ -38,6 +39,7 @@ const CONSTANTS = {
 } as const;
 
 const HomePage: React.FC = () => {
+  const navigate = useNavigate(); // Используем хук для навигации
   const [loading, setLoading] = useState(true);
   const [userFavorites, setUserFavorites] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -155,6 +157,18 @@ const HomePage: React.FC = () => {
     // window.location.href = '/auth'; // Раскомментировать для реального редиректа
   };
 
+  // Функция для перехода на страницу ресторана
+  const handleRestaurantClick = (restaurantId: string) => {
+    navigate(`/restaurant/${restaurantId}`);
+  };
+
+  // Функция для перехода к категории ресторанов
+  const handleFeaturedCardClick = (cardId: string) => {
+    // В реальном приложении здесь может быть переход на категорию или фильтрацию
+    console.log(`Clicked on featured card: ${cardId}`);
+    // Пример: navigate(`/restaurants/category/${cardId}`);
+  };
+
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -181,6 +195,7 @@ const HomePage: React.FC = () => {
         currentLanguage="ru"
         logoText="HvalaDviser"
         onWelcomeClick={handleWelcomeClick}
+        // isStatic не указываем, чтобы использовать значение по умолчанию (false)
       />
 
       <section className={styles.hero}>
@@ -212,7 +227,7 @@ const HomePage: React.FC = () => {
                 title={card.title}
                 subtitle={card.subtitle}
                 image={card.image}
-                onClick={() => console.log(`Clicked on featured ${card.title}`)}
+                onClick={() => handleFeaturedCardClick(card.id)}
                 buttonText="Посмотреть Список"
               />
             ))}
@@ -228,7 +243,7 @@ const HomePage: React.FC = () => {
                   title={restaurant.title}
                   location={restaurant.location}
                   rating={restaurant.rating}
-                  onClick={() => console.log(`Clicked on ${restaurant.title}`)}
+                  onClick={() => handleRestaurantClick(restaurant.id)} // Используем новую функцию
                   savedStatus={userFavorites.includes(restaurant.id)}
                   onSaveToggle={handleSaveToggle}
                 />
@@ -246,7 +261,7 @@ const HomePage: React.FC = () => {
                   title={restaurant.title}
                   location={restaurant.location}
                   rating={restaurant.rating}
-                  onClick={() => console.log(`Clicked on ${restaurant.title}`)}
+                  onClick={() => handleRestaurantClick(restaurant.id)} // Используем новую функцию
                   savedStatus={userFavorites.includes(restaurant.id)}
                   onSaveToggle={handleSaveToggle}
                 />

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import styles from './NavBar.module.css';
 
 const SearchIcon = () => (
@@ -14,6 +15,7 @@ interface NavBarProps {
   currentLanguage?: string;
   logoText?: string;
   onWelcomeClick?: () => void;
+  isStatic?: boolean; // Новый параметр для статичного режима
 }
 
 const NavBar: React.FC<NavBarProps> = ({
@@ -22,20 +24,31 @@ const NavBar: React.FC<NavBarProps> = ({
   currentLanguage = 'ru',
   logoText = 'HvalaDviser',
   onWelcomeClick = () => {},
+  isStatic = false, // По умолчанию - всплывающий навбар
 }) => {
-  const [scrolled, setScrolled] = useState(false);
+  const [scrolled, setScrolled] = useState(isStatic); // Если статичный, то сразу scrolled = true
   const [query, setQuery] = useState('');
 
   useEffect(() => {
+    if (isStatic) {
+      // Если navbar статичный, всегда показываем его как scrolled
+      setScrolled(true);
+      return;
+    }
+
+    // Стандартная логика для всплывающего навбара
     const handleScroll = () => setScrolled(window.scrollY > 100);
     window.addEventListener('scroll', handleScroll);
+    
+    // Вызов функции сразу для установки начального состояния
+    handleScroll();
+    
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isStatic]);
 
   return (
-    <header className={`${styles.header} ${scrolled ? styles.scrolled : ''}`}>
-      <div className={styles.logo}>{logoText}</div>
-
+    <header className={`${styles.header} ${scrolled ? styles.scrolled : ''} ${isStatic ? styles.static : ''}`}>
+      <Link to="/" className={styles.logo}>{logoText}</Link>
       <div className={styles.controls}>
         <div className={styles.search}>
           <input
@@ -49,11 +62,9 @@ const NavBar: React.FC<NavBarProps> = ({
           />
           <SearchIcon />
         </div>
-
         <button className={styles.welcomeBtn} onClick={onWelcomeClick}>
           <span>Welcome 👋</span>
         </button>
-
         <div className={styles.language} onClick={() => onLanguageChange?.(currentLanguage)}>
           {currentLanguage.toUpperCase()}
         </div>
