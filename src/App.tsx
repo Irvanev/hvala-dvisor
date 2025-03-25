@@ -6,6 +6,7 @@ import ProfilePage from './pages/ProfilePage/ProfilePage';
 import './App.css';
 
 const App: React.FC = () => {
+
   
   return (
     <Router>
