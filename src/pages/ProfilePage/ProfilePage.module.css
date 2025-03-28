@@ -67,7 +67,26 @@
 .userLogin {
   font-size: 16px;
   color: #666;
-  margin: 0 0 16px;
+  margin: 0 0 12px;
+}
+
+/* Новый стиль для местоположения */
+.userLocation {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  color: #555;
+  font-size: 14px;
+}
+
+.locationIcon {
+  margin-right: 8px;
+  color: #2a6db0;
+  flex-shrink: 0;
+}
+
+.cityText {
+  color: #555;
 }
 
 .editButton {
@@ -86,29 +105,6 @@
 
 .editButton:hover {
   background-color: #245a94;
-}
-
-/* Дополнительная информация о пользователе */
-.additionalInfo {
-  padding: 15px;
-  background-color: #f8f9fa;
-  border-radius: 6px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  margin-bottom: 20px;
-}
-
-.infoItem {
-  display: flex;
-  align-items: center;
-  margin-bottom: 8px;
-  color: #555;
-  font-size: 14px;
-}
-
-.infoIcon {
-  margin-right: 8px;
-  color: #2a6db0;
-  flex-shrink: 0;
 }
 
 /* Вкладки навигации */
@@ -264,29 +260,6 @@
   padding: 16px;
 }
 
-/* Блок "В избранном" */
-.favoriteButton {
-  display: inline-flex;
-  align-items: center;
-  padding: 8px 16px;
-  background-color: #f43f5e;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.favoriteButton:hover {
-  background-color: #e11d48;
-}
-
-.favoriteIcon {
-  margin-right: 6px;
-}
-
 /* Секции с ресторанами */
 .sectionTitle {
   font-size: 20px;
@@ -338,9 +311,8 @@
     text-align: center;
   }
   
-  .additionalInfo {
-    max-width: 300px;
-    margin: 0 auto 16px;
+  .userLocation {
+    justify-content: center;
   }
   
   .tabs {
