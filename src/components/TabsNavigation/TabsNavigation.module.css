@@ -1,0 +1,53 @@
+.tabs {
+    display: flex;
+    border-bottom: 1px solid #e5e5e5;
+    margin-bottom: 20px;
+    position: relative;
+    background-color: #f8f9fa;
+    border-radius: 6px 6px 0 0;
+    overflow: hidden;
+  }
+  
+  .tabButton {
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #555;
+    border: none;
+    background: none;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+    margin-right: 2px; /* Добавляем отступ между вкладками */
+    display: flex;
+    align-items: center;
+  }
+  
+  .tabButton:last-child {
+    margin-right: 0;
+  }
+  
+  .tabButton.active {
+    color: #2a6db0;
+    background-color: #fff;
+    font-weight: 600;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+  }
+  
+  .tabButton:hover:not(.active) {
+    background-color: #f0f0f0;
+  }
+  
+  .tabLabel {
+    white-space: nowrap; /* Предотвращаем перенос текста */
+  }
+  
+  .tabCount {
+    background-color: #e9ecef;
+    color: #555;
+    border-radius: 10px;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-left: 6px;
+  }

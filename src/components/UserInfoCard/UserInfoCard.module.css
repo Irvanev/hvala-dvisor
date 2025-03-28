@@ -1,0 +1,70 @@
+.avatarContainer {
+    margin-bottom: 16px;
+    position: relative;
+  }
+  
+  .avatar {
+    width: 100%;
+    max-width: 280px;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+    transition: transform 0.2s ease;
+  }
+  
+  .userInfo {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+  
+  .userName {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 8px;
+    color: #2a6db0;
+    line-height: 1.25;
+  }
+  
+  .userLogin {
+    font-size: 16px;
+    color: #666;
+    margin: 0 0 12px;
+  }
+  
+  .userLocation {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+    color: #555;
+    font-size: 14px;
+  }
+  
+  .locationIcon {
+    margin-right: 8px;
+    color: #2a6db0;
+    flex-shrink: 0;
+  }
+  
+  .cityText {
+    color: #555;
+  }
+  
+  .editButton {
+    width: 100%;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    color: #fff;
+    background-color: #2a6db0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .editButton:hover {
+    background-color: #245a94;
+  }

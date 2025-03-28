@@ -1,0 +1,63 @@
+.reviewItem {
+    position: relative;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    padding: 16px;
+    border-left: 3px solid #2a6db0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .reviewItem:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .reviewHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  
+  .reviewLeft {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .restaurantName {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 4px;
+    color: #2a6db0;
+  }
+  
+  .restaurantName:hover {
+    text-decoration: underline;
+  }
+  
+  .starsContainer {
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #ffc107;
+  }
+  
+  .star {
+    color: #ffc107;
+  }
+  
+  .emptyStar {
+    color: #ddd;
+  }
+  
+  .reviewDate {
+    font-size: 12px;
+    color: #777;
+  }
+  
+  .reviewText {
+    margin: 0;
+    color: #555;
+    line-height: 1.5;
+    font-size: 14px;
+  }
+  

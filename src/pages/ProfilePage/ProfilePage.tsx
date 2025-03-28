@@ -1,24 +1,32 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import NavBar from '../../components/NavBar';
 import Footer from '../../components/Footer/Footer';
+import ReviewItem from '../../components/ReviewItem/ReviewItem';
+import UserInfoCard from '../../components/UserInfoCard/UserInfoCard';
+import TabsNavigation from '../../components/TabsNavigation/TabsNavigation';
 import styles from './ProfilePage.module.css';
+
+interface Review {
+  id: string;
+  restaurant: string;
+  rating: number;
+  comment: string;
+  date: string;
+}
 
 interface UserProfile {
   name: string;
   username: string;
   city: string;
   avatar: string;
-  reviews: {
-    id: string;
-    restaurant: string;
-    rating: number;
-    comment: string;
-    date: string;
-  }[];
+  reviews: Review[];
   favorites: number;
 }
 
 const ProfilePage: React.FC = () => {
+  const navigate = useNavigate();
+  
   // Пример данных пользователя (в реальном приложении будут загружаться с сервера)
   const [profile, setProfile] = useState<UserProfile>({
     name: 'Имя Фамилия',
@@ -48,26 +56,51 @@ const ProfilePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'reviews' | 'favorites' | 'activity'>('reviews');
 
   const handleEditProfile = () => {
-    console.log('Редактировать профиль');
-    // Здесь будет логика для редактирования профиля
+    // Перенаправляем на страницу редактирования профиля
+    navigate('/edit-profile');
   };
 
-  const renderStars = (rating: number) => {
-    const fullStars = Math.floor(rating);
-    const halfStar = rating % 1 >= 0.5;
-    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
-    
-    return (
-      <div className={styles.starsContainer}>
-        {[...Array(fullStars)].map((_, i) => (
-          <span key={`full-${i}`} className={styles.star}>★</span>
-        ))}
-        {halfStar && <span className={styles.star}>★</span>}
-        {[...Array(emptyStars)].map((_, i) => (
-          <span key={`empty-${i}`} className={styles.emptyStar}>☆</span>
-        ))}
-      </div>
-    );
+  // Функция для отображения контента в зависимости от активной вкладки
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'reviews':
+        return (
+          <div className={styles.reviewsContainer}>
+            {profile.reviews.length > 0 ? (
+              <div className={styles.reviewsList}>
+                {profile.reviews.map(review => (
+                  <ReviewItem key={review.id} review={review} />
+                ))}
+              </div>
+            ) : (
+              <p className={styles.noReviews}>Пока нет отзывов</p>
+            )}
+          </div>
+        );
+      case 'favorites':
+        return (
+          <div className={styles.reviewsContainer}>
+            <p className={styles.noReviews}>Список избранных ресторанов</p>
+          </div>
+        );
+      case 'activity':
+        return (
+          <div className={styles.contributionsBlock}>
+            <div className={styles.contributionsHeader}>
+              Активность за последний год
+            </div>
+            <div className={styles.contributionsGraph}>
+              <img 
+                src="https://placehold.jp/800x120.png" 
+                alt="График активности" 
+                style={{ width: '100%', height: 'auto' }} 
+              />
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
@@ -85,98 +118,27 @@ const ProfilePage: React.FC = () => {
         <div className={styles.mainContent}>
           {/* Левая колонка с информацией о пользователе */}
           <div className={styles.leftColumn}>
-            <div className={styles.avatarContainer}>
-              <img src={profile.avatar} alt="Аватар пользователя" className={styles.avatar} />
-            </div>
-            
-            <div className={styles.userInfo}>
-              <h1 className={styles.userName}>{profile.name}</h1>
-              <p className={styles.userLogin}>@{profile.username}</p>
-              
-              {/* Информация о городе перемещена в блок userInfo */}
-              <div className={styles.userLocation}>
-                <svg className={styles.locationIcon} viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
-                  <path d="M11.536 3.464a5 5 0 0 1 0 7.072L8 14.07l-3.536-3.535a5 5 0 1 1 7.072-7.072v.001zm1.06 8.132a6.5 6.5 0 1 0-9.192 0l3.535 3.536a1.5 1.5 0 0 0 2.122 0l3.535-3.536zM8 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
-                </svg>
-                <span className={styles.cityText}>{profile.city}</span>
-              </div>
-              
-              <button onClick={handleEditProfile} className={styles.editButton}>
-                Редактировать профиль
-              </button>
-            </div>
+            <UserInfoCard 
+              user={profile}
+              onEditClick={handleEditProfile}
+            />
           </div>
           
           {/* Правая колонка с контентом */}
           <div className={styles.rightColumn}>
             {/* Вкладки */}
-            <div className={styles.tabs}>
-              <button 
-                className={`${styles.tab} ${activeTab === 'reviews' ? styles.active : ''}`}
-                onClick={() => setActiveTab('reviews')}
-              >
-                Отзывы
-                <span className={styles.tabCount}>{profile.reviews.length}</span>
-              </button>
-              <button 
-                className={`${styles.tab} ${activeTab === 'favorites' ? styles.active : ''}`}
-                onClick={() => setActiveTab('favorites')}
-              >
-                Избранное
-              </button>
-              <button 
-                className={`${styles.tab} ${activeTab === 'activity' ? styles.active : ''}`}
-                onClick={() => setActiveTab('activity')}
-              >
-                Активность
-              </button>
-            </div>
+            <TabsNavigation 
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              tabs={[
+                { id: 'reviews', label: 'Отзывы', count: profile.reviews.length },
+                { id: 'favorites', label: 'Избранное', count: undefined },
+                { id: 'activity', label: 'Активность', count: undefined }
+              ]}
+            />
             
             {/* Контент вкладки */}
-            {activeTab === 'reviews' && (
-              <div className={styles.reviewsContainer}>
-                {profile.reviews.length > 0 ? (
-                  <div className={styles.reviewsList}>
-                    {profile.reviews.map(review => (
-                      <div key={review.id} className={styles.reviewItem}>
-                        <div className={styles.reviewHeader}>
-                          <div className={styles.reviewLeft}>
-                            <h3 className={styles.restaurantName}>{review.restaurant}</h3>
-                            {renderStars(review.rating)}
-                          </div>
-                          <span className={styles.reviewDate}>{review.date}</span>
-                        </div>
-                        
-                        <p className={styles.reviewText}>{review.comment}</p>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className={styles.noReviews}>Пока нет отзывов</p>
-                )}
-              </div>
-            )}
-            
-            {activeTab === 'favorites' && (
-              <div className={styles.reviewsContainer}>
-                <p className={styles.noReviews}>Список избранных ресторанов</p>
-              </div>
-            )}
-            
-            {activeTab === 'activity' && (
-              <div className={styles.contributionsBlock}>
-                <div className={styles.contributionsHeader}>
-                  Активность за последний год
-                </div>
-                <div className={styles.contributionsGraph}>
-                  <img 
-                    src="https://placehold.jp/800x120.png" 
-                    alt="График активности" 
-                    style={{ width: '100%', height: 'auto' }} 
-                  />
-                </div>
-              </div>
-            )}
+            {renderTabContent()}
           </div>
         </div>
       </div>
