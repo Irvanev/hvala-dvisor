@@ -233,7 +233,7 @@ const HomePage: React.FC = () => {
             ))}
           </div>
 
-          <Section title="Лучшие Рестораны 2024 Года" showNavigation={true}>
+          <Section title="Лучшие Рестораны 2024 Года">
             <Carousel>
               {restaurants.map(restaurant => (
                 <Card
@@ -251,7 +251,7 @@ const HomePage: React.FC = () => {
             </Carousel>
           </Section>
 
-          <Section title="Лучшие Рестораны 2024 Года У Моря" showNavigation={true}>
+          <Section title="Лучшие Рестораны 2024 Года У Моря">
             <Carousel>
               {restaurants.map(restaurant => (
                 <Card
@@ -269,7 +269,7 @@ const HomePage: React.FC = () => {
             </Carousel>
           </Section>
 
-          <Section title="Популярные Страны" showNavigation={true}>
+          <Section title="Популярные Страны">
             <div className={styles.countriesGrid}>
               {countries.map(country => (
                 <div
