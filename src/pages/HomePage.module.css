@@ -20,7 +20,7 @@
 }
 
 .heroBackground {
-  position: absolute; /* ← ВЕРНИ ЭТО */
+  position: absolute; /* Уже указано, оставляем как есть */
   top: 0;
   left: 0;
   width: 100%;
@@ -29,9 +29,7 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  /* background-image: url(../assets/background.webp); */
 }
-
 
 .heroBackground::after {
   content: "";
@@ -42,7 +40,6 @@
   height: 100%;
   background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
 }
-
 
 .heroContent {
   position: relative;
@@ -236,27 +233,64 @@
   color: #0b60b0;
 }
 
+/* Стили для секции карты */
+.balkanMapSection {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin: 2rem 0;
+}
+
+.balkanDescription {
+  text-align: center;
+  color: #666;
+  font-size: 16px;
+  margin: 0;
+}
+
+.interactiveMapContainer {
+  width: 100%;
+  max-width: 600px; 
+  /* height: 500px; */
+  margin: 20px auto;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); */
+}
+
 /* Медиа-запросы для адаптивности */
 @media (max-width: 768px) {
   .heroTitle {
     font-size: 2.5rem;
   }
-  
+
   .featuredCardGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .countriesGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .footerLogo {
     margin-bottom: 1.5rem;
   }
-  
+
   .footerColumn {
     flex: 0 0 100%;
     margin-bottom: 1.5rem;
+  }
+
+  .interactiveMapContainer {
+    /* Уменьшаем высоту карты на планшетах */
+    height: 400px; 
+  }
+}
+
+@media (min-width: 769px) {
+  .countriesGrid {
+    display: none; /* Скрываем карточки стран на больших экранах, показываем карту */
   }
 }
 
@@ -264,12 +298,20 @@
   .heroTitle {
     font-size: 2rem;
   }
-  
+
   .hero {
     height: 70vh;
   }
-  
+
   .footerContainer {
     flex-direction: column;
+  }
+
+  .interactiveMapContainer {
+    display: none; /* Скрываем карту на мобильных устройствах */
+  }
+
+  .countriesGrid {
+    display: grid; /* Показываем карточки стран на мобильных устройствах */
   }
 }

@@ -83,6 +83,13 @@
   margin-right: 8px;
   color: #2a6db0;
   flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.locationIcon svg {
+  width: 16px;
+  height: 16px;
 }
 
 .cityText {
@@ -210,10 +217,24 @@
 
 .star {
   color: #ffc107;
+  width: 14px;
+  height: 14px;
+}
+
+.star svg {
+  width: 14px;
+  height: 14px;
 }
 
 .emptyStar {
   color: #ddd;
+  width: 14px;
+  height: 14px;
+}
+
+.emptyStar svg {
+  width: 14px;
+  height: 14px;
 }
 
 .reviewDate {
@@ -290,6 +311,11 @@
   transition: all 0.2s ease;
 }
 
+.navButton svg {
+  width: 16px;
+  height: 16px;
+}
+
 .navButton:hover {
   background-color: #f5f5f5;
   color: #2a6db0;
@@ -300,25 +326,25 @@
   .mainContent {
     grid-template-columns: 1fr;
   }
-  
+
   .avatar {
     max-width: 200px;
     display: block;
     margin: 0 auto;
   }
-  
+
   .userInfo {
     text-align: center;
   }
-  
+
   .userLocation {
     justify-content: center;
   }
-  
+
   .tabs {
     overflow-x: auto;
   }
-  
+
   .tab {
     padding: 12px 16px;
     white-space: nowrap;
