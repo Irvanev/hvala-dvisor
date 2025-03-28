@@ -5,7 +5,6 @@
   position: relative;
   z-index: 10;
 }
-
 .searchBar {
   display: flex;
   background-color: white;
@@ -13,7 +12,6 @@
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
-
 .locationSection {
   display: flex;
   align-items: center;
@@ -22,28 +20,35 @@
   border-right: 1px solid #e5e7eb;
   cursor: pointer;
 }
-
 .locationIcon {
   color: #ef4444;
   margin-right: 0.5rem;
+  width: 20px;
+  height: 20px;
 }
-
+.locationIcon svg {
+  width: 20px;
+  height: 20px;
+}
 .locationText {
   font-weight: 500;
 }
-
 .searchSection {
   display: flex;
   align-items: center;
   flex: 1;
   padding: 0 1.25rem;
 }
-
 .searchIcon {
   color: #9ca3af;
   margin-right: 0.75rem;
+  width: 20px;
+  height: 20px;
 }
-
+.searchIcon svg {
+  width: 20px;
+  height: 20px;
+}
 .searchInput {
   width: 100%;
   border: none;
@@ -51,17 +56,16 @@
   padding: 0.75rem 0;
   font-size: 0.875rem;
 }
-
-@media (max-width: 768px) {
+@media
+ (max-width: 768px) {
   .searchContainer {
     max-width: 90%;
   }
-  
   .locationSection {
     padding: 0.625rem 1rem;
   }
-  
   .searchSection {
     padding: 0 1rem;
   }
 }
+
