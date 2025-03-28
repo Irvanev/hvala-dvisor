@@ -1,0 +1,308 @@
+.countryPage {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f5f5f5;
+  }
+  
+  /* Hero Section */
+  .heroSection {
+    position: relative;
+    height: 400px;
+    overflow: hidden;
+  }
+  
+  .heroImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .heroOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5));
+    z-index: 1;
+  }
+  
+  .heroContent {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 40px;
+    color: white;
+    z-index: 2;
+  }
+  
+  .heroTitle {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0 0 16px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  .heroDescription {
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Main Content */
+  .contentContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    width: 100%;
+  }
+  
+  .countryInfoSection {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 40px;
+  }
+
+.infoCard {
+    background-color: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  }
+  
+  .infoCard h2 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    color: #333;
+    font-size: 1.5rem;
+  }
+  
+  .infoCard p {
+    line-height: 1.6;
+    color: #666;
+    margin-bottom: 20px;
+  }
+  
+  .infoGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  
+  .infoItem {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .infoLabel {
+    font-size: 0.9rem;
+    color: #999;
+    margin-bottom: 4px;
+  }
+  
+  .infoValue {
+    font-size: 1rem;
+    color: #333;
+    font-weight: 500;
+  }
+  
+  .mapSection {
+    background-color: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  }
+  
+  .mapSection h2 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    color: #333;
+    font-size: 1.5rem;
+  }
+  
+  /* Restaurants Section */
+  .restaurantsSection {
+    background-color: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  }
+  
+  .sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  
+  .sectionHeader h2 {
+    margin: 0;
+    color: #333;
+    font-size: 1.5rem;
+  }
+  
+  .filterButtons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .filterButton {
+    background-color: #f1f3f7;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 14px;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .filterButton:hover {
+    background-color: #e4e9f2;
+  }
+  
+  .filterButton.active {
+    background-color: #4d98e9;
+    color: white;
+  }
+  
+  .restaurantsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  
+  .restaurantCardWrapper {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .restaurantTags {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  
+  .cuisineTag, .priceTag {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 500;
+  }
+  
+  .cuisineTag {
+    background-color: #e1f5fe;
+    color: #0288d1;
+  }
+  
+  .priceTag {
+    background-color: #f3e5f5;
+    color: #8e24aa;
+  }
+  
+  .noResults {
+    text-align: center;
+    padding: 40px;
+    color: #777;
+    font-style: italic;
+  }
+  
+  /* Loading and Error States */
+  .loadingContainer, .errorContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: white;
+  }
+  
+  .loadingSpinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(77, 152, 233, 0.2);
+    border-radius: 50%;
+    border-top-color: #4d98e9;
+    animation: spin 1s ease-in-out infinite;
+    margin-bottom: 16px;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .errorMessage {
+    color: #e74c3c;
+    margin-bottom: 16px;
+  }
+  
+  .errorContainer button {
+    background-color: #4d98e9;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .errorContainer button:hover {
+    background-color: #3a87d7;
+  }
+  
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .heroTitle {
+      font-size: 2.5rem;
+    }
+    
+    .heroDescription {
+      font-size: 1rem;
+    }
+    
+    .heroContent {
+      padding: 20px;
+    }
+    
+    .countryInfoSection {
+      grid-template-columns: 1fr;
+    }
+    
+    .sectionHeader {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .restaurantsGrid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .heroTitle {
+      font-size: 2rem;
+    }
+    
+    .contentContainer {
+      padding: 20px 16px;
+    }
+    
+    .infoGrid {
+      grid-template-columns: 1fr;
+    }
+    
+    .filterButtons {
+      width: 100%;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+  }
