@@ -35,7 +35,7 @@ const CONSTANTS = {
   CURRENT_YEAR: '2024',
   DEFAULT_LOCATION: 'Paris',
   HERO_TITLE: 'EXPLORE MONTENEGRO',
-  SEARCH_PLACEHOLDER: 'Что-То Для Чего-То'
+  SEARCH_PLACEHOLDER: 'Поиск'
 } as const;
 
 const HomePage: React.FC = () => {

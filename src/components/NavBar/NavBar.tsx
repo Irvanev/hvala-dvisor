@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import styles from './NavBar.module.css';
 
 const SearchIcon = () => (
@@ -9,13 +10,20 @@ const SearchIcon = () => (
   </svg>
 );
 
+const UserIcon = () => (
+  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+    <circle cx="12" cy="7" r="4" />
+  </svg>
+);
+
 interface NavBarProps {
   onSearch?: (query: string) => void;
   onLanguageChange?: (language: string) => void;
   currentLanguage?: string;
   logoText?: string;
   onWelcomeClick?: () => void;
-  isStatic?: boolean; // Новый параметр для статичного режима
+  isStatic?: boolean;
 }
 
 const NavBar: React.FC<NavBarProps> = ({
@@ -24,27 +32,44 @@ const NavBar: React.FC<NavBarProps> = ({
   currentLanguage = 'ru',
   logoText = 'HvalaDviser',
   onWelcomeClick = () => {},
-  isStatic = false, // По умолчанию - всплывающий навбар
+  isStatic = false,
 }) => {
-  const [scrolled, setScrolled] = useState(isStatic); // Если статичный, то сразу scrolled = true
+  const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth();
+  const [scrolled, setScrolled] = useState(isStatic);
   const [query, setQuery] = useState('');
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   useEffect(() => {
     if (isStatic) {
-      // Если navbar статичный, всегда показываем его как scrolled
       setScrolled(true);
       return;
     }
-
-    // Стандартная логика для всплывающего навбара
+    
     const handleScroll = () => setScrolled(window.scrollY > 100);
     window.addEventListener('scroll', handleScroll);
-    
-    // Вызов функции сразу для установки начального состояния
     handleScroll();
-    
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isStatic]);
+
+  const handleButtonClick = () => {
+    if (isAuthenticated) {
+      setShowUserMenu(!showUserMenu);
+    } else {
+      navigate('/login');
+    }
+  };
+
+  const handleProfileClick = () => {
+    setShowUserMenu(false);
+    navigate('/profile');
+  };
+  
+  const handleLogoutClick = () => {
+    setShowUserMenu(false);
+    logout();
+    navigate('/');
+  };
 
   return (
     <header className={`${styles.header} ${scrolled ? styles.scrolled : ''} ${isStatic ? styles.static : ''}`}>
@@ -62,11 +87,44 @@ const NavBar: React.FC<NavBarProps> = ({
           />
           <SearchIcon />
         </div>
-        <button className={styles.welcomeBtn} onClick={onWelcomeClick}>
-          <span>Welcome 👋</span>
-        </button>
-        <div className={styles.language} onClick={() => onLanguageChange?.(currentLanguage)}>
-          {currentLanguage.toUpperCase()}
+        
+        <div className={styles.navButtons}>
+          {isAuthenticated ? (
+            <div className={styles.userContainer}>
+              <button className={styles.userButton} onClick={handleButtonClick}>
+                <div className={styles.userAvatar}>
+                  {user?.avatar ? (
+                    <img src={user.avatar} alt="Аватар" />
+                  ) : (
+                    <UserIcon />
+                  )}
+                </div>
+                <span className={styles.userName}>{user?.name || user?.username}</span>
+              </button>
+              
+              {showUserMenu && (
+                <div className={styles.userMenu}>
+                  <button onClick={handleProfileClick} className={styles.menuItem}>
+                    Мой профиль
+                  </button>
+                  <button onClick={handleLogoutClick} className={styles.menuItem}>
+                    Выйти
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button className={styles.welcomeBtn} onClick={handleButtonClick}>
+              <span>Welcome 👋</span>
+            </button>
+          )}
+          
+          <button 
+            className={styles.language} 
+            onClick={() => onLanguageChange?.(currentLanguage)}
+          >
+            {currentLanguage.toUpperCase()}
+          </button>
         </div>
       </div>
     </header>
