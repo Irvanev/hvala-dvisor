@@ -8,12 +8,12 @@ interface CardProps {
   subtitle?: string;
   location?: string;
   rating?: number;
-  size?: 'default' | 'featured';
+  size?: 'default' | 'featured' | 'large';
   showButton?: boolean;
   buttonText?: string;
   savedStatus?: boolean;
-  onClick: () => void;
-  onSaveToggle?: (id: string, saved: boolean) => void;
+  onClick?: () => void; // Делаем опциональным, т.к. будет использоваться с Link
+  onSaveToggle?: (saved: boolean, event?: React.MouseEvent) => void; // Изменяем сигнатуру для передачи события
 }
 
 const Card: React.FC<CardProps> = ({
@@ -36,21 +36,30 @@ const Card: React.FC<CardProps> = ({
   // Обработчик нажатия на закладку
   const handleSaveClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Предотвращаем срабатывание onClick родителя
+    e.preventDefault(); // Предотвращаем переход по ссылке при клике на кнопку
+    
     const newSavedState = !isSaved;
     setIsSaved(newSavedState);
     
     // Вызываем callback для обновления в БД, если он предоставлен
     if (onSaveToggle) {
-      onSaveToggle(id, newSavedState);
+      onSaveToggle(newSavedState, e);
     }
     
     console.log(`${newSavedState ? 'Добавлено в' : 'Удалено из'} избранное: ${title}`);
   };
 
+  // Обработчик для вызова onClick, если он предоставлен
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    }
+  };
+
   // Карточка в стиле "featured" (полноэкранное изображение с текстом внизу, как на изображении 1)
   if (size === 'featured') {
     return (
-      <div className={styles.featuredCard} onClick={onClick}>
+      <div className={styles.featuredCard} onClick={handleClick}>
         {image ? (
           <img
             src={image}
@@ -76,6 +85,7 @@ const Card: React.FC<CardProps> = ({
           {showButton && (
             <button className={styles.featuredButton} onClick={(e) => {
               e.stopPropagation();
+              e.preventDefault(); // Предотвращаем переход по ссылке
               console.log('Button clicked for', title);
             }}>
               {buttonText}
@@ -89,7 +99,7 @@ const Card: React.FC<CardProps> = ({
   // Карточка в большом размере (как на изображении 2)
   if (size === 'large') {
     return (
-      <div className={styles.cardLarge} onClick={onClick}>
+      <div className={styles.cardLarge} onClick={handleClick}>
         {/* Левая часть - изображение */}
         <div className={styles.cardLargeImageContainer}>
           {image ? (
@@ -168,7 +178,7 @@ const Card: React.FC<CardProps> = ({
   
   // Обычная карточка
   return (
-    <div className={styles.card} onClick={onClick}>
+    <div className={styles.card} onClick={handleClick}>
       <div className={styles.cardImageContainer}>
         {image ? (
           <img

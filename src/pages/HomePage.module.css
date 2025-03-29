@@ -315,3 +315,16 @@
     display: grid; /* Показываем карточки стран на мобильных устройствах */
   }
 }
+
+/* Стили для ссылок в карточках */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.restaurantLink {
+  display: block;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+}
