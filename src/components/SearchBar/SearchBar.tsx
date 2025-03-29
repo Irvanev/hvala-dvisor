@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styles from './SearchBar.module.css';
 
 // Иконки
@@ -35,6 +35,46 @@ const LocationIcon = ({ size = 20 }) => (
   </svg>
 );
 
+const ChevronDownIcon = ({ size = 16 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <polyline points="6 9 12 15 18 9"></polyline>
+  </svg>
+);
+
+// Список стран Балкан для выбора
+const LOCATIONS = [
+  "Albania",
+  "Bosnia and Herzegovina",
+  "Bulgaria",
+  "Croatia",
+  "Greece",
+  "Kosovo",
+  "Montenegro",
+  "North Macedonia",
+  "Romania",
+  "Serbia",
+  "Slovenia",
+  "Turkey"
+];
+
+// Моковые результаты поиска
+const SEARCH_RESULTS = [
+  "Restaurant Bakar",
+  "Restaurant Jadran",
+  "Restaurant Galeb",
+  "Restaurant Stara Čaršija",
+  "Restaurant Palata"
+];
+
 interface SearchBarProps {
   onSearch?: (query: string, location: string) => void;
   placeholder?: string;
@@ -43,35 +83,170 @@ interface SearchBarProps {
 
 const SearchBar: React.FC<SearchBarProps> = ({
   onSearch,
-  placeholder = "Поиск",
-  defaultLocation = "Montenegro"
+  placeholder = "Поиск ресторанов",
+  defaultLocation = "Serbia"
 }) => {
   const [query, setQuery] = useState('');
   const [location, setLocation] = useState(defaultLocation);
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
+  const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
+  const [isSearchDropdownOpen, setIsSearchDropdownOpen] = useState(false);
+  const [filteredLocations, setFilteredLocations] = useState(LOCATIONS);
+  const [filteredResults, setFilteredResults] = useState<string[]>([]);
+  const [locationInputValue, setLocationInputValue] = useState(defaultLocation);
+  
+  const locationDropdownRef = useRef<HTMLDivElement>(null);
+  const searchDropdownRef = useRef<HTMLDivElement>(null);
+  
+  // Обработчик клика вне дропдауна для его закрытия
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (locationDropdownRef.current && !locationDropdownRef.current.contains(event.target as Node)) {
+        setIsLocationDropdownOpen(false);
+        // Восстанавливаем текущую локацию в поле ввода при закрытии дропдауна
+        setLocationInputValue(location);
+      }
+      if (searchDropdownRef.current && !searchDropdownRef.current.contains(event.target as Node)) {
+        setIsSearchDropdownOpen(false);
+      }
+    }
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [location]);
+  
+  // Открытие/закрытие дропдауна локаций
+  const toggleLocationDropdown = () => {
+    setIsLocationDropdownOpen(!isLocationDropdownOpen);
+    setFilteredLocations(LOCATIONS);
+    setLocationInputValue(location);
+  };
+  
+  // Обработка выбора локации
+  const handleLocationSelect = (selectedLocation: string) => {
+    setLocation(selectedLocation);
+    setLocationInputValue(selectedLocation);
+    setIsLocationDropdownOpen(false);
+    
+    // Без перенаправления на страницу страны
+    
     if (onSearch) {
-      onSearch(e.target.value, location);
+      onSearch(query, selectedLocation);
     }
   };
-
+  
+  // Фильтрация локаций при вводе
+  const handleLocationInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setLocationInputValue(value);
+    setFilteredLocations(
+      LOCATIONS.filter(loc => loc.toLowerCase().includes(value.toLowerCase()))
+    );
+  };
+  
+  // Обработка ввода в поисковую строку
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setQuery(value);
+    
+    if (value.length > 0) {
+      setFilteredResults(
+        SEARCH_RESULTS.filter(result => 
+          result.toLowerCase().includes(value.toLowerCase())
+        )
+      );
+      setIsSearchDropdownOpen(true);
+    } else {
+      setFilteredResults([]);
+      setIsSearchDropdownOpen(false);
+    }
+    
+    if (onSearch) {
+      onSearch(value, location);
+    }
+  };
+  
+  // Обработка выбора результата поиска
+  const handleResultSelect = (result: string) => {
+    setQuery(result);
+    setIsSearchDropdownOpen(false);
+    if (onSearch) {
+      onSearch(result, location);
+    }
+  };
+  
+  // Обработка нажатия колесика мыши в выпадающем списке
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    // Предотвращаем прокрутку страницы, когда прокручиваем список
+    e.stopPropagation();
+  };
+  
+  // Обработка нажатия Enter
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && onSearch) {
       onSearch(query, location);
+      setIsSearchDropdownOpen(false);
     }
   };
 
   return (
     <div className={styles.searchContainer}>
       <div className={styles.searchBar}>
-        <div className={styles.locationSection}>
+        {/* Секция локации */}
+        <div 
+          className={styles.locationSection}
+          onClick={toggleLocationDropdown}
+          ref={locationDropdownRef}
+          aria-expanded={isLocationDropdownOpen}
+        >
           <span className={styles.locationIcon}>
             <LocationIcon />
           </span>
-          <span className={styles.locationText}>{location}</span>
+          {isLocationDropdownOpen ? (
+            <input
+              type="text"
+              className={styles.locationInput}
+              value={locationInputValue}
+              onChange={handleLocationInputChange}
+              onClick={(e) => e.stopPropagation()}
+              autoFocus
+            />
+          ) : (
+            <span className={styles.locationText}>{location}</span>
+          )}
+          <span className={styles.chevronIcon}>
+            <ChevronDownIcon />
+          </span>
+          
+          {/* Выпадающий список локаций */}
+          {isLocationDropdownOpen && (
+            <div 
+              className={styles.locationDropdown}
+              onWheel={handleWheel}
+            >
+              {filteredLocations.length > 0 ? (
+                filteredLocations.map((loc, index) => (
+                  <div 
+                    key={index} 
+                    className={styles.locationItem}
+                    onClick={() => handleLocationSelect(loc)}
+                  >
+                    {loc}
+                  </div>
+                ))
+              ) : (
+                <div className={styles.noResults}>Ничего не найдено</div>
+              )}
+            </div>
+          )}
         </div>
-        <div className={styles.searchSection}>
+        
+        {/* Секция поиска */}
+        <div 
+          className={styles.searchSection}
+          ref={searchDropdownRef}
+        >
           <span className={styles.searchIcon}>
             <SearchIcon />
           </span>
@@ -83,6 +258,21 @@ const SearchBar: React.FC<SearchBarProps> = ({
             onChange={handleSearch}
             onKeyDown={handleKeyDown}
           />
+          
+          {/* Выпадающий список результатов поиска */}
+          {isSearchDropdownOpen && filteredResults.length > 0 && (
+            <div className={styles.searchDropdown}>
+              {filteredResults.map((result, index) => (
+                <div 
+                  key={index} 
+                  className={styles.searchResultItem}
+                  onClick={() => handleResultSelect(result)}
+                >
+                  {result}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
