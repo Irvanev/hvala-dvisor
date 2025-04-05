@@ -45,7 +45,7 @@ const HomePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [userFavorites, setUserFavorites] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
-  // Удаляем scrollPosition, так как теперь используем localStorage
+  const [showFloatingButtonText, setShowFloatingButtonText] = useState(true);
 
   // Данные
   const featuredCards: FeaturedCard[] = [
@@ -124,9 +124,22 @@ const HomePage: React.FC = () => {
       localStorage.setItem('scrollPosition', window.scrollY.toString());
     };
 
+    // Обновляем отображение текста на плавающей кнопке в зависимости от ширины экрана
+    const updateButtonTextVisibility = () => {
+      setShowFloatingButtonText(window.innerWidth > 768);
+    };
+
+    // Вызываем один раз при монтировании
+    updateButtonTextVisibility();
+
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []); // Пустой массив зависимостей, чтобы срабатывало только при монтировании/размонтировании
+    window.addEventListener('resize', updateButtonTextVisibility);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', updateButtonTextVisibility);
+    };
+  }, []); 
 
   // Обработчики
   const handleSaveToggle = useCallback(
@@ -160,6 +173,11 @@ const HomePage: React.FC = () => {
 
   const handleFeaturedCardClick = (cardId: string) => {
     console.log(`Clicked on featured card: ${cardId}`);
+  };
+
+  // Обработчик для кнопки добавления ресторана
+  const handleAddRestaurantClick = () => {
+    navigate('/add-restaurant');
   };
 
   // Рендеринг
@@ -305,6 +323,14 @@ const HomePage: React.FC = () => {
           </Section>
         </div>
       </section>
+
+      {/* Плавающая кнопка добавления ресторана */}
+      <div className={styles.floatingAddButton} onClick={handleAddRestaurantClick}>
+        <span className={styles.plusIcon}>+</span>
+        {showFloatingButtonText && (
+          <span className={styles.buttonText}>Добавить ресторан</span>
+        )}
+      </div>
 
       <footer className={styles.footer}>
         <div className={styles.footerContainer}>

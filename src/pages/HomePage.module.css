@@ -20,7 +20,7 @@
 }
 
 .heroBackground {
-  position: absolute; /* Уже указано, оставляем как есть */
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -251,12 +251,66 @@
 .interactiveMapContainer {
   width: 100%;
   max-width: 600px; 
-  /* height: 500px; */
   margin: 20px auto;
   position: relative;
   border-radius: 12px;
   overflow: hidden;
-  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); */
+}
+
+/* Плавающая кнопка добавления ресторана */
+.floatingAddButton {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  z-index: 100;
+  transition: all 0.3s ease;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.floatingAddButton:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  background-color: #43a047;
+}
+
+.floatingAddButton:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.plusIcon {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.buttonText {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Анимация появления плавающей кнопки */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.floatingAddButton {
+  animation: fadeIn 0.5s ease-out;
 }
 
 /* Медиа-запросы для адаптивности */
@@ -283,8 +337,20 @@
   }
 
   .interactiveMapContainer {
-    /* Уменьшаем высоту карты на планшетах */
     height: 400px; 
+  }
+  
+  /* Адаптируем плавающую кнопку для мобильных */
+  .floatingAddButton {
+    padding: 10px 16px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    justify-content: center;
+  }
+  
+  .buttonText {
+    display: none; /* На мобильных скрываем текст */
   }
 }
 
@@ -313,6 +379,12 @@
 
   .countriesGrid {
     display: grid; /* Показываем карточки стран на мобильных устройствах */
+  }
+  
+  /* Корректируем позицию плавающей кнопки на совсем маленьких экранах */
+  .floatingAddButton {
+    bottom: 16px;
+    right: 16px;
   }
 }
 
