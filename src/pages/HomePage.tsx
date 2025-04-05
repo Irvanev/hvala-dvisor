@@ -9,6 +9,8 @@ import FeaturedBanner from '../components/FeaturedBanner/FeaturedBanner';
 import BalkanMap from '../components/BalkanMap/BalkanMap';
 import styles from './HomePage.module.css';
 import backgroundImage from '../assets/background.webp';
+import Footer from '../components/Footer/Footer';
+
 
 // Интерфейсы
 interface Restaurant {
@@ -306,16 +308,11 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      <footer className={styles.footer}>
-        <div className={styles.footerContainer}>
-          <div className={styles.footerLogo}>
-            <h3>{CONSTANTS.APP_NAME}</h3>
-            <p>© {CONSTANTS.CURRENT_YEAR} Все права защищены</p>
-          </div>
-          {/* Остальной код футера остается без изменений */}
-        </div>
-      </footer>
+      <Footer />
+
     </div>
+
+    
   );
 };
 

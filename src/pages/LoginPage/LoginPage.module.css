@@ -222,3 +222,72 @@
     margin-left: 2px;
   }
 }
+
+/* Добавьте эти стили в ваш файл LoginPage.module.css */
+
+/* Разделитель "или" */
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+  color: #8f9bb3;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #e4e9f2;
+}
+
+.divider span {
+  padding: 0 10px;
+  font-size: 14px;
+}
+
+/* Кнопка Google */
+.googleButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 15px;
+  background-color: #fff;
+  border: 1px solid #e4e9f2;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.googleButton:hover {
+  background-color: #f8f9fa;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.googleButton:disabled {
+  background-color: #f1f3f7;
+  color: #a0a9b8;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.googleIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+}
+
+/* Адаптив для мобильных устройств */
+@media (max-width: 480px) {
+  .googleButton {
+    padding: 13px;
+    font-size: 15px;
+  }
+}

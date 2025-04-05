@@ -13,7 +13,7 @@ interface LoginFormData {
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { login, isLoading: authLoading } = useAuth();
+  const { login, loginWithGoogle, isLoading: authLoading } = useAuth();
   
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
@@ -23,6 +23,7 @@ const LoginPage: React.FC = () => {
   const [errors, setErrors] = useState<Partial<Record<keyof LoginFormData, string>>>({});
   const [generalError, setGeneralError] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isGoogleSubmitting, setIsGoogleSubmitting] = useState<boolean>(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -85,6 +86,29 @@ const LoginPage: React.FC = () => {
       setGeneralError(errorMessage);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setIsGoogleSubmitting(true);
+    setGeneralError('');
+    
+    try {
+      // Используем функцию loginWithGoogle из AuthContext
+      const success = await loginWithGoogle();
+      
+      if (success) {
+        // После успешной аутентификации перенаправление на страницу профиля
+        navigate('/profile');
+      } else {
+        setGeneralError('Не удалось войти через Google. Пожалуйста, попробуйте другой способ.');
+      }
+    } catch (error) {
+      console.error('Ошибка при входе через Google:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Произошла ошибка при входе через Google. Попробуйте позже.';
+      setGeneralError(errorMessage);
+    } finally {
+      setIsGoogleSubmitting(false);
     }
   };
 
@@ -181,9 +205,31 @@ const LoginPage: React.FC = () => {
             <button
               type="submit"
               className={styles.submitButton}
-              disabled={isSubmitting || authLoading}
+              disabled={isSubmitting || authLoading || isGoogleSubmitting}
             >
-              {isSubmitting || authLoading ? 'Выполняется вход...' : 'ВОЙТИ'}
+              {isSubmitting || (authLoading && !isGoogleSubmitting) ? 'Выполняется вход...' : 'ВОЙТИ'}
+            </button>
+            
+            {/* Кнопка входа через Google */}
+            <div className={styles.divider}>
+              <span>или</span>
+            </div>
+            
+            <button
+              type="button"
+              className={styles.googleButton}
+              onClick={handleGoogleLogin}
+              disabled={isSubmitting || authLoading || isGoogleSubmitting}
+            >
+              <span className={styles.googleIcon}>
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M17.7895 9.20004C17.7895 8.46937 17.7339 7.88754 17.6113 7.28571H9.1V10.4179H14.1171C14.0245 11.1957 13.4962 12.3768 12.2865 13.1857L12.2695 13.2957L14.9559 15.3714L15.1339 15.3886C16.8481 13.8428 17.7895 11.7214 17.7895 9.20004Z" fill="#4285F4"/>
+                  <path d="M9.09999 17.9991C11.54 17.9991 13.58 17.2099 15.1339 15.3877L12.2865 13.1848C11.5177 13.7223 10.4734 14.0884 9.09999 14.0884C6.71642 14.0884 4.70106 12.5599 3.98546 10.4062L3.87971 10.4148L1.08046 12.5723L1.04114 12.6719C2.58541 15.7848 5.61972 17.9991 9.09999 17.9991Z" fill="#34A853"/>
+                  <path d="M3.98545 10.4089C3.79062 9.80708 3.68177 9.16208 3.68177 8.50005C3.68177 7.83802 3.79062 7.19302 3.97609 6.59119L3.97091 6.47338L1.13062 4.27295L1.04112 4.32828C0.380668 5.58585 0 7.00119 0 8.50005C0 9.99891 0.380668 11.4143 1.04112 12.6718L3.98545 10.4089Z" fill="#FBBC05"/>
+                  <path d="M9.1 2.93413C10.7956 2.93413 11.9307 3.6468 12.5766 4.25127L15.1429 1.76608C13.5708 0.312498 11.54 -0.00195312 9.1 -0.00195312C5.61974 -0.00195312 2.58541 2.21232 1.04114 5.32523L3.97611 7.58814C4.70107 5.43451 6.71643 2.93413 9.1 2.93413Z" fill="#EB4335"/>
+                </svg>
+              </span>
+              {isGoogleSubmitting ? 'Выполняется вход...' : 'Войти через Google'}
             </button>
             
             <div className={styles.registerLink}>

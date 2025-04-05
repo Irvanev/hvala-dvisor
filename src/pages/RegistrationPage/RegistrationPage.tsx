@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import NavBar from '../../components/NavBar';
 import Footer from '../../components/Footer/Footer';
 import styles from './RegistrationPage.module.css';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface RegistrationFormData {
   name: string;
@@ -21,6 +22,8 @@ interface RegistrationFormErrors extends Partial<Record<keyof RegistrationFormDa
 
 const RegistrationPage: React.FC = () => {
   const navigate = useNavigate();
+  const { register } = useAuth();
+  
   const [avatarPreview, setAvatarPreview] = useState<string>('https://placehold.jp/300x300.png');
   const [formData, setFormData] = useState<RegistrationFormData>({
     name: '',
@@ -116,24 +119,24 @@ const RegistrationPage: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      // Здесь будет отправка данных на сервер для регистрации
-      // Пример:
-      // const formDataToSend = new FormData();
-      // Object.entries(formData).forEach(([key, value]) => {
-      //   formDataToSend.append(key, value);
-      // });
-      // const response = await fetch('/api/register', {
-      //   method: 'POST',
-      //   body: formDataToSend
-      // });
+      // Регистрация пользователя с помощью Firebase
+      const success = await register({
+        email: formData.email,
+        password: formData.password,
+        name: formData.name,
+        username: formData.username,
+        city: formData.city,
+        avatar: formData.avatar
+      });
       
-      // Имитация задержки запроса
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      console.log('Регистрация успешна!', formData);
-      
-      // После успешной регистрации перенаправление на страницу входа
-      navigate('/login');
+      if (success) {
+        // После успешной регистрации перенаправление на страницу профиля
+        navigate('/profile');
+      } else {
+        setErrors({
+          general: 'Не удалось зарегистрироваться. Возможно, такой email уже используется.'
+        });
+      }
     } catch (error) {
       console.error('Ошибка при регистрации:', error);
       setErrors({
