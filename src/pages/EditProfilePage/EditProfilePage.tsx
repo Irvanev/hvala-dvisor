@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { updatePassword } from 'firebase/auth';
+import { auth } from '../../firebase/config';
 import NavBar from '../../components/NavBar';
 import Footer from '../../components/Footer/Footer';
 import styles from './EditProfilePage.module.css';
@@ -139,23 +141,39 @@ const EditProfilePage: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      // Подготовка данных для обновления
-      // В реальном приложении здесь будет отправка данных на сервер
+      // Подготовка данных для обновления профиля
       const updatedUserData = {
         name: formData.name,
         username: formData.username,
         email: formData.email,
         city: formData.city,
         // Если есть новый аватар, используем его превью URL
-        // (в реальном приложении здесь будет загрузка файла на сервер)
+        // (в реальном приложении здесь будет загрузка файла в Firebase Storage)
         avatar: formData.avatar ? avatarPreview : user?.avatar
       };
       
-      // Имитация задержки запроса
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
       // Обновление пользователя через контекст аутентификации
       const success = await updateUser(updatedUserData);
+      
+      // Обновление пароля, если пользователь ввел новый пароль
+      if (success && formData.newPassword && auth.currentUser) {
+        try {
+          // В реальном приложении здесь должна быть проверка текущего пароля
+          // через повторную аутентификацию (reauthenticateWithCredential)
+          await updatePassword(auth.currentUser, formData.newPassword);
+          console.log('Пароль успешно обновлен');
+        } catch (passwordError) {
+          console.error('Ошибка при обновлении пароля:', passwordError);
+          setErrors({
+            ...errors,
+            currentPassword: 'Не удалось обновить пароль. Возможно, нужно перелогиниться.'
+          });
+          // Несмотря на ошибку с паролем, профиль считаем обновленным
+          setSuccessMessage('Профиль обновлен, но пароль не был изменен');
+          setIsSubmitting(false);
+          return;
+        }
+      }
       
       if (success) {
         setSuccessMessage('Профиль успешно обновлен!');

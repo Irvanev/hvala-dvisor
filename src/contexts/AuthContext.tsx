@@ -1,4 +1,16 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
+import { 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  signOut, 
+  onAuthStateChanged,
+  updateProfile,
+  updateEmail,
+  User as FirebaseUser,
+  updatePassword
+} from 'firebase/auth';
+import { auth } from '../firebase/config';
+import { uploadImage } from '../firebase/storage';
 
 interface User {
   id: string;
@@ -15,7 +27,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string, password: string, rememberMe?: boolean) => Promise<boolean>;
   register: (userData: RegisterData) => Promise<boolean>;
-  logout: () => void;
+  logout: () => Promise<void>;
   updateUser: (userData: Partial<User>) => Promise<boolean>;
 }
 
@@ -35,23 +47,9 @@ const AuthContext = createContext<AuthContextType>({
   isLoading: true,
   login: async () => false,
   register: async () => false,
-  logout: () => {},
+  logout: async () => {},
   updateUser: async () => false
 });
-
-// Тестовые аккаунты для демонстрации
-// (в реальном приложении эти данные будут храниться в базе данных на сервере)
-const TEST_ACCOUNTS = [
-  {
-    id: 'test-1',
-    name: 'Иван Петров',
-    username: 'ivanp',
-    email: 'test@example.com',
-    password: 'password123',
-    city: 'Москва',
-    avatar: 'https://placehold.jp/150x150.png'
-  }
-];
 
 // Хук для использования контекста аутентификации
 export const useAuth = () => useContext(AuthContext);
@@ -60,43 +58,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   
-  // Проверяем аутентификацию при загрузке
+  // Следим за изменением состояния аутентификации
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        // Проверяем наличие токена в localStorage или sessionStorage
-        const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        // Преобразуем Firebase User в наш формат User
+        const userObj: User = {
+          id: firebaseUser.uid,
+          name: firebaseUser.displayName || '',
+          username: firebaseUser.displayName?.split(' ')[0].toLowerCase() || '',
+          email: firebaseUser.email || '',
+          avatar: firebaseUser.photoURL || 'https://placehold.jp/150x150.png',
+        };
         
-        if (token) {
-          // Получаем id пользователя из токена 
-          // (в реальном приложении будет декодирование JWT)
-          const userId = token.split('-').pop();
-          
-          // Находим пользователя по id в тестовых данных
-          // (в реальном приложении будет запрос к API)
-          const testUser = TEST_ACCOUNTS.find(account => account.id === userId);
-          
-          if (testUser) {
-            // Устанавливаем данные пользователя (без пароля)
-            const { password, ...userData } = testUser;
-            setUser(userData);
-          } else {
-            // Если пользователь не найден, очищаем токены
-            localStorage.removeItem('authToken');
-            sessionStorage.removeItem('authToken');
-          }
+        // Храним дополнительные данные в localStorage для демонстрации
+        // В реальном приложении эти данные должны быть в Firestore
+        const userData = localStorage.getItem(`userData_${firebaseUser.uid}`);
+        if (userData) {
+          const parsedData = JSON.parse(userData);
+          userObj.city = parsedData.city;
+          userObj.username = parsedData.username || userObj.username;
         }
-      } catch (error) {
-        console.error('Ошибка проверки аутентификации:', error);
-        // Очищаем токены в случае ошибки
-        localStorage.removeItem('authToken');
-        sessionStorage.removeItem('authToken');
-      } finally {
-        setIsLoading(false);
+        
+        setUser(userObj);
+      } else {
+        setUser(null);
       }
-    };
+      setIsLoading(false);
+    });
     
-    checkAuth();
+    // Отписываемся при размонтировании компонента
+    return () => unsubscribe();
   }, []);
   
   // Функция аутентификации
@@ -104,34 +96,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setIsLoading(true);
       
-      // Имитация запроса к API - поиск пользователя в тестовых данных
-      // (в реальном приложении будет запрос к API)
-      await new Promise(resolve => setTimeout(resolve, 800));
+      await signInWithEmailAndPassword(auth, email, password);
       
-      const foundUser = TEST_ACCOUNTS.find(
-        account => account.email === email && account.password === password
-      );
-      
-      if (foundUser) {
-        // Генерируем токен с id пользователя
-        // (в реальном приложении токен будет генерироваться на сервере)
-        const token = `auth-token-${Date.now()}-${foundUser.id}`;
-        
-        // Сохраняем токен в зависимости от выбора "Запомнить меня"
-        if (rememberMe) {
-          localStorage.setItem('authToken', token);
-        } else {
-          sessionStorage.setItem('authToken', token);
-        }
-        
-        // Устанавливаем данные пользователя (без пароля)
-        const { password, ...userData } = foundUser;
-        setUser(userData);
-        
-        return true;
+      // Настраиваем персистенцию в зависимости от rememberMe
+      // Это просто демонстрация, Firebase сам управляет персистенцией
+      if (rememberMe) {
+        localStorage.setItem('authPersistence', 'local');
+      } else {
+        localStorage.setItem('authPersistence', 'session');
       }
       
-      return false;
+      return true;
     } catch (error) {
       console.error('Ошибка при входе:', error);
       return false;
@@ -145,35 +120,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setIsLoading(true);
       
-      // Имитация запроса к API для регистрации
-      await new Promise(resolve => setTimeout(resolve, 1200));
+      // Создаем пользователя в Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(
+        auth, 
+        userData.email, 
+        userData.password
+      );
       
-      // Проверка, что email не занят
-      const emailExists = TEST_ACCOUNTS.some(account => account.email === userData.email);
-      if (emailExists) {
-        return false;
+      const firebaseUser = userCredential.user;
+      let photoURL = 'https://placehold.jp/150x150.png?text=User';
+      
+      // Если есть аватар, загружаем его в Firebase Storage
+      if (userData.avatar) {
+        try {
+          photoURL = await uploadImage(userData.avatar, `avatars/${firebaseUser.uid}`);
+        } catch (uploadError) {
+          console.error('Ошибка при загрузке аватара:', uploadError);
+          // Продолжаем с дефолтным аватаром
+        }
       }
       
-      // Создаем нового пользователя 
-      // (в реальном приложении это будет делать сервер)
-      const newUserId = `user-${Date.now()}`;
-      const newUser: User = {
-        id: newUserId,
-        name: userData.name,
+      // Обновляем профиль пользователя в Firebase
+      await updateProfile(firebaseUser, {
+        displayName: userData.name,
+        photoURL: photoURL
+      });
+      
+      // Сохраняем дополнительные данные в localStorage (демонстрационный подход)
+      // В реальном приложении используйте Firestore
+      localStorage.setItem(`userData_${firebaseUser.uid}`, JSON.stringify({
         username: userData.username,
-        email: userData.email,
-        city: userData.city,
-        avatar: userData.avatar ? URL.createObjectURL(userData.avatar) : 'https://placehold.jp/150x150.png?text=User'
-      };
-      
-      // Генерируем токен
-      const token = `auth-token-${Date.now()}-${newUserId}`;
-      sessionStorage.setItem('authToken', token);
-      
-      // Устанавливаем данные пользователя
-      setUser(newUser);
-      
-      // В реальном приложении здесь будет сохранение на сервере
+        city: userData.city
+      }));
       
       return true;
     } catch (error) {
@@ -185,13 +163,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
   
   // Функция выхода из аккаунта
-  const logout = () => {
-    // Удаляем токен из хранилища
-    localStorage.removeItem('authToken');
-    sessionStorage.removeItem('authToken');
-    
-    // Очищаем данные пользователя
-    setUser(null);
+  const logout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Ошибка при выходе:', error);
+    }
   };
   
   // Функция обновления данных пользователя
@@ -199,17 +176,59 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setIsLoading(true);
       
-      // Имитация запроса к API
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const firebaseUser = auth.currentUser;
+      if (!firebaseUser) return false;
       
-      // Обновляем данные пользователя
-      if (user) {
-        const updatedUser = { ...user, ...userData };
-        setUser(updatedUser);
-        return true;
+      let photoURL = user?.avatar;
+      
+      // Если есть новый аватар (файл), загружаем его в Firebase Storage
+      if (userData.avatar && typeof userData.avatar === 'string' && userData.avatar.startsWith('data:')) {
+        // В этом случае нам нужно конвертировать Data URL в File
+        try {
+          const response = await fetch(userData.avatar);
+          const blob = await response.blob();
+          const file = new File([blob], "avatar.jpg", { type: "image/jpeg" });
+          
+          photoURL = await uploadImage(file, `avatars/${firebaseUser.uid}`);
+          userData.avatar = photoURL;
+        } catch (uploadError) {
+          console.error('Ошибка при загрузке аватара:', uploadError);
+        }
       }
       
-      return false;
+      // Обновляем основные данные профиля в Firebase
+      if (userData.name || userData.avatar) {
+        await updateProfile(firebaseUser, {
+          displayName: userData.name || firebaseUser.displayName,
+          photoURL: photoURL || firebaseUser.photoURL
+        });
+      }
+      
+      // Обновляем email, если он изменился
+      if (userData.email && userData.email !== firebaseUser.email) {
+        await updateEmail(firebaseUser, userData.email);
+      }
+      
+      // Сохраняем дополнительные данные в localStorage (демонстрационный подход)
+      // В реальном приложении используйте Firestore
+      const existingData = localStorage.getItem(`userData_${firebaseUser.uid}`);
+      const parsedData = existingData ? JSON.parse(existingData) : {};
+      
+      localStorage.setItem(`userData_${firebaseUser.uid}`, JSON.stringify({
+        ...parsedData,
+        username: userData.username || parsedData.username,
+        city: userData.city || parsedData.city
+      }));
+      
+      // Обновляем состояние пользователя
+      if (user) {
+        setUser({
+          ...user,
+          ...userData
+        });
+      }
+      
+      return true;
     } catch (error) {
       console.error('Ошибка при обновлении профиля:', error);
       return false;

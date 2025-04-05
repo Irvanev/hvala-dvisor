@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './SearchBar.module.css';
+import { db } from '../../firebase/config';
+
 
 // Иконки
 const SearchIcon = ({ size = 20 }) => (

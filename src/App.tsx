@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
-
 // Pages
 import ProfilePage from './pages/ProfilePage/ProfilePage';
 import HomePage from '../src/pages/HomePage';
@@ -10,10 +9,8 @@ import RestaurantPage from './pages/RestaurantPage/RestaurantPage';
 import LoginPage from './pages/LoginPage/LoginPage';
 import RegistrationPage from './pages/RegistrationPage/RegistrationPage';
 import EditProfilePage from './pages/EditProfilePage/EditProfilePage';
-
-// import ForgotPasswordPage from './pages/Auth/ForgotPasswordPage/ForgotPasswordPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage/ForgotPasswordPage';
 // import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
-
 import './App.css';
 
 const App: React.FC = () => {
@@ -24,7 +21,7 @@ const App: React.FC = () => {
           {/* Публичные маршруты */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegistrationPage />} />
-          {/* <Route path="/forgot-password" element={<ForgotPasswordPage />} /> */}
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/restaurant/:id" element={<RestaurantPage />} />
           
