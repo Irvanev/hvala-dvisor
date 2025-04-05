@@ -350,3 +350,151 @@
     white-space: nowrap;
   }
 }
+
+/* Добавьте эти стили в конец вашего файла ProfilePage.module.css */
+
+/* Индикатор загрузки */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f7f9fc;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #4d98e9;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+.loadingIndicator {
+  text-align: center;
+  padding: 24px;
+  color: #6e7a8a;
+  font-style: italic;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Сообщение для неавторизованных пользователей */
+.unauthorizedMessage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 40px;
+  margin: 40px auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  max-width: 500px;
+}
+
+.unauthorizedMessage h2 {
+  font-size: 24px;
+  margin-bottom: 16px;
+  color: #2a6db0;
+}
+
+.unauthorizedMessage p {
+  margin-bottom: 24px;
+  color: #666;
+}
+
+.loginButton {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #4d98e9 0%, #3372c0 100%);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(77, 152, 233, 0.25);
+}
+
+.loginButton:hover {
+  background: linear-gradient(135deg, #3d8ae0 0%, #2e66b0 100%);
+  box-shadow: 0 6px 15px rgba(77, 152, 233, 0.35);
+  transform: translateY(-2px);
+}
+
+/* Стили для избранных ресторанов */
+.favoritesList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.favoriteRestaurant {
+  display: flex;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.favoriteRestaurant:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.favoriteImageContainer {
+  width: 120px;
+  height: 80px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.favoriteImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.favoriteDetails {
+  padding: 12px 16px;
+  flex: 1;
+}
+
+.favoriteName {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 6px;
+  color: #2a6db0;
+}
+
+.favoriteAddress {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+/* Мобильная версия */
+@media (max-width: 768px) {
+  .favoriteRestaurant {
+    flex-direction: column;
+  }
+  
+  .favoriteImageContainer {
+    width: 100%;
+    height: 120px;
+  }
+  
+  .favoriteDetails {
+    padding: 16px;
+  }
+}

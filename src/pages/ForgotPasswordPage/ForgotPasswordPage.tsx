@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '../../firebase/config';
+import { useAuth } from '../../contexts/AuthContext';
 import NavBar from '../../components/NavBar';
 import Footer from '../../components/Footer/Footer';
-import styles from '../ForgotPasswordPage/ForgotPasswordPage.module.css';
+import styles from './ForgotPasswordPage.module.css';
 
 const ForgotPasswordPage: React.FC = () => {
   const navigate = useNavigate();
+  const { resetPassword } = useAuth();
   const [email, setEmail] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
@@ -35,9 +35,14 @@ const ForgotPasswordPage: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      // Отправляем запрос на сброс пароля через Firebase
-      await sendPasswordResetEmail(auth, email);
-      setSuccess(true);
+      // Используем функцию resetPassword из AuthContext для Firebase
+      const result = await resetPassword(email);
+      
+      if (result) {
+        setSuccess(true);
+      } else {
+        setError('Не удалось отправить запрос на сброс пароля. Проверьте правильность email.');
+      }
     } catch (error) {
       console.error('Ошибка при отправке запроса на сброс пароля:', error);
       setError('Не удалось отправить запрос на сброс пароля. Проверьте правильность email.');

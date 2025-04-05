@@ -7,10 +7,22 @@ import {
   updateProfile,
   updateEmail,
   User as FirebaseUser,
-  updatePassword
+  updatePassword,
+  sendPasswordResetEmail,
+  GoogleAuthProvider,
+  signInWithPopup
 } from 'firebase/auth';
-import { auth } from '../firebase/config';
-import { uploadImage } from '../firebase/storage';
+import { 
+  doc, 
+  setDoc, 
+  getDoc, 
+  updateDoc, 
+  serverTimestamp,
+  arrayUnion,
+  arrayRemove 
+} from 'firebase/firestore';
+import { auth, db, storage } from '../firebase/config';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 interface User {
   id: string;
@@ -19,6 +31,11 @@ interface User {
   email: string;
   city?: string;
   avatar?: string;
+  favorites?: string[];
+  role?: string;
+  // Добавлены недостающие свойства
+  displayName?: string;  // Имя пользователя из Firebase Auth
+  photoURL?: string;     // URL фото профиля из Firebase Auth
 }
 
 interface AuthContextType {
@@ -29,6 +46,13 @@ interface AuthContextType {
   register: (userData: RegisterData) => Promise<boolean>;
   logout: () => Promise<void>;
   updateUser: (userData: Partial<User>) => Promise<boolean>;
+  addToFavorites: (restaurantId: string) => Promise<boolean>;
+  removeFromFavorites: (restaurantId: string) => Promise<boolean>;
+  resetPassword: (email: string) => Promise<boolean>;
+  loginWithGoogle: () => Promise<boolean>; // Добавляем метод для входа через Google
+  // Для совместимости с PrivateRoute
+  currentUser: FirebaseUser | null;
+  userProfile: User | null;
 }
 
 interface RegisterData {
@@ -40,6 +64,13 @@ interface RegisterData {
   avatar?: File | null;
 }
 
+// Функция для загрузки изображения в Firebase Storage
+const uploadImage = async (file: File, path: string): Promise<string> => {
+  const storageRef = ref(storage, `${path}/${Date.now()}_${file.name}`);
+  await uploadBytes(storageRef, file);
+  return getDownloadURL(storageRef);
+};
+
 // Создаем контекст с начальными значениями
 const AuthContext = createContext<AuthContextType>({
   user: null,
@@ -48,7 +79,13 @@ const AuthContext = createContext<AuthContextType>({
   login: async () => false,
   register: async () => false,
   logout: async () => {},
-  updateUser: async () => false
+  updateUser: async () => false,
+  addToFavorites: async () => false,
+  removeFromFavorites: async () => false,
+  resetPassword: async () => false,
+  loginWithGoogle: async () => false, // Добавляем пустую реализацию
+  currentUser: null,
+  userProfile: null
 });
 
 // Хук для использования контекста аутентификации
@@ -56,30 +93,50 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  
+  // Функция для получения расширенных данных пользователя из Firestore
+  const getUserData = async (firebaseUser: FirebaseUser): Promise<User> => {
+    // Создаем базовый объект пользователя из Firebase Auth
+    const userObj: User = {
+      id: firebaseUser.uid,
+      name: firebaseUser.displayName || '',  // используем displayName из Firebase
+      email: firebaseUser.email || '',
+      username: firebaseUser.displayName?.split(' ')[0].toLowerCase() || '',
+      avatar: firebaseUser.photoURL || 'https://placehold.jp/150x150.png?text=User', // используем photoURL из Firebase
+      favorites: []
+    };
+    
+    try {
+      // Пытаемся получить расширенные данные из Firestore
+      const userDoc = await getDoc(doc(db, 'Users', firebaseUser.uid));
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        
+        // Копируем существующие свойства из Firestore
+        if (userData.name) userObj.name = userData.name;
+        if (userData.username) userObj.username = userData.username;
+        if (userData.city) userObj.city = userData.city;
+        if (userData.avatar) userObj.avatar = userData.avatar;
+        if (userData.favorites) userObj.favorites = userData.favorites;
+        if (userData.role) userObj.role = userData.role;
+      }
+    } catch (error) {
+      console.error('Ошибка при получении данных пользователя из Firestore:', error);
+    }
+    
+    return userObj;
+  };
   
   // Следим за изменением состояния аутентификации
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      setCurrentUser(firebaseUser); // Устанавливаем currentUser для совместимости с PrivateRoute
+      
       if (firebaseUser) {
-        // Преобразуем Firebase User в наш формат User
-        const userObj: User = {
-          id: firebaseUser.uid,
-          name: firebaseUser.displayName || '',
-          username: firebaseUser.displayName?.split(' ')[0].toLowerCase() || '',
-          email: firebaseUser.email || '',
-          avatar: firebaseUser.photoURL || 'https://placehold.jp/150x150.png',
-        };
-        
-        // Храним дополнительные данные в localStorage для демонстрации
-        // В реальном приложении эти данные должны быть в Firestore
-        const userData = localStorage.getItem(`userData_${firebaseUser.uid}`);
-        if (userData) {
-          const parsedData = JSON.parse(userData);
-          userObj.city = parsedData.city;
-          userObj.username = parsedData.username || userObj.username;
-        }
-        
+        // Получаем расширенные данные пользователя
+        const userObj = await getUserData(firebaseUser);
         setUser(userObj);
       } else {
         setUser(null);
@@ -90,6 +147,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Отписываемся при размонтировании компонента
     return () => unsubscribe();
   }, []);
+  
+  const loginWithGoogle = async (): Promise<boolean> => {
+    try {
+      setIsLoading(true);
+      
+      // Создаем провайдер Google
+      const provider = new GoogleAuthProvider();
+      
+      // Предпочтение для выбора аккаунта каждый раз
+      provider.setCustomParameters({ prompt: 'select_account' });
+      
+      // Выполняем вход с помощью popup
+      const result = await signInWithPopup(auth, provider);
+      const firebaseUser = result.user;
+      
+      // Проверяем, есть ли документ пользователя в Firestore
+      const userDoc = await getDoc(doc(db, 'Users', firebaseUser.uid));
+      
+      if (!userDoc.exists()) {
+        // Если пользователь входит впервые, создаем его документ в Firestore
+        await setDoc(doc(db, 'Users', firebaseUser.uid), {
+          email: firebaseUser.email,
+          name: firebaseUser.displayName || '',
+          username: firebaseUser.displayName?.split(' ')[0].toLowerCase() || '',
+          avatar: firebaseUser.photoURL || 'https://placehold.jp/150x150.png?text=User',
+          role: 'user',
+          favorites: [],
+          timestamps: {
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+          }
+        });
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Ошибка при входе через Google:', error);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
   
   // Функция аутентификации
   const login = async (email: string, password: string, rememberMe: boolean = false): Promise<boolean> => {
@@ -146,12 +245,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         photoURL: photoURL
       });
       
-      // Сохраняем дополнительные данные в localStorage (демонстрационный подход)
-      // В реальном приложении используйте Firestore
-      localStorage.setItem(`userData_${firebaseUser.uid}`, JSON.stringify({
+      // Сохраняем данные пользователя в Firestore
+      await setDoc(doc(db, 'Users', firebaseUser.uid), {
+        email: userData.email,
+        displayName: userData.name,
+        name: userData.name,
         username: userData.username,
-        city: userData.city
-      }));
+        photoURL: photoURL,
+        avatar: photoURL,
+        city: userData.city || '',
+        role: 'user',
+        favorites: [],
+        timestamps: {
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        }
+      });
       
       return true;
     } catch (error) {
@@ -168,6 +277,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await signOut(auth);
     } catch (error) {
       console.error('Ошибка при выходе:', error);
+    }
+  };
+  
+  // Функция сброса пароля
+  const resetPassword = async (email: string): Promise<boolean> => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+      return true;
+    } catch (error) {
+      console.error('Ошибка при сбросе пароля:', error);
+      return false;
     }
   };
   
@@ -209,22 +329,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await updateEmail(firebaseUser, userData.email);
       }
       
-      // Сохраняем дополнительные данные в localStorage (демонстрационный подход)
-      // В реальном приложении используйте Firestore
-      const existingData = localStorage.getItem(`userData_${firebaseUser.uid}`);
-      const parsedData = existingData ? JSON.parse(existingData) : {};
+      // Обновляем данные в Firestore
+      const userDocRef = doc(db, 'Users', firebaseUser.uid);
       
-      localStorage.setItem(`userData_${firebaseUser.uid}`, JSON.stringify({
-        ...parsedData,
-        username: userData.username || parsedData.username,
-        city: userData.city || parsedData.city
-      }));
+      // Подготавливаем данные для обновления
+      const updateData: any = {
+        ...userData,
+        'timestamps.updatedAt': serverTimestamp()
+      };
+      
+      // Если изменилось имя, обновляем оба поля - name и displayName
+      if (userData.name) {
+        updateData.name = userData.name;
+        updateData.displayName = userData.name;
+      }
+      
+      // Если изменился аватар, обновляем оба поля - avatar и photoURL
+      if (photoURL) {
+        updateData.avatar = photoURL;
+        updateData.photoURL = photoURL;
+      }
+      
+      // Обновляем документ в Firestore
+      await updateDoc(userDocRef, updateData);
       
       // Обновляем состояние пользователя
       if (user) {
         setUser({
           ...user,
-          ...userData
+          ...userData,
+          avatar: photoURL || user.avatar
         });
       }
       
@@ -237,6 +371,58 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
   
+  // Функция добавления ресторана в избранное
+  const addToFavorites = async (restaurantId: string): Promise<boolean> => {
+    if (!user || !auth.currentUser) return false;
+    
+    try {
+      const userRef = doc(db, 'Users', auth.currentUser.uid);
+      
+      // Добавляем ID ресторана в массив favorites в Firestore
+      await updateDoc(userRef, {
+        favorites: arrayUnion(restaurantId),
+        'timestamps.updatedAt': serverTimestamp()
+      });
+      
+      // Обновляем локальное состояние
+      setUser({
+        ...user,
+        favorites: [...(user.favorites || []), restaurantId]
+      });
+      
+      return true;
+    } catch (error) {
+      console.error('Ошибка при добавлении в избранное:', error);
+      return false;
+    }
+  };
+  
+  // Функция удаления ресторана из избранного
+  const removeFromFavorites = async (restaurantId: string): Promise<boolean> => {
+    if (!user || !auth.currentUser) return false;
+    
+    try {
+      const userRef = doc(db, 'Users', auth.currentUser.uid);
+      
+      // Удаляем ID ресторана из массива favorites в Firestore
+      await updateDoc(userRef, {
+        favorites: arrayRemove(restaurantId),
+        'timestamps.updatedAt': serverTimestamp()
+      });
+      
+      // Обновляем локальное состояние
+      setUser({
+        ...user,
+        favorites: (user.favorites || []).filter(id => id !== restaurantId)
+      });
+      
+      return true;
+    } catch (error) {
+      console.error('Ошибка при удалении из избранного:', error);
+      return false;
+    }
+  };
+  
   // Значение провайдера
   const value = {
     user,
@@ -245,7 +431,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     login,
     register,
     logout,
-    updateUser
+    updateUser,
+    addToFavorites,
+    removeFromFavorites,
+    resetPassword,
+    loginWithGoogle, // Добавляем метод для входа через Google
+    currentUser,
+    userProfile: user
   };
   
   return (
