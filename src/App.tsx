@@ -10,6 +10,7 @@ import LoginPage from './pages/LoginPage/LoginPage';
 import RegistrationPage from './pages/RegistrationPage/RegistrationPage';
 import EditProfilePage from './pages/EditProfilePage/EditProfilePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage/ForgotPasswordPage';
+import AddRestaurantPage from './pages/AddRestaurantPage/AddRestaurantPage';
 // import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
 import './App.css';
 
@@ -24,7 +25,8 @@ const App: React.FC = () => {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/restaurant/:id" element={<RestaurantPage />} />
-          
+          <Route path="/add-restaurant" element={<AddRestaurantPage />} />
+
           {/* Защищенные маршруты (требуют аутентификации) */}
           <Route element={<PrivateRoute />}>
             <Route path="/profile" element={<ProfilePage />} />
