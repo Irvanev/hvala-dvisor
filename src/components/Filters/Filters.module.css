@@ -1,0 +1,253 @@
+.filtersContainer {
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    width: 100%;
+  }
+  
+  /* Секции фильтров */
+  .filterSection {
+    border-bottom: 1px solid #eee;
+  }
+  
+  .filterSection h3 {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #333;
+  }
+  
+  .filterSection h3:hover {
+    background-color: #f8f9fa;
+  }
+  
+  .arrowIcon {
+    color: #999;
+    font-size: 0.8rem;
+  }
+  
+  .filterContent {
+    padding: 0 1rem 1rem;
+  }
+  
+  /* Чекбоксы и их метки */
+  .filterOptions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .filterOption {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  .filterOption input[type="checkbox"] {
+    margin-right: 0.5rem;
+  }
+  
+  /* Слайдеры диапазонов */
+  .rangeSlider {
+    margin-top: 0.5rem;
+  }
+  
+  .rangeInput {
+    width: 100%;
+    height: 4px;
+    background: #ddd;
+    outline: none;
+    -webkit-appearance: none;
+    margin-bottom: 1rem;
+  }
+  
+  .rangeInput::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #0b60b0;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  
+  .rangeInput::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: #0b60b0;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+  }
+  
+  .rangeLabels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: #555;
+    margin-bottom: 0.75rem;
+  }
+  
+  .selectedValue {
+    font-size: 0.9rem;
+    color: #333;
+  }
+  
+  /* Кнопка применения фильтров */
+  .applyFiltersButton {
+    width: 100%;
+    background-color: #0b60b0;
+    color: #fff;
+    border: none;
+    padding: 0.75rem 0;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background-color 0.2s;
+    border-radius: 0;
+  }
+  
+  .applyFiltersButton:hover {
+    background-color: #094b8f;
+  }
+  
+  /* Адаптивность для мобильных */
+  @media (max-width: 768px) {
+    .filterSection h3 {
+      padding: 0.8rem 0.5rem;
+    }
+    
+    .filterContent {
+      padding: 0 0.5rem 0.8rem;
+    }
+  }
+
+  /* Стили для оверлея с фильтрами на мобильных устройствах */
+
+/* Фоновый затемненный оверлей */
+.filtersOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 900;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  /* Контейнер с фильтрами внутри оверлея */
+  .filtersOverlayContent {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 400px;
+    max-height: 80vh;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    overflow-y: auto;
+    z-index: 1000;
+    animation: slideIn 0.3s ease-in-out;
+  }
+  
+  /* Заголовок оверлея с фильтрами */
+  .filtersOverlayHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .filtersOverlayHeader h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  
+  /* Кнопка закрытия оверлея */
+  .closeOverlayButton {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+  }
+  
+  .closeOverlayButton:hover {
+    color: #333;
+  }
+  
+  /* Анимации для оверлея */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideIn {
+    from { transform: translate(-50%, -40%); opacity: 0; }
+    to { transform: translate(-50%, -50%); opacity: 1; }
+  }
+  
+  /* Отображение оверлея при активном состоянии */
+  .filtersOverlayActive {
+    display: block;
+  }
+  
+  /* Стилизованная кнопка фильтров для мобильных */
+  .mobileFilterToggle {
+    width: 100%;
+    background-color: #0b60b0;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .mobileFilterToggle:hover {
+    background-color: #094b8f;
+  }
+  
+  .filterButtonText {
+    flex-grow: 1;
+    text-align: center;
+  }
+  
+  .filterIcon {
+    font-size: 14px;
+    margin-left: 8px;
+  }
+  
+  /* Блокировка прокрутки страницы при активном оверлее */
+  .bodyNoScroll {
+    overflow: hidden;
+  }
+  
+  /* На десктопах скрываем кнопку вызова фильтров */
+  @media (min-width: 769px) {
+    .mobileFilterToggle {
+      display: none;
+    }
+  }
