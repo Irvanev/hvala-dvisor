@@ -2,42 +2,15 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import NavBar from '../components/NavBar/NavBar';
 import SearchBar from '../components/SearchBar/SearchBar';
-import Card from '../components/Card/Card';
 import Section from '../components/Section/Section';
-import Carousel from '../components/Carousel/Carousel';
 import FeaturedBanner from '../components/FeaturedBanner/FeaturedBanner';
 import BalkanMap from '../components/BalkanMap/BalkanMap';
 import styles from './HomePage.module.css';
 import backgroundImage from '../assets/background.webp';
 import Footer from '../components/Footer/Footer';
-import RestaurantGrid from '../components/RestaurantGrid/RestaurantGrid'; // Импортируем новый компонент
-
-
-
-interface Restaurant {
-  id: string;
-  title: string;
-  location: string;
-  description: string; // Хранится в объекте, но не отображается в карточке
-  rating: number;
-  image: string;
-  cuisineTags?: string[];
-  featureTags?: string[];
-  priceRange?: string;
-}
-
-interface Country {
-  id: string;
-  title: string;
-  image: string;
-}
-
-interface FeaturedCard {
-  id: string;
-  title: string;
-  subtitle: string;
-  image: string;
-}
+import RestaurantGrid from '../components/RestaurantGrid/RestaurantGrid';
+// Импортируем типы из единого файла
+import { Restaurant, Country, FeaturedCard } from '../models/types';
 
 const CONSTANTS = {
   APP_NAME: 'HvalaDviser',
@@ -70,6 +43,7 @@ const HomePage: React.FC = () => {
     },
   ];
 
+  // Массив ресторанов с новым форматом данных (images вместо image)
   const restaurants: Restaurant[] = [
     {
       id: 'rest1',
@@ -77,6 +51,13 @@ const HomePage: React.FC = () => {
       location: 'Paris',
       description: 'Изысканный ресторан с французской кухней',
       rating: 4.9,
+      // Используем новое поле images
+      images: [
+        'https://placehold.jp/300x200.png',
+        'https://placehold.jp/400x200.png',
+        'https://placehold.jp/350x200.png'
+      ],
+      // Для обратной совместимости можно оставить поле image
       image: 'https://placehold.jp/300x200.png',
       cuisineTags: ['Французская'],
       featureTags: ['Терраса', 'Детское меню'],
@@ -88,8 +69,12 @@ const HomePage: React.FC = () => {
       location: 'Paris',
       description: 'Современная французская кухня с акцентом на местные продукты',
       rating: 4.9,
+      images: [
+        'https://placehold.jp/300x200.png',
+        'https://placehold.jp/300x210.png'
+      ],
       image: 'https://placehold.jp/300x200.png',
-      cuisineTags: ['Французская', 'Панорамный вид', 'Винная карта', 'Веганское меню', 'Терраса']      ,
+      cuisineTags: ['Французская', 'Панорамный вид', 'Винная карта', 'Веганское меню', 'Терраса'],
       featureTags: ['Веганское меню', 'Фермерские продукты'],
       priceRange: '€€',
     },
@@ -99,6 +84,12 @@ const HomePage: React.FC = () => {
       location: 'Rome',
       description: 'Итальянская кухня с домашними пастами и пиццей',
       rating: 4.8,
+      images: [
+        'https://placehold.jp/300x200.png',
+        'https://placehold.jp/320x200.png',
+        'https://placehold.jp/310x200.png',
+        'https://placehold.jp/330x200.png'
+      ],
       image: 'https://placehold.jp/300x200.png',
       cuisineTags: ['Итальянская'],
       featureTags: ['Домашняя паста', 'Дровяная печь'],
@@ -110,6 +101,10 @@ const HomePage: React.FC = () => {
       location: 'Barcelona',
       description: 'Испанская кухня с акцентом на тапас и паэлью',
       rating: 4.8,
+      images: [
+        'https://placehold.jp/300x200.png',
+        'https://placehold.jp/305x200.png'
+      ],
       image: 'https://placehold.jp/300x200.png',
       cuisineTags: ['Испанская'],
       featureTags: ['Винная карта', 'Панорамный вид'],
@@ -231,7 +226,7 @@ const HomePage: React.FC = () => {
         logoText={CONSTANTS.APP_NAME}
         onWelcomeClick={handleWelcomeClick}
       />
-  
+
       <section className={styles.hero}>
         <div
           className={styles.heroBackground}
@@ -247,9 +242,20 @@ const HomePage: React.FC = () => {
         </div>
         <div className={styles.curvyBottom}></div>
       </section>
-  
+
       <section className={styles.contentSection}>
         <div className={styles.contentContainer}>
+          {/* Добавленная секция со слоганом */}
+          <div className={styles.sloganSection}>
+            <h2 className={styles.sloganTitle}>Откройте для себя аутентичные балканские вкусы</h2>
+            <p className={styles.sloganText}>
+              HvalaDviser — это ваш надежный путеводитель по лучшим ресторанам Балкан.
+              Мы помогаем путешественникам и местным жителям находить уникальные гастрономические
+              впечатления, сохранять любимые места и делиться своими открытиями.
+            </p>
+            <div className={styles.sloganDivider}></div>
+          </div>
+
           <div className={styles.featuredCardGrid}>
             {featuredCards.map((card) => (
               <FeaturedBanner
@@ -263,16 +269,16 @@ const HomePage: React.FC = () => {
               />
             ))}
           </div>
-  
+
           {/* Заменяем карусели на сетку из 8 ресторанов */}
           <Section title="Top">
-            <RestaurantGrid 
+            <RestaurantGrid
               restaurants={restaurants.concat(restaurants)} // Дублируем массив для получения 8 карточек
               userFavorites={userFavorites}
               onSaveToggle={handleSaveToggle}
             />
           </Section>
-  
+
           {/* Остальные секции остаются без изменений */}
           <Section title="Популярные Страны">
             <div className={styles.countriesGrid}>
@@ -297,7 +303,7 @@ const HomePage: React.FC = () => {
               ))}
             </div>
           </Section>
-  
+
           <Section title="Исследуйте Балканы">
             <div className={styles.balkanMapSection}>
               <p className={styles.balkanDescription}>
@@ -310,7 +316,7 @@ const HomePage: React.FC = () => {
           </Section>
         </div>
       </section>
-  
+
       {/* Плавающая кнопка добавления ресторана */}
       <div className={styles.floatingAddButton} onClick={handleAddRestaurantClick}>
         <span className={styles.plusIcon}>+</span>
@@ -318,7 +324,7 @@ const HomePage: React.FC = () => {
           <span className={styles.buttonText}>Добавить ресторан</span>
         )}
       </div>
-  
+
       <Footer />
     </div>
   );

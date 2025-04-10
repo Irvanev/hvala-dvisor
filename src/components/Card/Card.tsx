@@ -13,16 +13,17 @@ const tagIcons: Record<string, string> = {
   'Винная карта': '🍷',
   'Дровяная печь': '🔥',
 };
+
 const priceRangeIcons: Record<string, string> = {
   '€': '💰',
   '€€': '💵',
   '€€€': '💳',
 };
 
-
 interface CardProps {
   id: string;
-  image: string;
+  images: string[]; // Массив изображений
+  image?: string;   // Опциональное поле для обратной совместимости
   title: string;
   location?: string;
   rating?: number;
@@ -36,6 +37,7 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = ({
   id,
+  images = [],
   image,
   title,
   location,
@@ -47,6 +49,31 @@ const Card: React.FC<CardProps> = ({
   onClick,
   onSaveToggle
 }) => {
+  // Создаем массив изображений из всех доступных источников
+  const allImages = images.length > 0 ? images : (image ? [image] : []);
+  
+  // Локальное состояние для закладки
+  const [isSaved, setIsSaved] = useState(savedStatus);
+  
+  // Состояние для текущего индекса изображения
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Функция для перелистывания вперед
+  const nextImage = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Останавливаем всплытие события
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === allImages.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  // Функция для перелистывания назад
+  const prevImage = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Останавливаем всплытие события
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === 0 ? allImages.length - 1 : prevIndex - 1
+    );
+  };
+
   const renderIconTags = (tags: string[]) => {
     const maxVisible = 3; // показываем максимум 3 тега
     const visibleTags = tags.slice(0, maxVisible);
@@ -65,10 +92,6 @@ const Card: React.FC<CardProps> = ({
       </>
     );
   };
-  
-
-  // Локальное состояние для закладки
-  const [isSaved, setIsSaved] = useState(savedStatus);
 
   // Обработчик нажатия на закладку
   const handleSaveClick = (e: React.MouseEvent) => {
@@ -91,16 +114,62 @@ const Card: React.FC<CardProps> = ({
     }
   };
 
+  // Проверяем, есть ли несколько изображений для отображения стрелок
+  const hasMultipleImages = allImages.length > 1;
+
   return (
     <div className={styles.card} onClick={handleClick}>
       <div className={styles.cardImageContainer}>
-        {image ? (
-          <img
-            src={image}
-            alt={title}
-            className={styles.cardImage}
-            loading="lazy"
-          />
+        {allImages.length > 0 ? (
+          <>
+            <img
+              src={allImages[currentImageIndex]}
+              alt={`${title} - фото ${currentImageIndex + 1}`}
+              className={styles.cardImage}
+              loading="lazy"
+            />
+            
+            {/* Отображаем стрелки только при наличии нескольких изображений */}
+            {hasMultipleImages && (
+              <>
+                <button 
+                  className={`${styles.carouselArrow} ${styles.carouselArrowLeft}`}
+                  onClick={prevImage}
+                  aria-label="Предыдущее изображение"
+                >
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                </button>
+                
+                <button 
+                  className={`${styles.carouselArrow} ${styles.carouselArrowRight}`}
+                  onClick={nextImage}
+                  aria-label="Следующее изображение"
+                >
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+              </>
+            )}
+            
+            {/* Индикаторы для множественных изображений */}
+            {hasMultipleImages && (
+              <div className={styles.carouselIndicators}>
+                {allImages.map((_, index) => (
+                  <span 
+                    key={index}
+                    className={`${styles.carouselIndicator} ${index === currentImageIndex ? styles.carouselIndicatorActive : ''}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCurrentImageIndex(index);
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+          </>
         ) : (
           <div className={styles.cardImagePlaceholder}>Нет изображения</div>
         )}
@@ -155,7 +224,6 @@ const Card: React.FC<CardProps> = ({
         <div className={styles.iconTagsRow}>
           {renderIconTags([...cuisineTags, ...featureTags])}
         </div>
-
       </div>
     </div>
   );

@@ -29,7 +29,7 @@ const ReviewItem: React.FC<ReviewProps> = ({ review }) => {
       </div>
     );
   };
-
+  
   return (
     <div className={styles.reviewItem}>
       <div className={styles.reviewHeader}>
@@ -41,6 +41,21 @@ const ReviewItem: React.FC<ReviewProps> = ({ review }) => {
       </div>
       
       <p className={styles.reviewText}>{review.comment}</p>
+      
+      <div className={styles.reviewActions}>
+        <button className={styles.actionButton}>
+          <span className={styles.actionIcon}>👍</span>
+          <span className={styles.actionText}>Полезно</span>
+        </button>
+        <button className={styles.actionButton}>
+          <span className={styles.actionIcon}>💬</span>
+          <span className={styles.actionText}>Комментировать</span>
+        </button>
+        <button className={styles.actionButton}>
+          <span className={styles.actionIcon}>🔗</span>
+          <span className={styles.actionText}>Поделиться</span>
+        </button>
+      </div>
     </div>
   );
 };

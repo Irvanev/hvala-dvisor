@@ -1,19 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Card from '../Card/Card';
 import styles from './RestaurantGrid.module.css';
-
-interface Restaurant {
-  id: string;
-  title: string;
-  location: string;
-  description: string;
-  rating: number;
-  image: string;
-  cuisineTags?: string[];
-  featureTags?: string[];
-  priceRange?: string;
-}
+// Импортируем тип Restaurant из единого файла
+import { Restaurant } from '../../models/types';
 
 interface RestaurantGridProps {
   restaurants: Restaurant[];
@@ -24,19 +14,21 @@ interface RestaurantGridProps {
 const RestaurantGrid: React.FC<RestaurantGridProps> = ({
   restaurants,
   userFavorites,
-  onSaveToggle
+  onSaveToggle,
 }) => {
+  const navigate = useNavigate();
+
+  const handleCardClick = (restaurantId: string) => {
+    navigate(`/restaurant/${restaurantId}`);
+  };
+
   return (
     <div className={styles.restaurantGrid}>
       {restaurants.map((restaurant) => (
-        <Link
-          key={restaurant.id}
-          to={`/restaurant/${restaurant.id}`}
-          className={styles.restaurantLink}
-        >
+        <div key={restaurant.id} className={styles.gridItem}>
           <Card
             id={restaurant.id}
-            image={restaurant.image}
+            images={restaurant.images || [restaurant.image].filter(Boolean) as string[]} // Используем массив изображений или создаем его из одного изображения
             title={restaurant.title}
             location={restaurant.location}
             rating={restaurant.rating}
@@ -44,11 +36,12 @@ const RestaurantGrid: React.FC<RestaurantGridProps> = ({
             featureTags={restaurant.featureTags}
             priceRange={restaurant.priceRange}
             savedStatus={userFavorites.includes(restaurant.id)}
-            onSaveToggle={(isSaved, event) =>
-              onSaveToggle(restaurant.id, isSaved, event)
+            onClick={() => handleCardClick(restaurant.id)}
+            onSaveToggle={(saved, event) => 
+              onSaveToggle(restaurant.id, saved, event)
             }
           />
-        </Link>
+        </div>
       ))}
     </div>
   );

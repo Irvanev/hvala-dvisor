@@ -1,5 +1,5 @@
 // src/components/FeaturedBanner/FeaturedBanner.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './FeaturedBanner.module.css';
 
 interface FeaturedBannerProps {
@@ -19,8 +19,15 @@ const FeaturedBanner: React.FC<FeaturedBannerProps> = ({
   onClick,
   buttonText = "Посмотреть Список"
 }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
-    <div className={styles.featuredBanner} onClick={onClick}>
+    <div 
+      className={`${styles.featuredBanner} ${isHovered ? styles.hovered : ''}`} 
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div className={styles.imageContainer}>
         {image ? (
           <img
@@ -44,15 +51,22 @@ const FeaturedBanner: React.FC<FeaturedBannerProps> = ({
       </div>
       
       <div className={styles.content}>
-        <h2 className={styles.title}>{title}</h2>
-        <p className={styles.subtitle}>{subtitle}</p>
-        
-        <button className={styles.actionButton} onClick={(e) => {
-          e.stopPropagation();
-          console.log('Button clicked for', title);
-        }}>
-          {buttonText}
-        </button>
+        <div className={styles.textContent}>
+          <h2 className={styles.title}>{title}</h2>
+          <div className={styles.detailsWrapper}>
+            <p className={styles.subtitle}>{subtitle}</p>
+            <button 
+              className={styles.actionButton} 
+              onClick={(e) => {
+                e.stopPropagation();
+                console.log('Button clicked for', title);
+              }}
+            >
+              <span className={styles.buttonText}>{buttonText}</span>
+              <span className={styles.buttonIcon}>→</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

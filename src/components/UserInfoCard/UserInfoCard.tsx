@@ -7,15 +7,18 @@ interface UserInfoCardProps {
     username: string;
     city: string;
     avatar: string;
+    reviews?: any[]; // Опционально: массив отзывов пользователя
+    favorites?: number; // Опционально: количество избранных ресторанов
+    registrationDate?: string; // Опционально: дата регистрации
   };
   onEditClick: () => void;
 }
 
 const UserInfoCard: React.FC<UserInfoCardProps> = ({ user, onEditClick }) => {
   return (
-    <>
+    <div className={styles.userInfoCard}>
       <div className={styles.avatarContainer}>
-        <img src={user.avatar} alt="Аватар пользователя" className={styles.avatar} />
+        <img src={user.avatar} alt={`Аватар ${user.name}`} className={styles.avatar} />
       </div>
       
       <div className={styles.userInfo}>
@@ -30,11 +33,54 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({ user, onEditClick }) => {
           <span className={styles.cityText}>{user.city}</span>
         </div>
         
+        {/* Статистика пользователя */}
+        <div className={styles.userStats}>
+          {user.reviews && (
+            <div className={styles.statItem}>
+              <div className={styles.statValue}>{user.reviews.length}</div>
+              <div className={styles.statLabel}>Отзывов</div>
+            </div>
+          )}
+          
+          {user.favorites !== undefined && (
+            <div className={styles.statItem}>
+              <div className={styles.statValue}>{user.favorites}</div>
+              <div className={styles.statLabel}>В избранном</div>
+            </div>
+          )}
+          
+          {user.registrationDate && (
+            <div className={styles.statItem}>
+              <div className={styles.statValue}>{user.registrationDate}</div>
+              <div className={styles.statLabel}>С нами с</div>
+            </div>
+          )}
+        </div>
+        
         <button onClick={onEditClick} className={styles.editButton}>
+          <span className={styles.editIcon}>✏️</span>
           Редактировать профиль
         </button>
       </div>
-    </>
+      
+      {/* Добавляем нижнюю секцию с кнопками быстрого доступа */}
+      <div className={styles.quickActions}>
+        <button className={styles.quickActionButton}>
+          <span className={styles.quickActionIcon}>📝</span>
+          <span>Написать отзыв</span>
+        </button>
+        
+        <button className={styles.quickActionButton}>
+          <span className={styles.quickActionIcon}>🔍</span>
+          <span>Найти ресторан</span>
+        </button>
+        
+        <button className={styles.quickActionButton}>
+          <span className={styles.quickActionIcon}>🌟</span>
+          <span>Рейтинги</span>
+        </button>
+      </div>
+    </div>
   );
 };
 

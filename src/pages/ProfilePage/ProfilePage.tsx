@@ -314,7 +314,6 @@ const ProfilePage: React.FC = () => {
               tabs={[
                 { id: 'reviews', label: 'Отзывы', count: reviews.length },
                 { id: 'favorites', label: 'Избранное', count: favorites.length },
-                { id: 'activity', label: 'Активность', count: undefined }
               ]}
             />
             
