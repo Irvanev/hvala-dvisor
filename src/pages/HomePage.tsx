@@ -10,15 +10,20 @@ import BalkanMap from '../components/BalkanMap/BalkanMap';
 import styles from './HomePage.module.css';
 import backgroundImage from '../assets/background.webp';
 import Footer from '../components/Footer/Footer';
+import RestaurantGrid from '../components/RestaurantGrid/RestaurantGrid'; // Импортируем новый компонент
 
 
-// Интерфейсы
+
 interface Restaurant {
   id: string;
   title: string;
   location: string;
+  description: string; // Хранится в объекте, но не отображается в карточке
   rating: number;
   image: string;
+  cuisineTags?: string[];
+  featureTags?: string[];
+  priceRange?: string;
 }
 
 interface Country {
@@ -70,29 +75,45 @@ const HomePage: React.FC = () => {
       id: 'rest1',
       title: 'Au Bourguignon Du Marais',
       location: 'Paris',
+      description: 'Изысканный ресторан с французской кухней',
       rating: 4.9,
       image: 'https://placehold.jp/300x200.png',
+      cuisineTags: ['Французская'],
+      featureTags: ['Терраса', 'Детское меню'],
+      priceRange: '€€€',
     },
     {
       id: 'rest2',
       title: 'La Maison',
       location: 'Paris',
+      description: 'Современная французская кухня с акцентом на местные продукты',
       rating: 4.9,
       image: 'https://placehold.jp/300x200.png',
+      cuisineTags: ['Французская', 'Панорамный вид', 'Винная карта', 'Веганское меню', 'Терраса']      ,
+      featureTags: ['Веганское меню', 'Фермерские продукты'],
+      priceRange: '€€',
     },
     {
       id: 'rest3',
       title: 'Trattoria Italiana',
       location: 'Rome',
+      description: 'Итальянская кухня с домашними пастами и пиццей',
       rating: 4.8,
       image: 'https://placehold.jp/300x200.png',
+      cuisineTags: ['Итальянская'],
+      featureTags: ['Домашняя паста', 'Дровяная печь'],
+      priceRange: '€€',
     },
     {
       id: 'rest4',
       title: 'El Tapas',
       location: 'Barcelona',
+      description: 'Испанская кухня с акцентом на тапас и паэлью',
       rating: 4.8,
       image: 'https://placehold.jp/300x200.png',
+      cuisineTags: ['Испанская'],
+      featureTags: ['Винная карта', 'Панорамный вид'],
+      priceRange: '€€€',
     },
   ];
 
@@ -136,12 +157,12 @@ const HomePage: React.FC = () => {
 
     window.addEventListener('scroll', handleScroll);
     window.addEventListener('resize', updateButtonTextVisibility);
-    
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', updateButtonTextVisibility);
     };
-  }, []); 
+  }, []);
 
   // Обработчики
   const handleSaveToggle = useCallback(
@@ -210,7 +231,7 @@ const HomePage: React.FC = () => {
         logoText={CONSTANTS.APP_NAME}
         onWelcomeClick={handleWelcomeClick}
       />
-
+  
       <section className={styles.hero}>
         <div
           className={styles.heroBackground}
@@ -226,7 +247,7 @@ const HomePage: React.FC = () => {
         </div>
         <div className={styles.curvyBottom}></div>
       </section>
-
+  
       <section className={styles.contentSection}>
         <div className={styles.contentContainer}>
           <div className={styles.featuredCardGrid}>
@@ -242,53 +263,17 @@ const HomePage: React.FC = () => {
               />
             ))}
           </div>
-
-          <Section title="Лучшие Рестораны 2024 Года">
-            <Carousel>
-              {restaurants.map((restaurant) => (
-                <Link
-                  key={restaurant.id}
-                  to={`/restaurant/${restaurant.id}`}
-                  style={{ textDecoration: 'none', color: 'inherit' }}
-                >
-                  <Card
-                    id={restaurant.id}
-                    image={restaurant.image}
-                    title={restaurant.title}
-                    location={restaurant.location}
-                    rating={restaurant.rating}
-                    savedStatus={userFavorites.includes(restaurant.id)}
-                    onSaveToggle={(isSaved, event) =>
-                      handleSaveToggle(restaurant.id, isSaved, event)
-                    }
-                  />
-                </Link>
-              ))}
-            </Carousel>
+  
+          {/* Заменяем карусели на сетку из 8 ресторанов */}
+          <Section title="Top">
+            <RestaurantGrid 
+              restaurants={restaurants.concat(restaurants)} // Дублируем массив для получения 8 карточек
+              userFavorites={userFavorites}
+              onSaveToggle={handleSaveToggle}
+            />
           </Section>
-
-          <Section title="Лучшие Рестораны 2024 Года У Моря">
-            <Carousel>
-              {restaurants.map((restaurant) => (
-                <Link
-                  key={restaurant.id}
-                  to={`/restaurant/${restaurant.id}`}
-                  style={{ textDecoration: 'none', color: 'inherit' }}
-                >
-                  <Card
-                    id={restaurant.id}
-                    image={restaurant.image}
-                    title={restaurant.title}
-                    location={restaurant.location}
-                    rating={restaurant.rating}
-                    savedStatus={userFavorites.includes(restaurant.id)}
-                    onSaveToggle={(isSaved) => handleSaveToggle(restaurant.id, isSaved)}
-                  />
-                </Link>
-              ))}
-            </Carousel>
-          </Section>
-
+  
+          {/* Остальные секции остаются без изменений */}
           <Section title="Популярные Страны">
             <div className={styles.countriesGrid}>
               {countries.map((country) => (
@@ -312,7 +297,7 @@ const HomePage: React.FC = () => {
               ))}
             </div>
           </Section>
-
+  
           <Section title="Исследуйте Балканы">
             <div className={styles.balkanMapSection}>
               <p className={styles.balkanDescription}>
@@ -325,7 +310,7 @@ const HomePage: React.FC = () => {
           </Section>
         </div>
       </section>
-
+  
       {/* Плавающая кнопка добавления ресторана */}
       <div className={styles.floatingAddButton} onClick={handleAddRestaurantClick}>
         <span className={styles.plusIcon}>+</span>
@@ -333,22 +318,9 @@ const HomePage: React.FC = () => {
           <span className={styles.buttonText}>Добавить ресторан</span>
         )}
       </div>
-
-      <footer className={styles.footer}>
-        <div className={styles.footerContainer}>
-          <div className={styles.footerLogo}>
-            <h3>{CONSTANTS.APP_NAME}</h3>
-            <p>© {CONSTANTS.CURRENT_YEAR} Все права защищены</p>
-          </div>
-          {/* Остальной код футера остается без изменений */}
-        </div>
-      </footer>
-
+  
       <Footer />
-
     </div>
-
-    
   );
 };
 

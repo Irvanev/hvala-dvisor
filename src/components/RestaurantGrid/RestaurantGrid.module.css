@@ -1,0 +1,36 @@
+.restaurantGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 колонки по умолчанию */
+    gap: 16px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  .restaurantLink {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* Медиа-запросы для адаптивности */
+  @media (max-width: 1200px) {
+    .restaurantGrid {
+      grid-template-columns: repeat(3, 1fr); /* 3 колонки на средних экранах */
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .restaurantGrid {
+      grid-template-columns: repeat(2, 1fr); /* 2 колонки на планшетах */
+      gap: 12px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .restaurantGrid {
+      grid-template-columns: 1fr; /* 1 колонка на мобильных */
+      gap: 16px;
+    }
+  }

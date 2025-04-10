@@ -13,8 +13,8 @@ import RegistrationPage from './pages/RegistrationPage/RegistrationPage';
 import EditProfilePage from './pages/EditProfilePage/EditProfilePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage/ForgotPasswordPage';
 import AddRestaurantPage from './pages/AddRestaurantPage/AddRestaurantPage';
-// import SearchResultsPage from './pages/SearchResultsPage/SearchResultsPage';
-// import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
+import BestRestaurantsPage from './pages/BestRestaurantsPage/BestRestaurantsPage';
+import SearchResultsPage from './pages/SearchResultsPage/SearchResultsPage';
 
 import './App.css';
 
@@ -30,7 +30,8 @@ const App: React.FC = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/restaurant/:id" element={<RestaurantPage />} />
           <Route path="/add-restaurant" element={<AddRestaurantPage />} />
-          {/* <Route path="/best" element={<SearchResultsPage />} /> */}
+          <Route path="/best" element={<BestRestaurantsPage />} />
+          <Route path="/s" element={<SearchResultsPage />} />
 
           {/* Защищенные маршруты (требуют аутентификации) */}
           <Route element={<PrivateRoute />}>
