@@ -1,0 +1,220 @@
+
+  .overviewColumns {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+  }
+  
+  .overviewMainColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  
+  /* Описание */
+  .descriptionSection {
+    margin-bottom: 10px;
+  }
+  
+  .sectionTitle {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2a6db0;
+    margin: 0 0 20px;
+  }
+  
+  .descriptionText {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #444;
+    margin: 0;
+  }
+  
+  /* Особенности */
+  .featuresSection {
+    margin-bottom: 10px;
+  }
+  
+  .featuresTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .featureTag {
+    background-color: #f0f5fa;
+    color: #2a6db0;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+  
+  .featureTag:hover {
+    background-color: #e4eef9;
+    transform: translateY(-2px);
+  }
+  
+  /* Карта */
+  .mapSection {
+    margin-bottom: 10px;
+  }
+  
+  .mapContainer {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  }
+  
+  .mapImage {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  
+  /* Боковая панель */
+  .overviewSidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .sidebarCard {
+    background-color: #f9fafc;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  }
+  
+  .sidebarTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2a6db0;
+    margin: 0 0 15px;
+  }
+  
+  .sidebarHours {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .sidebarHourRow {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eaecef;
+  }
+  
+  .sidebarDay {
+    font-weight: 600;
+    color: #444;
+  }
+  
+  .sidebarTime {
+    color: #2a6db0;
+  }
+  
+  /* Отзывы в сайдбаре */
+  .sidebarReview {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eaecef;
+  }
+  
+  .sidebarReviewHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .sidebarReviewAuthor {
+    display: flex;
+    align-items: center;
+  }
+  
+  .sidebarReviewAvatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+  }
+  
+  .sidebarReviewName {
+    font-weight: 500;
+    color: #444;
+  }
+  
+  .sidebarReviewRating {
+    color: #FFD700;
+    font-weight: 600;
+  }
+  
+  .sidebarReviewText {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+    margin: 0;
+  }
+  
+  .sidebarShowMore {
+    width: 100%;
+    padding: 10px;
+    background-color: #f0f5fa;
+    color: #2a6db0;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .sidebarShowMore:hover {
+    background-color: #e4eef9;
+    transform: translateY(-2px);
+  }
+  
+  /* Медиа-запросы */
+  @media (max-width: 992px) {
+    .overviewColumns {
+      grid-template-columns: 3fr 2fr;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .overviewColumns {
+      grid-template-columns: 1fr;
+    }
+    
+    .overviewSidebar {
+      order: -1; /* Показываем сайдбар перед основным контентом на мобильном */
+      margin-bottom: 30px;
+    }
+    
+    .sidebarCard {
+      padding: 15px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .sectionTitle {
+      font-size: 20px;
+    }
+    
+    .overviewMainColumn {
+      gap: 30px;
+    }
+    
+    .featuresTags {
+      gap: 8px;
+    }
+    
+    .featureTag {
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+  }

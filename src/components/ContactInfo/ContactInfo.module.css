@@ -1,0 +1,126 @@
+/* .contactContainer {
+    margin-bottom: 40px;
+  } */
+  
+  .sectionTitle {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2a6db0;
+    margin: 0 0 20px;
+  }
+  
+  .contactGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .contactItem {
+    display: flex;
+    align-items: flex-start;
+    padding: 15px;
+    background-color: #f9fafc;
+    border-radius: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .contactItem:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+  
+  .contactIcon {
+    font-size: 24px;
+    margin-right: 15px;
+    color: #2a6db0;
+  }
+  
+  .contactInfo {
+    flex: 1;
+  }
+  
+  .contactLabel {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 5px;
+  }
+  
+  .contactValue {
+    font-size: 16px;
+    color: #333;
+    font-weight: 500;
+  }
+  
+  .contactLink {
+    color: #2a6db0;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+  
+  .contactLink:hover {
+    color: #1d5a96;
+    text-decoration: underline;
+  }
+  
+  /* Часы работы */
+  .hoursSection {
+    margin-top: 30px;
+  }
+  
+  .hoursTitle {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2a6db0;
+    margin: 0 0 15px;
+  }
+  
+  .hoursGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+  }
+  
+  .hourRow {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 15px;
+    background-color: #f9fafc;
+    border-radius: 8px;
+  }
+  
+  .dayName {
+    font-weight: 600;
+    color: #444;
+  }
+  
+  .dayHours {
+    color: #2a6db0;
+    font-weight: 500;
+  }
+  
+  /* Медиа-запросы */
+  @media (max-width: 768px) {
+    .contactGrid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .sectionTitle {
+      font-size: 20px;
+    }
+    
+    .contactItem {
+      padding: 12px;
+    }
+    
+    .contactIcon {
+      font-size: 20px;
+    }
+    
+    .hourRow {
+      padding: 10px 12px;
+    }
+  }

@@ -1,0 +1,94 @@
+.tabsContainer {
+  margin-bottom: 30px;
+  /* Removed position: sticky */
+  /* Removed top: 70px */
+  z-index: 10;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  /* Add alignment to the left */
+  text-align: left;
+}
+
+.tabsNavigationWrapper {
+  display: flex;
+  justify-content: flex-start; /* Changed from space-between to align left */
+  align-items: center;
+  padding: 5px 20px;
+}
+
+.tabsWrapper {
+  display: flex;
+  position: relative;
+  flex: 1;
+}
+
+.tabButton {
+  background: none;
+  border: none;
+  padding: 15px 20px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #555;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  position: relative;
+  flex: 1;
+  text-align: center;
+}
+
+.tabButton:hover {
+  color: #2a6db0;
+}
+
+.tabButton.active {
+  color: #2a6db0;
+  font-weight: 600;
+}
+
+.tabBadge {
+  background-color: #f0f0f0;
+  color: #666;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: 5px;
+}
+
+.tabButton.active .tabBadge {
+  background-color: #2a6db0;
+  color: white;
+}
+
+.tabIndicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: #2a6db0;
+  border-radius: 3px;
+  transition: left 0.3s ease, width 0.3s ease;
+}
+
+/* Removed shareButton styles since the button has been removed */
+
+@media (max-width: 768px) {
+  .tabsNavigationWrapper {
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+  }
+  /* Removed shareButton related styles */
+}
+
+@media (max-width: 480px) {
+  .tabButton {
+    padding: 12px 8px;
+    font-size: 14px;
+  }
+  .tabBadge {
+    font-size: 10px;
+    padding: 2px 4px;
+  }
+  /* Removed shareButton related styles */
+}

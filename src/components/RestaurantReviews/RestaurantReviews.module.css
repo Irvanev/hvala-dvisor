@@ -1,0 +1,371 @@
+.reviewsSection {
+    padding-bottom: 30px;
+  }
+  
+  .sectionTitle {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2a6db0;
+    margin: 0 0 15px;
+  }
+  
+  .reviewsHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+  }
+  
+  .reviewsSummary {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .reviewsOverview {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .reviewsRating {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .ratingBig {
+    font-size: 36px;
+    font-weight: 700;
+    color: #2a6db0;
+  }
+  
+  .ratingStarsBig {
+    display: flex;
+  }
+  
+  .star, .halfStar, .emptyStar {
+    font-size: 24px;
+    line-height: 1;
+  }
+  
+  .star {
+    color: #FFD700;
+  }
+  
+  .halfStar {
+    color: #FFD700;
+    position: relative;
+    opacity: 0.5;
+  }
+  
+  .emptyStar {
+    color: #ddd;
+  }
+  
+  .reviewsCount {
+    font-size: 16px;
+    color: #666;
+  }
+  
+  .writeReviewButton {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #2a6db0, #3d8ae0);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(45, 109, 176, 0.2);
+  }
+  
+  .writeReviewButton:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(45, 109, 176, 0.3);
+  }
+  
+  .writeReviewIcon {
+    margin-right: 10px;
+  }
+  
+  .reviewFilters {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eaecef;
+  }
+  
+  .filterLabel {
+    font-size: 14px;
+    color: #666;
+    margin-right: 15px;
+  }
+  
+  .filterOptions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .filterOption {
+    padding: 8px 15px;
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #444;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .filterOption:hover {
+    background-color: #e4e4e4;
+  }
+  
+  .filterOption.active {
+    background-color: #2a6db0;
+    color: white;
+  }
+  
+  .reviewsList {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .reviewCard {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    border-radius: 12px;
+    background-color: #f9fafc;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .reviewCard:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .reviewAuthorSection {
+    flex-shrink: 0;
+    width: 80px;
+    text-align: center;
+  }
+  
+  .reviewAuthorAvatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+  }
+  
+  .reviewAuthorName {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .reviewMetaInfo {
+    font-size: 12px;
+    color: #777;
+  }
+  
+  .reviewDate {
+    white-space: nowrap;
+  }
+  
+  .reviewContent {
+    flex: 1;
+  }
+  
+  .reviewRating {
+    display: flex;
+    margin-bottom: 10px;
+  }
+  
+  .reviewRating .star,
+  .reviewRating .halfStar,
+  .reviewRating .emptyStar {
+    color: #FFD700;
+    font-size: 20px;
+  }
+  
+  .reviewRating .emptyStar {
+    color: #ddd;
+  }
+  
+  .reviewText {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #444;
+    margin: 0 0 20px;
+  }
+  
+  .reviewActions {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .reviewLikeButton,
+  .reviewReplyButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #444;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .reviewLikeButton:hover,
+  .reviewReplyButton:hover {
+    background-color: #e4e4e4;
+    transform: translateY(-2px);
+  }
+  
+  .likesCount {
+    background-color: #2a6db0;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 12px;
+    margin-left: 5px;
+  }
+  
+  /* Пустое состояние */
+  .noReviews {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #f9fafc;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  }
+  
+  .noReviewsIcon {
+    font-size: 48px;
+    margin-bottom: 20px;
+    color: #aaa;
+  }
+  
+  .noReviewsTitle {
+    font-size: 22px;
+    font-weight: 600;
+    color: #444;
+    margin: 0 0 15px;
+  }
+  
+  .noReviewsText {
+    font-size: 16px;
+    color: #666;
+    max-width: 500px;
+    margin: 0 0 25px;
+    line-height: 1.5;
+  }
+  
+  .writeFirstReviewButton {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #2a6db0, #3d8ae0);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(45, 109, 176, 0.2);
+  }
+  
+  .writeFirstReviewButton:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(45, 109, 176, 0.3);
+  }
+  
+  /* Медиа-запросы */
+  @media (max-width: 768px) {
+    .reviewsHeader {
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .writeReviewButton {
+      align-self: flex-start;
+    }
+    
+    .reviewCard {
+      flex-direction: column;
+      gap: 15px;
+      padding: 15px;
+    }
+    
+    .reviewAuthorSection {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      text-align: left;
+    }
+    
+    .reviewAuthorAvatar {
+      width: 50px;
+      height: 50px;
+      margin-bottom: 0;
+      margin-right: 15px;
+    }
+    
+    .reviewAuthorInfo {
+      flex: 1;
+    }
+    
+    .reviewRating {
+      margin-top: 10px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .sectionTitle {
+      font-size: 20px;
+    }
+    
+    .reviewsOverview {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    
+    .ratingBig {
+      font-size: 30px;
+    }
+    
+    .reviewFilters {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    
+    .reviewActions {
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .reviewLikeButton, .reviewReplyButton {
+      width: 100%;
+    }
+  }

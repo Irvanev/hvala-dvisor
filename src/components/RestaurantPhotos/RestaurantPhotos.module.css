@@ -1,0 +1,132 @@
+.photosSection {
+    padding-bottom: 30px;
+  }
+  
+  .sectionTitle {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2a6db0;
+    margin: 0 0 25px;
+  }
+  
+  .photosGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  
+  .photoCard {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 1/1;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .photoCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  }
+  
+  .photoImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  
+  .photoCard:hover .photoImage {
+    transform: scale(1.05);
+  }
+  
+  .photoOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .photoCard:hover .photoOverlay {
+    opacity: 1;
+  }
+  
+  .photoExpand {
+    font-size: 24px;
+    color: white;
+  }
+  
+  .photosNote {
+    background-color: #f0f5fa;
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-top: 30px;
+    color: #666;
+    font-size: 14px;
+    font-style: italic;
+  }
+  
+  /* Пустое состояние */
+  .noPhotos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #f9fafc;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  }
+  
+  .noPhotosIcon {
+    font-size: 48px;
+    margin-bottom: 20px;
+    color: #aaa;
+  }
+  
+  .noPhotosTitle {
+    font-size: 22px;
+    font-weight: 600;
+    color: #444;
+    margin: 0 0 15px;
+  }
+  
+  .noPhotosText {
+    font-size: 16px;
+    color: #666;
+    max-width: 500px;
+    margin: 0;
+    line-height: 1.5;
+  }
+  
+  /* Медиа-запросы */
+  @media (max-width: 768px) {
+    .photosGrid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .sectionTitle {
+      font-size: 20px;
+    }
+    
+    .photosGrid {
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 10px;
+    }
+    
+    .photosNote {
+      padding: 12px 16px;
+      font-size: 13px;
+    }
+  }
