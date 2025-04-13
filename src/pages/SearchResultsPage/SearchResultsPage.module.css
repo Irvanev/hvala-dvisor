@@ -27,6 +27,7 @@
   gap: 20px;
   flex: 1; /* Растягиваем до конца доступного пространства */
   position: relative; /* Для sticky позиционирования */
+  transition: all 0.3s ease;
 }
 
 .contentContainer > :first-child {
@@ -42,6 +43,12 @@
   height: calc(100vh - 80px - 40px); /* Растягиваем карту до низа экрана, учитываем padding */
 }
 
+/* Когда карта скрыта, карточки занимают всю ширину */
+.fullWidth > :first-child {
+  flex: 1;
+  width: 100%;
+}
+
 .loadingContainer, .errorContainer {
   text-align: center;
   padding: 40px;
@@ -53,7 +60,7 @@
   .contentContainer {
     flex-direction: column;
   }
-
+  
   .contentContainer > :first-child,
   .contentContainer > :last-child {
     flex: none;
@@ -61,11 +68,11 @@
     align-self: auto; /* Отключаем align-self на мобильных */
     position: static; /* Отключаем sticky на мобильных */
   }
-
+  
   .contentContainer > :last-child {
     height: 300px; /* На мобильных фиксированная высота карты */
   }
-
+  
   .restaurantList {
     grid-template-columns: 1fr;
   }

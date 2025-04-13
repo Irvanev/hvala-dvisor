@@ -5,6 +5,7 @@ import NavBar from '../../components/NavBar/NavBar';
 import Footer from '../../components/Footer/Footer';
 import RestaurantList from '../../components/RestaurantList/RestaurantList';
 import MapPlaceholder from '../../components/MapPlaceholder/MapPlaceholder';
+import FilterBar from '../../components/FilterBar/FilterBar';
 import styles from './SearchResultsPage.module.css';
 import { Restaurant } from '../../models/types';
 
@@ -17,6 +18,7 @@ const SearchResultsPage: React.FC = () => {
   const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>([]);
   const [userFavorites, setUserFavorites] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [showMap, setShowMap] = useState(true);
 
   const query = searchParams.get('query') || '';
   const location = searchParams.get('location') || '';
@@ -136,6 +138,10 @@ const SearchResultsPage: React.FC = () => {
     navigate(`/restaurant/${id}`);
   };
 
+  const handleMapToggle = () => {
+    setShowMap(prev => !prev);
+  };
+
   if (loading) {
     return <div className={styles.loadingContainer}>Загрузка...</div>;
   }
@@ -156,17 +162,19 @@ const SearchResultsPage: React.FC = () => {
       />
       
       <div className={styles.pageContainer}>
-        <div className={styles.resultsInfo}>
-          <span>{filteredRestaurants.length} результатов</span>
-        </div>
-        <div className={styles.contentContainer}>
+        <FilterBar 
+          showMap={showMap}
+          onMapToggle={handleMapToggle}
+        />
+        
+        <div className={`${styles.contentContainer} ${!showMap ? styles.fullWidth : ''}`}>
           <RestaurantList
             restaurants={filteredRestaurants}
             userFavorites={userFavorites}
             onSaveToggle={handleSaveToggle}
             onRestaurantClick={handleRestaurantClick}
           />
-          <MapPlaceholder />
+          {showMap && <MapPlaceholder />}
         </div>
       </div>
       
