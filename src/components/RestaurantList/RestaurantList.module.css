@@ -1,0 +1,8 @@
+/* components/RestaurantList/RestaurantList.module.css */
+.restaurantList {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Ровно 3 карточки в ряд */
+  gap: 20px;
+  width: 100%;
+  height: auto; /* Список занимает столько высоты, сколько нужно карточкам */
+}

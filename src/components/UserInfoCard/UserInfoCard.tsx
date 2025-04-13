@@ -63,24 +63,8 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({ user, onEditClick }) => {
         </button>
       </div>
       
-      {/* Добавляем нижнюю секцию с кнопками быстрого доступа */}
-      <div className={styles.quickActions}>
-        <button className={styles.quickActionButton}>
-          <span className={styles.quickActionIcon}>📝</span>
-          <span>Написать отзыв</span>
-        </button>
-        
-        <button className={styles.quickActionButton}>
-          <span className={styles.quickActionIcon}>🔍</span>
-          <span>Найти ресторан</span>
-        </button>
-        
-        <button className={styles.quickActionButton}>
-          <span className={styles.quickActionIcon}>🌟</span>
-          <span>Рейтинги</span>
-        </button>
       </div>
-    </div>
+
   );
 };
 

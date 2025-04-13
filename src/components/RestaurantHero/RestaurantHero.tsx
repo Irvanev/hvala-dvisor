@@ -63,10 +63,6 @@ const RestaurantHero: React.FC<RestaurantHeroProps> = ({
               className={styles.heroImage}
             />
             <div className={styles.heroOverlay}></div>
-            <div className={styles.viewAllPhotos} onClick={onViewAllPhotos}>
-              <span className={styles.cameraIcon}>📷</span>
-              Смотреть все фото ({images.length})
-            </div>
           </>
         ) : (
           <div className={styles.noImage}>Изображение отсутствует</div>

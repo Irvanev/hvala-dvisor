@@ -1,33 +1,41 @@
-/* Существующие стили карточки */
+/* components/Card/Card.module.css */
 .card {
   background-color: #fff;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  width: 100%;
-  height: 100%; /* Автоматическая высота */
+  width: 100%; /* Стандартная ширина для default */
+  height: 100%; /* Стандартная высота для default */
   display: flex;
   flex-direction: column;
 }
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+.squareCard {
+  width: 300px; /* Фиксированная ширина для квадратного варианта */
+  height: 400px; /* Фиксированная высота для квадратного варианта */
+  min-width: 300px;
 }
-/* Контейнер изображения */
+
 .cardImageContainer {
   position: relative;
   width: 100%;
-  height: 200px;
+  height: 200px; /* Стандартная высота изображения для default */
   background-color: #f0f0f0;
-  overflow: hidden; /* Добавлено для обрезки изображений */
+  overflow: hidden;
 }
+
+.squareImageContainer {
+  height: 250px; /* Для square */
+}
+
 .cardImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: opacity 0.3s ease; /* Плавное переключение между изображениями */
+  transition: opacity 0.3s ease;
 }
+
 .cardImagePlaceholder {
   width: 100%;
   height: 100%;
@@ -38,9 +46,6 @@
   font-size: 14px;
 }
 
-/* Новые стили для карусели */
-
-/* Стрелки для перелистывания изображений */
 .carouselArrow {
   position: absolute;
   top: 50%;
@@ -57,11 +62,11 @@
   cursor: pointer;
   transition: background-color 0.2s ease, opacity 0.2s ease;
   z-index: 2;
-  opacity: 0; /* Скрываем по умолчанию */
+  opacity: 0;
 }
 
 .card:hover .carouselArrow {
-  opacity: 1; /* Показываем при наведении на карточку */
+  opacity: 1;
 }
 
 .carouselArrow:hover {
@@ -76,7 +81,6 @@
   right: 10px;
 }
 
-/* Индикаторы страниц карусели */
 .carouselIndicators {
   position: absolute;
   bottom: 10px;
@@ -101,7 +105,6 @@
   transform: scale(1.2);
 }
 
-/* Остальные существующие стили */
 .ratingBadge {
   position: absolute;
   left: 10px;
@@ -126,11 +129,11 @@
 
 .starIcon {
   margin-left: 5px;
-  color: #ffd700; /* Золотой цвет для звезды */
+  color: #ffd700;
   font-size: 16px;
   text-shadow: 0 0 3px rgba(255, 215, 0, 0.5);
 }
-/* Возвращаем кнопку в правый верхний угол */
+
 .favoriteButton {
   position: absolute;
   top: 10px;
@@ -148,37 +151,42 @@
   z-index: 2;
   padding: 0;
 }
+
 .favoriteButton:hover {
   background-color: rgba(51, 51, 51, 0.9);
   transform: scale(1.05);
 }
-/* Стиль для активного состояния кнопки избранного */
+
 .favoriteButton[aria-label="Удалить из избранного"] {
-  background-color: rgba(220, 53, 69, 0.85); /* Красный фон для активного состояния */
+  background-color: rgba(220, 53, 69, 0.85);
 }
+
 .favoriteButton[aria-label="Удалить из избранного"]:hover {
-  background-color: rgba(220, 53, 69, 0.95); /* Более насыщенный красный при наведении */
-  box-shadow: 0 0 10px rgba(220, 53, 69, 0.4); /* Легкое свечение для активной кнопки */
+  background-color: rgba(220, 53, 69, 0.95);
+  box-shadow: 0 0 10px rgba(220, 53, 69, 0.4);
 }
-/* Содержимое карточки */
+
 .cardContent {
   padding: 16px;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  /* Обеспечиваем, чтобы все карточки имели одинаковую высоту */
-  height: calc(100% - 200px); /* 200px - высота контейнера изображения */
-  /* Добавляем нижний отступ для тегов */
+  height: calc(100% - 200px); /* Для default */
   padding-bottom: 20px;
 }
-/* Заголовок карточки */
+
+.squareCard .cardContent {
+  height: calc(100% - 250px); /* Для square */
+  padding: 12px;
+}
+
 .cardHeader {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 8px;
 }
-/* Название ресторана */
+
 .cardTitle {
   font-size: 18px;
   font-weight: 600;
@@ -190,7 +198,7 @@
   flex: 1;
   padding-right: 8px;
 }
-/* Ценовой диапазон - измененные стили */
+
 .priceTag {
   padding: 4px 8px;
   border-radius: 16px;
@@ -199,34 +207,13 @@
   flex-shrink: 0;
   background-color: #e8f5e9;
   color: #43a047;
-  /* Исправим переход, чтобы не было эффекта белого квадрата */
   transition: background-color 0.2s ease;
-  /* Уберем любые возможные границы или тени */
   border: none;
   box-shadow: none;
-  /* Убедимся, что позиционирование не меняется при наведении */
   position: relative;
   z-index: 1;
 }
 
-/* Убираем отдельные классы для разных ценовых диапазонов, 
-   так как они используют тот же стиль и могут вызывать проблему */
-/* 
-.expensivePrice {
-  background-color: #e8f5e9;
-  color: #43a047;
-}
-.moderatePrice {
-  background-color: #e8f5e9;
-  color: #43a047;
-}
-.affordablePrice {
-  background-color: #e8f5e9;
-  color: #43a047;
-}
-*/
-
-/* Местоположение */
 .cardLocation {
   font-size: 14px;
   color: #666;
@@ -235,37 +222,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* Контейнер для тегов */
-.tagsContainer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: auto;
-}
-.tag {
-  font-size: 13px;
-  color: #444;
-  padding: 4px 10px;
-  background-color: #f5f5f5;
-  border-radius: 12px;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
-.tag-icon {
-  width: 14px;
-  height: 14px;
-  fill: currentColor;
-}
-.cuisine-tag {
-  background-color: #e8f5e9;
-  color: #388e3c;
-}
-.feature-tag {
-  background-color: #e3f2fd;
-  color: #1976d2;
-}
+
 .iconTagsRow {
   display: flex;
   flex-wrap: wrap;
@@ -273,25 +230,22 @@
   margin-top: auto;
   font-size: 14px;
   color: #444;
-  /* Фиксированная высота для контейнера тегов */
   height: 28px;
-  /* Ограничение количества строк */
   overflow: hidden;
-  /* Выравнивание тегов по левому краю и центрирование по вертикали */
   align-items: center;
 }
+
 .iconTag {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   white-space: nowrap;
   font-weight: 500;
-  /* Устанавливаем единую высоту для тегов */
   height: 24px;
-  /* Добавляем стили для однородного вида */
   padding: 0 6px;
   border-radius: 12px;
 }
+
 .moreTag {
   font-size: 14px;
   color: #555;

@@ -1,5 +1,7 @@
+// components/Card/Card.tsx
 import React, { useState } from 'react';
 import styles from './Card.module.css';
+import cx from 'classnames'; // Библиотека для объединения классов (например, classnames)
 
 const tagIcons: Record<string, string> = {
   'Французская': '🍽️',
@@ -22,8 +24,8 @@ const priceRangeIcons: Record<string, string> = {
 
 interface CardProps {
   id: string;
-  images: string[]; // Массив изображений
-  image?: string;   // Опциональное поле для обратной совместимости
+  images: string[];
+  image?: string;
   title: string;
   location?: string;
   rating?: number;
@@ -33,6 +35,7 @@ interface CardProps {
   savedStatus?: boolean;
   onClick?: () => void;
   onSaveToggle?: (saved: boolean, event?: React.MouseEvent) => void;
+  variant?: 'default' | 'square'; // Новый проп для выбора стиля
 }
 
 const Card: React.FC<CardProps> = ({
@@ -47,38 +50,32 @@ const Card: React.FC<CardProps> = ({
   priceRange,
   savedStatus = false,
   onClick,
-  onSaveToggle
+  onSaveToggle,
+  variant = 'default', // По умолчанию используем стандартный стиль
 }) => {
-  // Создаем массив изображений из всех доступных источников
-  const allImages = images.length > 0 ? images : (image ? [image] : []);
-  
-  // Локальное состояние для закладки
+  const allImages = images.length > 0 ? images : image ? [image] : [];
   const [isSaved, setIsSaved] = useState(savedStatus);
-  
-  // Состояние для текущего индекса изображения
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Функция для перелистывания вперед
   const nextImage = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Останавливаем всплытие события
-    setCurrentImageIndex((prevIndex) => 
+    e.stopPropagation();
+    setCurrentImageIndex(prevIndex =>
       prevIndex === allImages.length - 1 ? 0 : prevIndex + 1
     );
   };
 
-  // Функция для перелистывания назад
   const prevImage = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Останавливаем всплытие события
-    setCurrentImageIndex((prevIndex) => 
+    e.stopPropagation();
+    setCurrentImageIndex(prevIndex =>
       prevIndex === 0 ? allImages.length - 1 : prevIndex - 1
     );
   };
 
   const renderIconTags = (tags: string[]) => {
-    const maxVisible = 3; // показываем максимум 3 тега
+    const maxVisible = 3;
     const visibleTags = tags.slice(0, maxVisible);
     const hiddenCount = tags.length - maxVisible;
-  
+
     return (
       <>
         {visibleTags.map((tag, i) => (
@@ -93,33 +90,27 @@ const Card: React.FC<CardProps> = ({
     );
   };
 
-  // Обработчик нажатия на закладку
   const handleSaveClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Предотвращаем срабатывание onClick родителя
-    e.preventDefault(); // Предотвращаем переход по ссылке при клике на кнопку
-
+    e.stopPropagation();
+    e.preventDefault();
     const newSavedState = !isSaved;
     setIsSaved(newSavedState);
-
-    // Вызываем callback для обновления в БД, если он предоставлен
     if (onSaveToggle) {
       onSaveToggle(newSavedState, e);
     }
   };
 
-  // Обработчик для вызова onClick, если он предоставлен
   const handleClick = () => {
     if (onClick) {
       onClick();
     }
   };
 
-  // Проверяем, есть ли несколько изображений для отображения стрелок
   const hasMultipleImages = allImages.length > 1;
 
   return (
-    <div className={styles.card} onClick={handleClick}>
-      <div className={styles.cardImageContainer}>
+    <div className={cx(styles.card, { [styles.squareCard]: variant === 'square' })} onClick={handleClick}>
+      <div className={cx(styles.cardImageContainer, { [styles.squareImageContainer]: variant === 'square' })}>
         {allImages.length > 0 ? (
           <>
             <img
@@ -128,11 +119,9 @@ const Card: React.FC<CardProps> = ({
               className={styles.cardImage}
               loading="lazy"
             />
-            
-            {/* Отображаем стрелки только при наличии нескольких изображений */}
             {hasMultipleImages && (
               <>
-                <button 
+                <button
                   className={`${styles.carouselArrow} ${styles.carouselArrowLeft}`}
                   onClick={prevImage}
                   aria-label="Предыдущее изображение"
@@ -141,8 +130,7 @@ const Card: React.FC<CardProps> = ({
                     <polyline points="15 18 9 12 15 6"></polyline>
                   </svg>
                 </button>
-                
-                <button 
+                <button
                   className={`${styles.carouselArrow} ${styles.carouselArrowRight}`}
                   onClick={nextImage}
                   aria-label="Следующее изображение"
@@ -153,15 +141,13 @@ const Card: React.FC<CardProps> = ({
                 </button>
               </>
             )}
-            
-            {/* Индикаторы для множественных изображений */}
             {hasMultipleImages && (
               <div className={styles.carouselIndicators}>
                 {allImages.map((_, index) => (
-                  <span 
+                  <span
                     key={index}
                     className={`${styles.carouselIndicator} ${index === currentImageIndex ? styles.carouselIndicatorActive : ''}`}
-                    onClick={(e) => {
+                    onClick={e => {
                       e.stopPropagation();
                       setCurrentImageIndex(index);
                     }}
@@ -173,57 +159,36 @@ const Card: React.FC<CardProps> = ({
         ) : (
           <div className={styles.cardImagePlaceholder}>Нет изображения</div>
         )}
-
-        {/* Кнопка "Избранное" */}
         <button
           className={styles.favoriteButton}
           onClick={handleSaveClick}
-          aria-label={isSaved ? "Удалить из избранного" : "Добавить в избранное"}
+          aria-label={isSaved ? 'Удалить из избранного' : 'Добавить в избранное'}
         >
-          <svg
-            viewBox="0 0 24 24"
-            fill={isSaved ? "#fff" : "none"}
-            stroke="#fff"
-            strokeWidth="2"
-            width="24"
-            height="24"
-          >
+          <svg viewBox="0 0 24 24" fill={isSaved ? '#fff' : 'none'} stroke="#fff" strokeWidth="2" width="24" height="24">
             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
           </svg>
         </button>
-
-        {/* Рейтинг на изображении */}
         {rating && (
           <div className={styles.ratingBadge}>
             {rating.toFixed(1)} <span className={styles.starIcon}>★</span>
           </div>
         )}
       </div>
-
       <div className={styles.cardContent}>
         <div className={styles.cardHeader}>
-          {/* Название ресторана */}
           <h3 className={styles.cardTitle}>{title}</h3>
-
-          {/* Ценовой диапазон */}
           {priceRange && (
-            <div className={`${styles.priceTag} ${priceRange === '€€€' ? styles.expensivePrice :
-                priceRange === '€€' ? styles.moderatePrice :
-                  styles.affordablePrice
-              }`}>
+            <div
+              className={`${styles.priceTag} ${
+                priceRange === '€€€' ? styles.expensivePrice : priceRange === '€€' ? styles.moderatePrice : styles.affordablePrice
+              }`}
+            >
               {priceRange}
             </div>
           )}
         </div>
-
-        {/* Местоположение */}
         {location && <p className={styles.cardLocation}>{location}</p>}
-
-        {/* Теги */}
-        {/* Краткие иконки-теги */}
-        <div className={styles.iconTagsRow}>
-          {renderIconTags([...cuisineTags, ...featureTags])}
-        </div>
+        <div className={styles.iconTagsRow}>{renderIconTags([...cuisineTags, ...featureTags])}</div>
       </div>
     </div>
   );
