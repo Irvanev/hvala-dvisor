@@ -43,10 +43,11 @@
   height: calc(100vh - 80px - 40px); /* Растягиваем карту до низа экрана, учитываем padding */
 }
 
-/* Когда карта скрыта, карточки занимают всю ширину */
-.fullWidth > :first-child {
-  flex: 1;
-  width: 100%;
+/* Когда карта скрыта, показываем 4 карточки в ряд */
+.fullWidth .restaurantList {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 карточки в ряд когда карта скрыта */
+  gap: 20px;
 }
 
 .loadingContainer, .errorContainer {

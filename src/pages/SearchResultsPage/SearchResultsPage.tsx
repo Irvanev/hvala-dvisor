@@ -1,4 +1,4 @@
-// pages/SearchResultsPage.tsx
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import NavBar from '../../components/NavBar/NavBar';
@@ -167,13 +167,16 @@ const SearchResultsPage: React.FC = () => {
           onMapToggle={handleMapToggle}
         />
         
-        <div className={`${styles.contentContainer} ${!showMap ? styles.fullWidth : ''}`}>
-          <RestaurantList
-            restaurants={filteredRestaurants}
-            userFavorites={userFavorites}
-            onSaveToggle={handleSaveToggle}
-            onRestaurantClick={handleRestaurantClick}
-          />
+        <div className={styles.contentContainer}>
+          <div className={`${showMap ? '' : styles.fullWidth}`}>
+            <RestaurantList
+              restaurants={filteredRestaurants}
+              userFavorites={userFavorites}
+              onSaveToggle={handleSaveToggle}
+              onRestaurantClick={handleRestaurantClick}
+              showFullWidth={!showMap}
+            />
+          </div>
           {showMap && <MapPlaceholder />}
         </div>
       </div>

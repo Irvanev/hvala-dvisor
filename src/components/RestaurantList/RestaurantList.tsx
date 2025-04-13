@@ -10,6 +10,7 @@ interface RestaurantListProps {
   onSaveToggle: (id: string, isSaved: boolean, event?: React.MouseEvent) => void;
   onRestaurantClick: (id: string) => void;
   loading?: boolean;
+  showFullWidth?: boolean;
 }
 
 const RestaurantList: React.FC<RestaurantListProps> = ({
@@ -18,6 +19,7 @@ const RestaurantList: React.FC<RestaurantListProps> = ({
   onSaveToggle,
   onRestaurantClick,
   loading = false,
+  showFullWidth = false,
 }) => {
   // If loading, show skeleton loading UI
   if (loading) {
@@ -44,7 +46,7 @@ const RestaurantList: React.FC<RestaurantListProps> = ({
   }
 
   return (
-    <div className={styles.restaurantList}>
+    <div className={`${styles.restaurantList} ${showFullWidth ? styles.fullWidthGrid : ''}`}>
       {restaurants.map(restaurant => (
         <Card
           key={restaurant.id}
@@ -67,3 +69,4 @@ const RestaurantList: React.FC<RestaurantListProps> = ({
 };
 
 export default RestaurantList;
+
