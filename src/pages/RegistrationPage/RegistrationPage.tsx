@@ -20,10 +20,21 @@ interface RegistrationFormErrors extends Partial<Record<keyof RegistrationFormDa
   general?: string;
 }
 
+// interface RegistrationFormErrors {
+//   name?: string;
+//   username?: string;
+//   email?: string;
+//   password?: string;
+//   confirmPassword?: string;
+//   city?: string;
+//   acceptTerms?: string;
+//   general?: string;
+// }
+
 const RegistrationPage: React.FC = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
-  
+
   const [avatarPreview, setAvatarPreview] = useState<string>('https://placehold.jp/300x300.png');
   const [formData, setFormData] = useState<RegistrationFormData>({
     name: '',
@@ -41,32 +52,19 @@ const RegistrationPage: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value
-    });
-    
-    // Очистить ошибку при изменении поля
+    setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
     if (errors[name as keyof RegistrationFormData]) {
-      setErrors({
-        ...errors,
-        [name]: ''
-      });
+      setErrors({ ...errors, [name]: '' });
     }
   };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setFormData({
-        ...formData,
-        avatar: file
-      });
-      
-      // Показать превью аватара
+      setFormData({ ...formData, avatar: file });
       const reader = new FileReader();
       reader.onload = (event) => {
-        if (event.target && event.target.result) {
+        if (event.target?.result) {
           setAvatarPreview(event.target.result as string);
         }
       };
@@ -76,27 +74,20 @@ const RegistrationPage: React.FC = () => {
 
   const validateForm = (): boolean => {
     const newErrors: RegistrationFormErrors = {};
-    
-    // Валидация для первого шага
     if (registrationStep === 1) {
       if (!formData.email) newErrors.email = 'Электронная почта обязательна';
       else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Неверный формат электронной почты';
-      
       if (!formData.password) newErrors.password = 'Пароль обязателен';
       else if (formData.password.length < 8) newErrors.password = 'Пароль должен содержать не менее 8 символов';
-      
       if (!formData.confirmPassword) newErrors.confirmPassword = 'Подтверждение пароля обязательно';
       else if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Пароли не совпадают';
     }
-    
-    // Валидация для второго шага
     if (registrationStep === 2) {
       if (!formData.name) newErrors.name = 'Имя обязательно';
       if (!formData.username) newErrors.username = 'Имя пользователя обязательно';
       if (!formData.city) newErrors.city = 'Город обязателен';
       if (!formData.acceptTerms) newErrors.acceptTerms = 'Необходимо принять условия использования';
     }
-    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -113,13 +104,9 @@ const RegistrationPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!validateForm()) return;
-    
     setIsSubmitting(true);
-    
     try {
-      // Регистрация пользователя с помощью Firebase
       const success = await register({
         email: formData.email,
         password: formData.password,
@@ -128,21 +115,11 @@ const RegistrationPage: React.FC = () => {
         city: formData.city,
         avatar: formData.avatar
       });
-      
-      if (success) {
-        // После успешной регистрации перенаправление на страницу профиля
-        navigate('/profile');
-      } else {
-        setErrors({
-          general: 'Не удалось зарегистрироваться. Возможно, такой email уже используется.'
-        });
-      }
+      if (success) navigate('/profile');
+      else setErrors({ general: 'Не удалось зарегистрироваться. Возможно, такой email уже используется.' });
     } catch (error) {
       console.error('Ошибка при регистрации:', error);
-      setErrors({
-        ...errors,
-        general: 'Произошла ошибка при регистрации. Попробуйте позже.'
-      });
+      setErrors({ general: 'Произошла ошибка при регистрации. Попробуйте позже.' });
     } finally {
       setIsSubmitting(false);
     }
@@ -158,17 +135,12 @@ const RegistrationPage: React.FC = () => {
         onWelcomeClick={() => console.log('Клик на Welcome')}
         isStatic={true}
       />
-
       <div className={styles.registrationContainer}>
         <div className={styles.formWrapper}>
           <h1 className={styles.pageTitle}>
             {registrationStep === 1 ? 'Создать аккаунт' : 'Завершите регистрацию'}
           </h1>
-          
-          {errors.general && (
-            <div className={styles.errorMessage}>{errors.general}</div>
-          )}
-          
+          {errors.general && <div className={styles.errorMessage}>{errors.general}</div>}
           <form onSubmit={handleSubmit} className={styles.registrationForm}>
             {registrationStep === 1 ? (
               <>
@@ -192,7 +164,6 @@ const RegistrationPage: React.FC = () => {
                   </div>
                   {errors.email && <p className={styles.errorText}>{errors.email}</p>}
                 </div>
-                
                 <div className={styles.formGroup}>
                   <div className={styles.inputWrapper}>
                     <span className={styles.inputIcon}>
@@ -213,7 +184,6 @@ const RegistrationPage: React.FC = () => {
                   </div>
                   {errors.password && <p className={styles.errorText}>{errors.password}</p>}
                 </div>
-                
                 <div className={styles.formGroup}>
                   <div className={styles.inputWrapper}>
                     <span className={styles.inputIcon}>
@@ -234,15 +204,9 @@ const RegistrationPage: React.FC = () => {
                   </div>
                   {errors.confirmPassword && <p className={styles.errorText}>{errors.confirmPassword}</p>}
                 </div>
-                
-                <button
-                  type="button"
-                  className={styles.nextButton}
-                  onClick={handleNextStep}
-                >
+                <button type="button" className={styles.nextButton} onClick={handleNextStep}>
                   ДАЛЕЕ
                 </button>
-                
                 <div className={styles.loginLink}>
                   Уже есть аккаунт? <a href="/login">Войти</a>
                 </div>
@@ -268,7 +232,6 @@ const RegistrationPage: React.FC = () => {
                     className={styles.fileInput}
                   />
                 </div>
-                
                 <div className={styles.formGroup}>
                   <div className={styles.inputWrapper}>
                     <span className={styles.inputIcon}>
@@ -289,7 +252,6 @@ const RegistrationPage: React.FC = () => {
                   </div>
                   {errors.name && <p className={styles.errorText}>{errors.name}</p>}
                 </div>
-                
                 <div className={styles.formGroup}>
                   <div className={styles.inputWrapper}>
                     <span className={styles.inputIcon}>
@@ -310,7 +272,6 @@ const RegistrationPage: React.FC = () => {
                   </div>
                   {errors.username && <p className={styles.errorText}>{errors.username}</p>}
                 </div>
-                
                 <div className={styles.formGroup}>
                   <div className={styles.inputWrapper}>
                     <span className={styles.inputIcon}>
@@ -331,7 +292,6 @@ const RegistrationPage: React.FC = () => {
                   </div>
                   {errors.city && <p className={styles.errorText}>{errors.city}</p>}
                 </div>
-                
                 <div className={styles.formGroup}>
                   <div className={styles.checkboxContainer}>
                     <input
@@ -348,21 +308,11 @@ const RegistrationPage: React.FC = () => {
                   </div>
                   {errors.acceptTerms && <p className={styles.errorText}>{errors.acceptTerms}</p>}
                 </div>
-                
                 <div className={styles.buttonGroup}>
-                  <button
-                    type="button"
-                    className={styles.backButton}
-                    onClick={handlePrevStep}
-                  >
+                  <button type="button" className={styles.backButton} onClick={handlePrevStep}>
                     НАЗАД
                   </button>
-                  
-                  <button
-                    type="submit"
-                    className={styles.submitButton}
-                    disabled={isSubmitting}
-                  >
+                  <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
                     {isSubmitting ? 'Регистрация...' : 'ЗАВЕРШИТЬ'}
                   </button>
                 </div>
@@ -371,7 +321,6 @@ const RegistrationPage: React.FC = () => {
           </form>
         </div>
       </div>
-
       <Footer />
     </div>
   );

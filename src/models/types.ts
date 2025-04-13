@@ -112,3 +112,4 @@ export interface RestaurantProposal {
   reviewedAt?: Date;
   reviewerId?: string;
 }
+

@@ -8,16 +8,17 @@ import UserInfoCard from '../../components/UserInfoCard/UserInfoCard';
 import TabsNavigation from '../../components/TabsNavigation/TabsNavigation';
 import styles from './ProfilePage.module.css';
 import { db } from '../../firebase/config';
-import { 
-  collection, 
-  query, 
-  where, 
-  getDocs, 
-  getDoc, 
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  getDoc,
   doc,
-  orderBy 
+  orderBy
 } from 'firebase/firestore';
 
+// Локальные типы для профиля (их можно объединить с общими моделями)
 interface Review {
   id: string;
   restaurant: string;
@@ -36,69 +37,59 @@ interface FavoriteRestaurant {
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, isLoading } = useAuth();
-  
+
   const [reviews, setReviews] = useState<Review[]>([]);
   const [favorites, setFavorites] = useState<FavoriteRestaurant[]>([]);
   const [isLoadingReviews, setIsLoadingReviews] = useState<boolean>(true);
   const [isLoadingFavorites, setIsLoadingFavorites] = useState<boolean>(true);
-  
-  // Активная вкладка
   const [activeTab, setActiveTab] = useState<'reviews' | 'favorites' | 'activity'>('reviews');
 
-  // Загрузка отзывов пользователя
+  // Функция для загрузки отзывов пользователя
   useEffect(() => {
     const fetchReviews = async () => {
       if (!isAuthenticated || !user) return;
-      
       setIsLoadingReviews(true);
-      
+
       try {
-        // Запрос к коллекции Reviews для получения отзывов текущего пользователя
         const reviewsQuery = query(
           collection(db, 'Reviews'),
           where('FK_userId', '==', user.id),
           orderBy('timestamps.createdAt', 'desc')
         );
-        
+
         const reviewsSnapshot = await getDocs(reviewsQuery);
-        
-        // Массив для сбора промисов
+
         const reviewsPromises = reviewsSnapshot.docs.map(async (reviewDoc) => {
           const reviewData = reviewDoc.data();
-          
-          // Получаем информацию о ресторане
+
+          // Получаем название ресторана
           let restaurantName = 'Ресторан';
-          
           try {
             const restaurantDoc = await getDoc(doc(db, 'Restaurants', reviewData.FK_restaurantId));
-            
             if (restaurantDoc.exists()) {
-              restaurantName = restaurantDoc.data().name;
+              restaurantName = restaurantDoc.data().name || restaurantName;
             }
           } catch (err) {
             console.error('Ошибка при загрузке данных ресторана:', err);
           }
-          
-          // Дата создания отзыва
+
+          // Приведение server timestamp к дате
           const createdAt = reviewData.timestamps?.createdAt;
           let dateString = 'Недавно';
-          
           if (createdAt) {
-            // Если createdAt - это серверный timestamp, преобразуем его в дату
             const date = createdAt.toDate ? createdAt.toDate() : new Date(createdAt);
             dateString = date.toLocaleDateString('ru-RU');
           }
-          
+
           return {
             id: reviewDoc.id,
             restaurant: restaurantName,
-            rating: reviewData.rating || 0,
+            rating: reviewData.rating ?? 0,
             comment: reviewData.content || '',
             date: dateString
           };
         });
-        
-        // Ждем выполнения всех промисов
+
         const userReviews = await Promise.all(reviewsPromises);
         setReviews(userReviews);
       } catch (error) {
@@ -107,44 +98,38 @@ const ProfilePage: React.FC = () => {
         setIsLoadingReviews(false);
       }
     };
-    
+
     fetchReviews();
   }, [user, isAuthenticated]);
 
-  // Загрузка избранных ресторанов
+  // Функция для загрузки избранных ресторанов
   useEffect(() => {
     const fetchFavorites = async () => {
       if (!isAuthenticated || !user || !user.favorites || user.favorites.length === 0) {
         setIsLoadingFavorites(false);
         return;
       }
-      
       setIsLoadingFavorites(true);
-      
+
       try {
-        // Загружаем данные для каждого избранного ресторана
-        const favoritePromises = user.favorites.map(async (restaurantId) => {
+        const favoritePromises = user.favorites.map(async (restaurantId: string) => {
           try {
             const restaurantDoc = await getDoc(doc(db, 'Restaurants', restaurantId));
-            
             if (restaurantDoc.exists()) {
               const data = restaurantDoc.data();
-              
               return {
                 id: restaurantDoc.id,
                 name: data.name || 'Ресторан',
                 address: data.address || 'Адрес не указан',
-                image: data.mainImage || data.images?.[0] || undefined
+                image: data.mainImage || (data.images && data.images[0]) || undefined
               };
             }
-            
             return null;
           } catch (err) {
             console.error(`Ошибка при загрузке ресторана ${restaurantId}:`, err);
             return null;
           }
         });
-        
         const favoriteRestaurants = (await Promise.all(favoritePromises)).filter(Boolean) as FavoriteRestaurant[];
         setFavorites(favoriteRestaurants);
       } catch (error) {
@@ -153,16 +138,14 @@ const ProfilePage: React.FC = () => {
         setIsLoadingFavorites(false);
       }
     };
-    
+
     fetchFavorites();
   }, [user, isAuthenticated]);
 
   const handleEditProfile = () => {
-    // Перенаправляем на страницу редактирования профиля
     navigate('/edit-profile');
   };
-  
-  // Если идет загрузка, показываем индикатор загрузки
+
   if (isLoading) {
     return (
       <div className={styles.loadingContainer}>
@@ -171,8 +154,7 @@ const ProfilePage: React.FC = () => {
       </div>
     );
   }
-  
-  // Если пользователь не авторизован, показываем сообщение и кнопку входа
+
   if (!isAuthenticated || !user) {
     return (
       <div className={styles.profilePage}>
@@ -184,26 +166,21 @@ const ProfilePage: React.FC = () => {
           onWelcomeClick={() => console.log('Клик на Welcome')}
           isStatic={true}
         />
-        
         <div className={styles.profileContainer}>
           <div className={styles.unauthorizedMessage}>
             <h2>Вы не авторизованы</h2>
             <p>Для просмотра профиля необходимо войти в систему</p>
-            <button 
-              className={styles.loginButton}
-              onClick={() => navigate('/login')}
-            >
+            <button className={styles.loginButton} onClick={() => navigate('/login')}>
               Войти
             </button>
           </div>
         </div>
-        
         <Footer />
       </div>
     );
   }
 
-  // Функция для отображения контента в зависимости от активной вкладки
+  // Отображение контента в зависимости от выбранной вкладки
   const renderTabContent = () => {
     switch (activeTab) {
       case 'reviews':
@@ -213,7 +190,7 @@ const ProfilePage: React.FC = () => {
               <div className={styles.loadingIndicator}>Загрузка отзывов...</div>
             ) : reviews.length > 0 ? (
               <div className={styles.reviewsList}>
-                {reviews.map(review => (
+                {reviews.map((review) => (
                   <ReviewItem key={review.id} review={review} />
                 ))}
               </div>
@@ -229,16 +206,16 @@ const ProfilePage: React.FC = () => {
               <div className={styles.loadingIndicator}>Загрузка избранных ресторанов...</div>
             ) : favorites.length > 0 ? (
               <div className={styles.favoritesList}>
-                {favorites.map(restaurant => (
-                  <div 
-                    key={restaurant.id} 
+                {favorites.map((restaurant) => (
+                  <div
+                    key={restaurant.id}
                     className={styles.favoriteRestaurant}
                     onClick={() => navigate(`/restaurant/${restaurant.id}`)}
                   >
                     <div className={styles.favoriteImageContainer}>
-                      <img 
-                        src={restaurant.image || 'https://placehold.jp/300x200.png?text=Ресторан'} 
-                        alt={restaurant.name} 
+                      <img
+                        src={restaurant.image || 'https://placehold.jp/300x200.png?text=Ресторан'}
+                        alt={restaurant.name}
                         className={styles.favoriteImage}
                       />
                     </div>
@@ -257,14 +234,12 @@ const ProfilePage: React.FC = () => {
       case 'activity':
         return (
           <div className={styles.contributionsBlock}>
-            <div className={styles.contributionsHeader}>
-              Активность за последний год
-            </div>
+            <div className={styles.contributionsHeader}>Активность за последний год</div>
             <div className={styles.contributionsGraph}>
-              <img 
-                src="https://placehold.jp/800x120.png" 
-                alt="График активности" 
-                style={{ width: '100%', height: 'auto' }} 
+              <img
+                src="https://placehold.jp/800x120.png"
+                alt="График активности"
+                style={{ width: '100%', height: 'auto' }}
               />
             </div>
           </div>
@@ -274,7 +249,7 @@ const ProfilePage: React.FC = () => {
     }
   };
 
-  // Создаем профиль пользователя для UserInfoCard
+  // Формируем объект профиля для компонента UserInfoCard
   const userProfile = {
     name: user.name || user.email?.split('@')[0] || 'Пользователь',
     username: user.username || user.email?.split('@')[0] || 'user',
@@ -297,27 +272,18 @@ const ProfilePage: React.FC = () => {
 
       <div className={styles.profileContainer}>
         <div className={styles.mainContent}>
-          {/* Левая колонка с информацией о пользователе */}
           <div className={styles.leftColumn}>
-            <UserInfoCard 
-              user={userProfile}
-              onEditClick={handleEditProfile}
-            />
+            <UserInfoCard user={userProfile} onEditClick={handleEditProfile} />
           </div>
-          
-          {/* Правая колонка с контентом */}
           <div className={styles.rightColumn}>
-            {/* Вкладки */}
-            <TabsNavigation 
+            <TabsNavigation
               activeTab={activeTab}
               onTabChange={setActiveTab}
               tabs={[
                 { id: 'reviews', label: 'Отзывы', count: reviews.length },
-                { id: 'favorites', label: 'Избранное', count: favorites.length },
+                { id: 'favorites', label: 'Избранное', count: favorites.length }
               ]}
             />
-            
-            {/* Контент вкладки */}
             {renderTabContent()}
           </div>
         </div>

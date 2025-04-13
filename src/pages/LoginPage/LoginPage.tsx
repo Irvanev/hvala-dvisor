@@ -14,13 +14,13 @@ interface LoginFormData {
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { login, loginWithGoogle, isLoading: authLoading } = useAuth();
-  
+
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
     password: '',
     rememberMe: false
   });
-  const [errors, setErrors] = useState<Partial<Record<keyof LoginFormData, string>>>({});
+  const [errors, setErrors] = useState<Partial<LoginFormData>>({});
   const [generalError, setGeneralError] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isGoogleSubmitting, setIsGoogleSubmitting] = useState<boolean>(false);
@@ -31,59 +31,37 @@ const LoginPage: React.FC = () => {
       ...formData,
       [name]: type === 'checkbox' ? checked : value
     });
-    
-    // Очистить ошибку при изменении поля
+
     if (errors[name as keyof LoginFormData]) {
-      setErrors({
-        ...errors,
-        [name]: ''
-      });
+      setErrors({ ...errors, [name]: '' });
     }
-    
-    // Очистить общую ошибку при любом изменении формы
-    if (generalError) {
-      setGeneralError('');
-    }
+    if (generalError) setGeneralError('');
   };
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<Record<keyof LoginFormData, string>> = {};
-    
-    if (!formData.email) {
-      newErrors.email = 'Электронная почта обязательна';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Неверный формат электронной почты';
-    }
-    
-    if (!formData.password) {
-      newErrors.password = 'Пароль обязателен';
-    }
-    
+    const newErrors: Partial<LoginFormData> = {};
+    if (!formData.email) newErrors.email = 'Электронная почта обязательна';
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Неверный формат электронной почты';
+    if (!formData.password) newErrors.password = 'Пароль обязателен';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!validateForm()) return;
-    
     setIsSubmitting(true);
-    
+
     try {
-      // Используем функцию login из AuthContext
       const success = await login(formData.email, formData.password, formData.rememberMe);
-      
       if (success) {
-        // После успешной аутентификации перенаправление на страницу профиля
         navigate('/profile');
       } else {
         setGeneralError('Неверный email или пароль');
       }
     } catch (error) {
       console.error('Ошибка при входе:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Произошла ошибка при входе. Попробуйте позже.';
-      setGeneralError(errorMessage);
+      setGeneralError(error instanceof Error ? error.message : 'Произошла ошибка при входе. Попробуйте позже.');
     } finally {
       setIsSubmitting(false);
     }
@@ -92,21 +70,13 @@ const LoginPage: React.FC = () => {
   const handleGoogleLogin = async () => {
     setIsGoogleSubmitting(true);
     setGeneralError('');
-    
     try {
-      // Используем функцию loginWithGoogle из AuthContext
       const success = await loginWithGoogle();
-      
-      if (success) {
-        // После успешной аутентификации перенаправление на страницу профиля
-        navigate('/profile');
-      } else {
-        setGeneralError('Не удалось войти через Google. Пожалуйста, попробуйте другой способ.');
-      }
+      if (success) navigate('/profile');
+      else setGeneralError('Не удалось войти через Google. Попробуйте другой способ.');
     } catch (error) {
       console.error('Ошибка при входе через Google:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Произошла ошибка при входе через Google. Попробуйте позже.';
-      setGeneralError(errorMessage);
+      setGeneralError(error instanceof Error ? error.message : 'Произошла ошибка при входе через Google. Попробуйте позже.');
     } finally {
       setIsGoogleSubmitting(false);
     }
@@ -126,15 +96,10 @@ const LoginPage: React.FC = () => {
         onWelcomeClick={() => console.log('Клик на Welcome')}
         isStatic={true}
       />
-
       <div className={styles.loginContainer}>
         <div className={styles.formWrapper}>
           <h1 className={styles.pageTitle}>Вход в аккаунт</h1>
-          
-          {generalError && (
-            <div className={styles.errorMessage}>{generalError}</div>
-          )}
-          
+          {generalError && <div className={styles.errorMessage}>{generalError}</div>}
           <form onSubmit={handleSubmit} className={styles.loginForm}>
             <div className={styles.formGroup}>
               <div className={styles.inputWrapper}>
@@ -156,7 +121,6 @@ const LoginPage: React.FC = () => {
               </div>
               {errors.email && <p className={styles.errorText}>{errors.email}</p>}
             </div>
-            
             <div className={styles.formGroup}>
               <div className={styles.inputWrapper}>
                 <span className={styles.inputIcon}>
@@ -171,13 +135,12 @@ const LoginPage: React.FC = () => {
                   className={`${styles.input} ${errors.password ? styles.inputError : ''}`}
                   value={formData.password}
                   onChange={handleInputChange}
-                  placeholder="Пароль"
-                  autoComplete="current-password"
+                  placeholder="Пароль (минимум 8 символов)"
+                  autoComplete="new-password"
                 />
               </div>
               {errors.password && <p className={styles.errorText}>{errors.password}</p>}
             </div>
-            
             <div className={styles.formOptions}>
               <div className={styles.rememberMeContainer}>
                 <input
@@ -192,35 +155,17 @@ const LoginPage: React.FC = () => {
                   Запомнить меня
                 </label>
               </div>
-              
-              <button
-                type="button"
-                className={styles.forgotPasswordLink}
-                onClick={handleForgotPassword}
-              >
+              <button type="button" className={styles.forgotPasswordLink} onClick={handleForgotPassword}>
                 Забыли пароль?
               </button>
             </div>
-            
-            <button
-              type="submit"
-              className={styles.submitButton}
-              disabled={isSubmitting || authLoading || isGoogleSubmitting}
-            >
+            <button type="submit" className={styles.submitButton} disabled={isSubmitting || authLoading || isGoogleSubmitting}>
               {isSubmitting || (authLoading && !isGoogleSubmitting) ? 'Выполняется вход...' : 'ВОЙТИ'}
             </button>
-            
-            {/* Кнопка входа через Google */}
             <div className={styles.divider}>
               <span>или</span>
             </div>
-            
-            <button
-              type="button"
-              className={styles.googleButton}
-              onClick={handleGoogleLogin}
-              disabled={isSubmitting || authLoading || isGoogleSubmitting}
-            >
+            <button type="button" className={styles.googleButton} onClick={handleGoogleLogin} disabled={isSubmitting || authLoading || isGoogleSubmitting}>
               <span className={styles.googleIcon}>
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M17.7895 9.20004C17.7895 8.46937 17.7339 7.88754 17.6113 7.28571H9.1V10.4179H14.1171C14.0245 11.1957 13.4962 12.3768 12.2865 13.1857L12.2695 13.2957L14.9559 15.3714L15.1339 15.3886C16.8481 13.8428 17.7895 11.7214 17.7895 9.20004Z" fill="#4285F4"/>
@@ -231,14 +176,12 @@ const LoginPage: React.FC = () => {
               </span>
               {isGoogleSubmitting ? 'Выполняется вход...' : 'Войти через Google'}
             </button>
-            
             <div className={styles.registerLink}>
               Нет аккаунта? <a href="/register">Зарегистрироваться</a>
             </div>
           </form>
         </div>
       </div>
-
       <Footer />
     </div>
   );
