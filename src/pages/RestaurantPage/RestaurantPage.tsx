@@ -1,7 +1,5 @@
-// src/pages/RestaurantPage/RestaurantPage.tsx
-
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import NavBar from '../../components/NavBar';
 import Footer from '../../components/Footer/Footer';
 import RestaurantHero from '../../components/RestaurantHero/RestaurantHero';
@@ -11,14 +9,10 @@ import RestaurantMenu from '../../components/RestaurantMenu/RestaurantMenu';
 import RestaurantReviews from '../../components/RestaurantReviews/RestaurantReviews';
 import RestaurantPhotos from '../../components/RestaurantPhotos/RestaurantPhotos';
 import styles from './RestaurantPage.module.css';
-// Импорт базовой модели ресторана
 import { Restaurant, MenuItem, Review, MenuCategory } from '../../models/types';
 
-// Расширяем базовую модель для страницы
 interface RestaurantDetails extends Restaurant {
-  // Дополнительные поля для страницы
   openingHours?: { [key: string]: string };
-  // Здесь можно использовать нашу модель Review или задать расширенный тип
   reviews?: Array<{
     id: string;
     author: string;
@@ -28,233 +22,125 @@ interface RestaurantDetails extends Restaurant {
     date: string;
     likes?: number;
   }>;
-  // Если фото для раздела "Фото" отличаются от основного массива изображений
   photos?: string[];
-  // Группированное меню для отображения по категориям
   groupedMenu?: MenuCategory[];
-  // Если нужно отобразить кухню как строку (например, объединённые теги)
   cuisine?: string;
-  // Для обратной совместимости с компонентом обзора ресторана
   phoneNumber?: string;
   website?: string;
-  // Если требуется дополнительное поле для функций
   features?: string[];
 }
 
 const RestaurantPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Используем новый тип RestaurantDetails
   const [restaurant, setRestaurant] = useState<RestaurantDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userFavorite, setUserFavorite] = useState(false);
-  const [activeTab, setActiveTab] = useState('overview'); // 'overview', 'menu', 'reviews', 'photos'
+  const [activeTab, setActiveTab] = useState('overview');
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [showPhotoModal, setShowPhotoModal] = useState(false);
+
+  // Функция загрузки данных из fallback-мок-массива (на случай, если state не передан)
+  const loadMockRestaurant = (restaurantId: string): RestaurantDetails | null => {
+    const mockRestaurants: RestaurantDetails[] = [
+      {
+        id: 'rest1',
+        title: 'Au Bourguignon Du Marais',
+        description: 'Изысканный ресторан с французской кухней',
+        location: 'Подгорица',
+        coordinates: { lat: 42.4300, lng: 19.2600 },
+        images: [
+          "https://placehold.jp/800x500.png",
+          "https://placehold.jp/900x500.png",
+          "https://placehold.jp/850x500.png",
+          "https://placehold.jp/950x500.png"
+        ],
+        contact: {
+          phone: "+38212345678",
+          website: "https://aubourguignon.example.com",
+          socialLinks: {
+            facebook: "https://facebook.com/restaurant",
+            instagram: "https://instagram.com/restaurant"
+          }
+        },
+        cuisineTags: ['Французская'],
+        featureTags: ['Терраса', 'Детское меню'],
+        priceRange: '€€€',
+        rating: 4.9,
+        moderationStatus: 'approved',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        openingHours: {
+          "Понедельник": "12:00 - 22:00",
+          "Вторник": "12:00 - 22:00",
+          "Среда": "12:00 - 22:00",
+          "Четверг": "12:00 - 22:00",
+          "Пятница": "12:00 - 23:00",
+          "Суббота": "12:00 - 23:00",
+          "Воскресенье": "12:00 - 21:00"
+        },
+        reviews: [
+          {
+            id: "rev1",
+            author: "Анна К.",
+            authorAvatar: "https://placehold.jp/80x80.png?text=AK",
+            rating: 5,
+            comment: "Отличный ресторан!",
+            date: "15.01.2024",
+            likes: 8
+          }
+        ],
+        groupedMenu: [
+          {
+            category: "Закуски",
+            items: [
+              {
+                id: "menu1",
+                name: "Салат Цезарь",
+                description: "Классический салат с курицей",
+                price: "12€",
+                isPopular: true
+              }
+            ]
+          }
+        ],
+        photos: [
+          "https://placehold.jp/400x300.png",
+          "https://placehold.jp/400x300.png"
+        ],
+        phoneNumber: "+38212345678",
+        website: "https://aubourguignon.example.com",
+        features: ["Уютная атмосфера", "Обслуживание на высшем уровне"],
+        cuisine: "Французская"
+      },
+      // ... Добавь остальные mock-рестораны, если необходимо
+    ];
+
+    return mockRestaurants.find(r => r.id === restaurantId) || null;
+  };
 
   useEffect(() => {
     const fetchRestaurantDetails = async () => {
       setLoading(true);
       try {
-        // В реальном приложении здесь будет API-запрос
-        // Для демонстрации используем заглушку с демо-данными
-
-        // Имитация задержки сети
+        // Если объект ресторана передан через state, используем его
+        const stateRestaurant = location.state as RestaurantDetails | undefined;
+        if (stateRestaurant && stateRestaurant.id === id) {
+          setRestaurant(stateRestaurant);
+        } else {
+          // Иначе используем fallback (или здесь можно добавить запрос к Firestore)
+          const data = loadMockRestaurant(id || '');
+          if (data) {
+            setRestaurant(data);
+          } else {
+            setError('Ресторан не найден');
+          }
+        }
+        // Можем имитировать задержку
         await new Promise(resolve => setTimeout(resolve, 800));
-
-        // Моковые данные с использованием модели Restaurant + расширений
-        const mockRestaurant: RestaurantDetails = {
-          id: id || 'unknown',
-          title:
-            id === 'rest1'
-              ? "Au Bourguignon Du Marais"
-              : id === 'rest2'
-                ? "La Maison"
-                : id === 'rest3'
-                  ? "Trattoria Italiana"
-                  : id === 'rest4'
-                    ? "El Tapas"
-                    : "Ресторан",
-          description:
-            "Уютный ресторан с превосходной кухней и атмосферой. Здесь вы можете насладиться аутентичными блюдами, приготовленными по традиционным рецептам шеф-повара с многолетним опытом.",
-          // Используем поле location вместо address – на странице можно передавать location как адрес
-          location: "123 Restaurant Street, City",
-          // Пример координат (если нужны)
-          coordinates: {
-            lat: 48.8566,
-            lng: 2.3522,
-          },
-          // Заполняем массив изображений (основной фон и галерея)
-          images: [
-            "https://placehold.jp/800x500.png",
-            "https://placehold.jp/900x500.png",
-            "https://placehold.jp/850x500.png",
-            "https://placehold.jp/950x500.png"
-          ],
-          // Обязательное поле contact согласно модели Restaurant
-          contact: {
-            phone: "+1 234 567 8901",
-            website: "https://restaurant-website.com",
-            socialLinks: {
-              facebook: "https://facebook.com/restaurant",
-              instagram: "https://instagram.com/restaurant"
-            }
-          },
-          // Можно задать теги кухни и особенностей
-          cuisineTags: id === 'rest1' || id === 'rest2' ? ["Французская"] : id === 'rest3' ? ["Итальянская"] : id === 'rest4' ? ["Испанская"] : ["Европейская"],
-          featureTags: [
-            "Уютная атмосфера",
-            "Обслуживание на высшем уровне",
-            "Аутентичные блюда",
-            "Панорамный вид"
-          ],
-          priceRange: "€€€",
-          // Для демонстрации оставляем меню пустым, а сгруппированное меню заполняем отдельно
-          menu: [],
-          groupedMenu: [
-            {
-              category: "Закуски",
-              items: [
-                {
-                  id: "menu1",
-                  name: "Салат Цезарь",
-                  description: "Классический салат с куриным филе, хрустящими гренками и соусом",
-                  price: "12€",
-                  isPopular: true
-                },
-                {
-                  id: "menu2",
-                  name: "Карпаччо из говядины",
-                  description: "Тонко нарезанная говядина с трюфельным маслом и пармезаном",
-                  price: "15€"
-                },
-                {
-                  id: "menu3",
-                  name: "Брускетта с томатами",
-                  description: "Хрустящий багет с томатами, чесноком и базиликом",
-                  price: "9€"
-                }
-              ]
-            },
-            {
-              category: "Основные блюда",
-              items: [
-                {
-                  id: "menu4",
-                  name: "Стейк Рибай",
-                  description: "Сочный стейк из мраморной говядины с гарниром",
-                  price: "28€",
-                  isPopular: true
-                },
-                {
-                  id: "menu5",
-                  name: "Паста Карбонара",
-                  description: "Традиционная итальянская паста с беконом и сливочным соусом",
-                  price: "18€"
-                },
-                {
-                  id: "menu6",
-                  name: "Ризотто с грибами",
-                  description: "Кремовое ризотто с белыми грибами и трюфельным маслом",
-                  price: "22€"
-                }
-              ]
-            },
-            {
-              category: "Десерты",
-              items: [
-                {
-                  id: "menu7",
-                  name: "Тирамису",
-                  description: "Классический итальянский десерт с кофейным вкусом",
-                  price: "8€",
-                  isPopular: true
-                },
-                {
-                  id: "menu8",
-                  name: "Шоколадный фондан",
-                  description: "Теплый шоколадный кекс с жидкой сердцевиной и ванильным мороженым",
-                  price: "10€"
-                }
-              ]
-            }
-          ],
-          // Для рейтинга оставляем то же значение
-          rating: 4.8,
-          // Обязательное поле в модели – статус модерации
-          moderationStatus: 'approved',
-          createdBy: "user123",
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          // Дополнительные поля для страницы
-          openingHours: {
-            "Понедельник": "12:00 - 22:00",
-            "Вторник": "12:00 - 22:00",
-            "Среда": "12:00 - 22:00",
-            "Четверг": "12:00 - 22:00",
-            "Пятница": "12:00 - 23:00",
-            "Суббота": "12:00 - 23:00",
-            "Воскресенье": "12:00 - 21:00"
-          },
-          // Используем моковые отзывы – их можно будет заменить запросом к API
-          reviews: [
-            {
-              id: "rev1",
-              author: "Анна К.",
-              authorAvatar: "https://placehold.jp/80x80.png?text=AK",
-              rating: 5,
-              comment: "Отличный ресторан! Обслуживание на высшем уровне, еда невероятно вкусная. Обязательно вернусь!",
-              date: "15.01.2024",
-              likes: 8
-            },
-            {
-              id: "rev2",
-              author: "Михаил П.",
-              authorAvatar: "https://placehold.jp/80x80.png?text=МП",
-              rating: 4,
-              comment: "Очень понравилась атмосфера и кухня. Немного долго ждали заказ, но оно того стоило.",
-              date: "02.02.2024",
-              likes: 3
-            },
-            {
-              id: "rev3",
-              author: "Елена С.",
-              authorAvatar: "https://placehold.jp/80x80.png?text=ЕС",
-              rating: 5,
-              comment: "Прекрасная атмосфера, изысканные блюда и безупречное обслуживание! Особенно рекомендую фирменный десерт.",
-              date: "20.02.2024",
-              likes: 12
-            }
-          ],
-          // Массив фото для раздела "Фото" (если отличается от основного массива изображений)
-          photos: [
-            "https://placehold.jp/400x300.png",
-            "https://placehold.jp/400x300.png",
-            "https://placehold.jp/400x300.png",
-            "https://placehold.jp/400x300.png",
-            "https://placehold.jp/400x300.png",
-            "https://placehold.jp/400x300.png"
-          ],
-          // Для совместимости с компонентами, если нужно – задаём дополнительные поля
-          phoneNumber: "+1 234 567 8901",
-          website: "https://restaurant-website.com",
-          // Можно передать объединённую информацию из featureTags
-          features: [
-            "Уютная атмосфера",
-            "Обслуживание на высшем уровне",
-            "Аутентичные блюда",
-            "Панорамный вид",
-            "Веганское меню",
-            "Винная карта"
-          ],
-          // Можно задать кухню как строку, объединив теги кухни
-          cuisine: (id === 'rest1' || id === 'rest2') ? "Французская" : id === 'rest3' ? "Итальянская" : id === 'rest4' ? "Испанская" : "Европейская"
-        };
-
-        setRestaurant(mockRestaurant);
-        setUserFavorite(Math.random() > 0.5); // Имитация статуса избранного
         setLoading(false);
       } catch (e) {
         setError(e instanceof Error ? e.message : 'Произошла ошибка при загрузке данных');
@@ -268,7 +154,7 @@ const RestaurantPage: React.FC = () => {
       setError('ID ресторана не указан');
       setLoading(false);
     }
-  }, [id]);
+  }, [id, location.state]);
 
   const handleNavBarSearch = (query: string) => {
     console.log(`Поиск в NavBar: ${query}`);
@@ -284,7 +170,7 @@ const RestaurantPage: React.FC = () => {
 
   const handleFavoriteToggle = () => {
     setUserFavorite(prev => !prev);
-    // В реальном приложении здесь будет API-запрос для обновления избранного
+    // Реальная логика обновления избранного тут
   };
 
   const handleTabChange = (tab: string) => {
@@ -293,18 +179,17 @@ const RestaurantPage: React.FC = () => {
 
   const handleShare = () => {
     console.log('Поделиться ссылкой на ресторан');
-    // Здесь можно реализовать логику шаринга
   };
 
   const openPhotoModal = (index: number) => {
     setCurrentPhotoIndex(index);
     setShowPhotoModal(true);
-    document.body.style.overflow = 'hidden'; // Запрещаем прокрутку страницы
+    document.body.style.overflow = 'hidden';
   };
 
   const closePhotoModal = () => {
     setShowPhotoModal(false);
-    document.body.style.overflow = 'auto'; // Разрешаем прокрутку страницы
+    document.body.style.overflow = 'auto';
   };
 
   const nextPhoto = () => {
@@ -339,7 +224,6 @@ const RestaurantPage: React.FC = () => {
     );
   }
 
-  // Определяем вкладки для страницы
   const tabs = [
     { id: 'overview', label: 'Обзор' },
     { id: 'menu', label: 'Меню' },
@@ -367,7 +251,6 @@ const RestaurantPage: React.FC = () => {
           <span className={styles.breadcrumbCurrent}>{restaurant.title}</span>
         </div>
 
-        {/* Hero Section */}
         <RestaurantHero
           title={restaurant.title}
           rating={restaurant.rating ?? 0}
@@ -380,23 +263,18 @@ const RestaurantPage: React.FC = () => {
           onViewAllPhotos={() => setActiveTab('photos')}
         />
 
-        {/* Navigation Tabs */}
         <RestaurantTabs
           tabs={tabs}
           activeTab={activeTab}
           onTabChange={handleTabChange}
-        // onShare={handleShare}
         />
 
-        {/* Main Content */}
         <div className={styles.mainContent}>
           {activeTab === 'overview' && (
             <RestaurantOverview
               description={restaurant.description}
               features={restaurant.features}
-              // Передаём адрес как location из модели
               address={restaurant.location}
-              // Используем данные из contact для телефона и сайта, либо поля phoneNumber и website
               phoneNumber={restaurant.contact.phone || restaurant.phoneNumber}
               website={restaurant.contact.website || restaurant.website}
               openingHours={restaurant.openingHours}
@@ -426,33 +304,28 @@ const RestaurantPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Photo Modal */}
       {showPhotoModal && restaurant.photos && (
         <div className={styles.photoModal} onClick={closePhotoModal}>
           <div className={styles.photoModalContent} onClick={(e) => e.stopPropagation()}>
             <button className={styles.photoModalClose} onClick={closePhotoModal}>✕</button>
-
             <div className={styles.photoModalImageContainer}>
               <img
                 src={restaurant.photos[currentPhotoIndex]}
                 alt={`${restaurant.title} - фото ${currentPhotoIndex + 1}`}
                 className={styles.photoModalImage}
               />
-
               <button
                 className={`${styles.photoModalButton} ${styles.photoModalPrev}`}
                 onClick={prevPhoto}
               >
                 ❮
               </button>
-
               <button
                 className={`${styles.photoModalButton} ${styles.photoModalNext}`}
                 onClick={nextPhoto}
               >
                 ❯
               </button>
-
               <div className={styles.photoModalCounter}>
                 {currentPhotoIndex + 1} / {restaurant.photos.length}
               </div>

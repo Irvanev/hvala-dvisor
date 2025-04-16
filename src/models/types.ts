@@ -30,35 +30,39 @@ export interface Restaurant {
   id: string;
   title: string;
   description: string;
-  location: string;                  // Основной адрес ресторана
+  location: {
+    street: string;
+    city: string;
+    postalCode: string;
+    country: string;
+  };
   coordinates?: {
     lat: number;
     lng: number;
   };
-  images: string[];                  // Основной массив изображений ресторана
+  images: string[];
   contact: {
     phone?: string;
     email?: string;
     website?: string;
-    socialLinks?: { [platform: string]: string }; // Доп. каналы (Facebook, Instagram и т.п.)
+    socialLinks?: { [platform: string]: string };
   };
-  cuisineTags?: string[];            // Теги для типа кухни (например, Балканская, Итальянская и т.д.)
-  featureTags?: string[];            // Теги с особенностями ресторана (уютная атмосфера, веганское меню и пр.)
-  priceRange?: string;               // Строка с обозначением ценового диапазона (например, "$$$")
-  menu?: MenuItem[];                 // Вложенный массив позиций меню (если планируется сделать простую форму)
-  rating?: number;                   // Средний рейтинг ресторана, рассчитанный на лету
+  cuisineTags?: string[];
+  featureTags?: string[];
+  priceRange?: string;
+  menu?: MenuItem[];
+  rating?: number;
   moderationStatus: 'pending' | 'approved' | 'rejected';
-                                     // Статус модерации, можно расширить список, если появится необходимость
-  createdBy?: string;                // ID пользователя, предложившего ресторан (например, для владельца)
+  createdBy?: string;
   createdAt: Date;
   updatedAt: Date;
-  // Дополнительные поля для аудита ресторана (например, история изменений)
   changeHistory?: Array<{
     modifiedAt: Date;
     modifiedBy: string;
-    changes: string;               // Описание изменений; можно сделать в виде объекта, если потребуется
+    changes: string;
   }>;
 }
+
 
 // Модель позиции меню с уникальным идентификатором для расширения функционала
 export interface MenuItem {

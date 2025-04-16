@@ -9,7 +9,7 @@ import styles from './HomePage.module.css';
 import backgroundImage from '../assets/background.webp';
 import Footer from '../components/Footer/Footer';
 import RestaurantGrid from '../components/RestaurantGrid/RestaurantGrid';
-// Импортируем типы из единого файла
+// Импортируем типы из единого файла моделей
 import { Restaurant, Country, FeaturedCard } from '../models/types';
 
 const CONSTANTS = {
@@ -22,12 +22,12 @@ const CONSTANTS = {
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [userFavorites, setUserFavorites] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [showFloatingButtonText, setShowFloatingButtonText] = useState(true);
+  const [showFloatingButtonText, setShowFloatingButtonText] = useState<boolean>(true);
 
-  // Данные
+  // Данные для секций
   const featuredCards: FeaturedCard[] = [
     {
       id: 'feat1',
@@ -43,7 +43,7 @@ const HomePage: React.FC = () => {
     },
   ];
 
-  // Массив ресторанов с новым форматом данных (images вместо image)
+  // Массив ресторанов с обновлённой структурой (используем поле images вместо устаревшего image, но для обратной совместимости оставляем его тоже)
   const restaurants: Restaurant[] = [
     {
       id: 'rest1',
@@ -51,17 +51,22 @@ const HomePage: React.FC = () => {
       location: 'Paris',
       description: 'Изысканный ресторан с французской кухней',
       rating: 4.9,
-      // Используем новое поле images
       images: [
         'https://placehold.jp/300x200.png',
         'https://placehold.jp/400x200.png',
         'https://placehold.jp/350x200.png'
       ],
-      // Для обратной совместимости можно оставить поле image
       image: 'https://placehold.jp/300x200.png',
       cuisineTags: ['Французская'],
       featureTags: ['Терраса', 'Детское меню'],
       priceRange: '€€€',
+      moderationStatus: 'approved',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      contact: {
+        phone: '+38212345678',
+        website: 'https://aubourguignon.example.com'
+      }
     },
     {
       id: 'rest2',
@@ -74,9 +79,16 @@ const HomePage: React.FC = () => {
         'https://placehold.jp/300x210.png'
       ],
       image: 'https://placehold.jp/300x200.png',
-      cuisineTags: ['Французская', 'Панорамный вид', 'Винная карта', 'Веганское меню', 'Терраса'],
-      featureTags: ['Веганское меню', 'Фермерские продукты'],
+      cuisineTags: ['Французская'],
+      featureTags: ['Панорамный вид', 'Винная карта', 'Веганское меню', 'Терраса'],
       priceRange: '€€',
+      moderationStatus: 'approved',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      contact: {
+        phone: '+38298765432',
+        website: 'https://lamaison.example.com'
+      }
     },
     {
       id: 'rest3',
@@ -94,6 +106,13 @@ const HomePage: React.FC = () => {
       cuisineTags: ['Итальянская'],
       featureTags: ['Домашняя паста', 'Дровяная печь'],
       priceRange: '€€',
+      moderationStatus: 'approved',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      contact: {
+        phone: '+38211223344',
+        website: 'https://trattoria.example.com'
+      }
     },
     {
       id: 'rest4',
@@ -109,6 +128,13 @@ const HomePage: React.FC = () => {
       cuisineTags: ['Испанская'],
       featureTags: ['Винная карта', 'Панорамный вид'],
       priceRange: '€€€',
+      moderationStatus: 'approved',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      contact: {
+        phone: '+38255667788',
+        website: 'https://eltapas.example.com'
+      }
     },
   ];
 
@@ -118,10 +144,11 @@ const HomePage: React.FC = () => {
     { id: 'alb', title: 'Албания', image: 'https://placehold.jp/400x300.png' },
   ];
 
-  // Загрузка данных
+  // Загрузка данных: здесь используем mock-данные
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Имитация избранных ресторанов
         const demoFavorites = ['rest1', 'rest3'];
         setUserFavorites(demoFavorites);
         setLoading(false);
@@ -133,7 +160,7 @@ const HomePage: React.FC = () => {
     fetchData();
   }, []);
 
-  // Сохранение и восстановление позиции прокрутки через localStorage
+  // Восстановление позиции прокрутки и управление видимостью плавающей кнопки
   useEffect(() => {
     const savedPosition = Number(localStorage.getItem('scrollPosition') || 0);
     window.scrollTo(0, savedPosition);
@@ -142,14 +169,11 @@ const HomePage: React.FC = () => {
       localStorage.setItem('scrollPosition', window.scrollY.toString());
     };
 
-    // Обновляем отображение текста на плавающей кнопке в зависимости от ширины экрана
     const updateButtonTextVisibility = () => {
       setShowFloatingButtonText(window.innerWidth > 768);
     };
 
-    // Вызываем один раз при монтировании
     updateButtonTextVisibility();
-
     window.addEventListener('scroll', handleScroll);
     window.addEventListener('resize', updateButtonTextVisibility);
 
@@ -159,7 +183,6 @@ const HomePage: React.FC = () => {
     };
   }, []);
 
-  // Обработчики
   const handleSaveToggle = useCallback(
     (id: string, isSaved: boolean, event?: React.MouseEvent) => {
       if (event) {
@@ -193,12 +216,10 @@ const HomePage: React.FC = () => {
     console.log(`Clicked on featured card: ${cardId}`);
   };
 
-  // Обработчик для кнопки добавления ресторана
   const handleAddRestaurantClick = () => {
     navigate('/add-restaurant');
   };
 
-  // Рендеринг
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -245,13 +266,11 @@ const HomePage: React.FC = () => {
 
       <section className={styles.contentSection}>
         <div className={styles.contentContainer}>
-          {/* Добавленная секция со слоганом */}
           <div className={styles.sloganSection}>
             <h2 className={styles.sloganTitle}>Откройте для себя аутентичные балканские вкусы</h2>
             <p className={styles.sloganText}>
               HvalaDviser — это ваш надежный путеводитель по лучшим ресторанам Балкан.
-              Мы помогаем путешественникам и местным жителям находить уникальные гастрономические
-              впечатления, сохранять любимые места и делиться своими открытиями.
+              Мы помогаем путешественникам и местным жителям находить уникальные гастрономические впечатления, сохранять любимые места и делиться своими открытиями.
             </p>
             <div className={styles.sloganDivider}></div>
           </div>
@@ -270,16 +289,15 @@ const HomePage: React.FC = () => {
             ))}
           </div>
 
-          {/* Заменяем карусели на сетку из 8 ресторанов */}
           <Section title="Top">
+            {/* Для демонстрации используем дублирование ресторана, чтобы получить 8 карточек */}
             <RestaurantGrid
-              restaurants={restaurants.concat(restaurants)} // Дублируем массив для получения 8 карточек
+              restaurants={[...restaurants, ...restaurants]}
               userFavorites={userFavorites}
               onSaveToggle={handleSaveToggle}
             />
           </Section>
 
-          {/* Остальные секции остаются без изменений */}
           <Section title="Популярные Страны">
             <div className={styles.countriesGrid}>
               {countries.map((country) => (
@@ -317,7 +335,6 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Плавающая кнопка добавления ресторана */}
       <div className={styles.floatingAddButton} onClick={handleAddRestaurantClick}>
         <span className={styles.plusIcon}>+</span>
         {showFloatingButtonText && (

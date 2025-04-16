@@ -8,11 +8,16 @@ import LocationPicker from '../../pages/AddRestaurantPage/components/LocationPic
 import SubmissionSteps from '../../pages/AddRestaurantPage/components/SubmissionSteps';
 import SuccessModal from '../../pages/AddRestaurantPage/components/SuccessModal';
 import styles from './AddRestaurantPage.module.css';
+import { Restaurant, MenuItem } from '../../models/types';
+import { db, storage } from '../../firebase/config';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
+// Интерфейс данных формы
 interface RestaurantFormData {
-  name: string;
+  name: string; // будет превращаться в title
   description: string;
-  cuisine: string;
+  cuisine: string; // будем сохранять как один из тегов кухни
   priceRange: string;
   address: {
     street: string;
@@ -29,8 +34,8 @@ interface RestaurantFormData {
       closed: boolean;
     }
   };
-  features: string[];
-  photos: File[];
+  features: string[]; // отобразятся как featureTags
+  photos: File[]; // Файлы для загрузки; в модель попадут URL фотографий (в примере не реализована загрузка)
   menuItems: {
     category: string;
     items: Array<{
@@ -45,12 +50,10 @@ interface RestaurantFormData {
     phone: string;
     isOwner: boolean;
   };
-  position: {
-    lat: number;
-    lng: number;
-  } | null;
+  position: { lat: number; lng: number } | null;
 }
 
+// Начальное состояние формы
 const INITIAL_FORM_DATA: RestaurantFormData = {
   name: '',
   description: '',
@@ -105,27 +108,27 @@ const AddRestaurantPage: React.FC = () => {
 
   const totalSteps = 4;
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  // Функция для обработки ввода (поддержка вложенных полей через точку)
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    
-    // Обработка вложенных полей через точечную нотацию (например, address.city)
     if (name.includes('.')) {
       const [parent, child] = name.split('.');
-    setFormData({
-      ...formData,
-      [parent]: {
-        ...(formData[parent as keyof RestaurantFormData] as Record<string, any>),
-        [child]: value
-      }
-    });
+      setFormData({
+        ...formData,
+        [parent]: {
+          ...(formData[parent as keyof RestaurantFormData] as Record<string, any>),
+          [child]: value
+        }
+      });
     } else {
       setFormData({
         ...formData,
         [name]: value
       });
     }
-    
-    // Очистка ошибки при изменении поля
+
     if (errors[name]) {
       setErrors({
         ...errors,
@@ -134,52 +137,31 @@ const AddRestaurantPage: React.FC = () => {
     }
   };
 
+  // Обработка checkbox-элементов
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked, value } = e.target;
-    
     if (name === 'features') {
       const updatedFeatures = [...formData.features];
-      
       if (checked) {
         updatedFeatures.push(value);
       } else {
         const index = updatedFeatures.indexOf(value);
-        if (index !== -1) {
-          updatedFeatures.splice(index, 1);
-        }
+        if (index !== -1) updatedFeatures.splice(index, 1);
       }
-      
-      setFormData({
-        ...formData,
-        features: updatedFeatures
-      });
+      setFormData({ ...formData, features: updatedFeatures });
     } else if (name.includes('openingHours')) {
-      // Например, openingHours.Понедельник.closed
+      // Пример: openingHours.Понедельник.closed
       const [parent, day, field] = name.split('.');
-      
       setFormData({
         ...formData,
         openingHours: {
           ...formData.openingHours,
-          [day]: {
-            ...formData.openingHours[day],
-            [field]: checked
-          }
-        }
-      });
-    } else if (name === 'contactPerson.isOwner') {
-      setFormData({
-        ...formData,
-        contactPerson: {
-          ...formData.contactPerson,
-          isOwner: checked
+          [day]: { ...formData.openingHours[day], [field]: checked }
         }
       });
     } else {
-      setFormData({
-        ...formData,
-        [name]: checked
-      });
+      // Для других чекбоксов
+      setFormData({ ...formData, [name]: checked });
     }
   };
 
@@ -206,31 +188,19 @@ const AddRestaurantPage: React.FC = () => {
   const handlePhotoRemove = (index: number) => {
     const updatedPhotos = [...formData.photos];
     updatedPhotos.splice(index, 1);
-    
-    setFormData({
-      ...formData,
-      photos: updatedPhotos
-    });
+    setFormData({ ...formData, photos: updatedPhotos });
   };
 
   const handleAddMenuItem = (categoryIndex: number) => {
     const updatedMenuItems = [...formData.menuItems];
     updatedMenuItems[categoryIndex].items.push({ name: '', description: '', price: '' });
-    
-    setFormData({
-      ...formData,
-      menuItems: updatedMenuItems
-    });
+    setFormData({ ...formData, menuItems: updatedMenuItems });
   };
 
   const handleRemoveMenuItem = (categoryIndex: number, itemIndex: number) => {
     const updatedMenuItems = [...formData.menuItems];
     updatedMenuItems[categoryIndex].items.splice(itemIndex, 1);
-    
-    setFormData({
-      ...formData,
-      menuItems: updatedMenuItems
-    });
+    setFormData({ ...formData, menuItems: updatedMenuItems });
   };
 
   const handleAddCategory = () => {
@@ -238,10 +208,7 @@ const AddRestaurantPage: React.FC = () => {
       ...formData,
       menuItems: [
         ...formData.menuItems,
-        {
-          category: '',
-          items: [{ name: '', description: '', price: '' }]
-        }
+        { category: '', items: [{ name: '', description: '', price: '' }] }
       ]
     });
   };
@@ -249,11 +216,7 @@ const AddRestaurantPage: React.FC = () => {
   const handleRemoveCategory = (index: number) => {
     const updatedMenuItems = [...formData.menuItems];
     updatedMenuItems.splice(index, 1);
-    
-    setFormData({
-      ...formData,
-      menuItems: updatedMenuItems
-    });
+    setFormData({ ...formData, menuItems: updatedMenuItems });
   };
 
   const handleMenuItemChange = (categoryIndex: number, itemIndex: number, field: string, value: string) => {
@@ -262,82 +225,52 @@ const AddRestaurantPage: React.FC = () => {
       ...updatedMenuItems[categoryIndex].items[itemIndex],
       [field]: value
     };
-    
-    setFormData({
-      ...formData,
-      menuItems: updatedMenuItems
-    });
+    setFormData({ ...formData, menuItems: updatedMenuItems });
   };
 
   const handleCategoryNameChange = (index: number, value: string) => {
     const updatedMenuItems = [...formData.menuItems];
     updatedMenuItems[index].category = value;
-    
-    setFormData({
-      ...formData,
-      menuItems: updatedMenuItems
-    });
+    setFormData({ ...formData, menuItems: updatedMenuItems });
   };
 
   const handleLocationSelect = (position: { lat: number; lng: number }) => {
-    setFormData({
-      ...formData,
-      position
-    });
+    setFormData({ ...formData, position: position });
   };
 
+  // Валидация для текущего шага
   const validateCurrentStep = (): boolean => {
     const newErrors: FormErrors = {};
-    
-    // Валидация для первого шага (основная информация)
+
     if (currentStep === 1) {
       if (!formData.name.trim()) newErrors['name'] = 'Название ресторана обязательно';
       if (!formData.description.trim()) newErrors['description'] = 'Описание ресторана обязательно';
-      if (!formData.cuisine.trim()) newErrors['cuisine'] = 'Выберите тип кухни';
+      if (!formData.cuisine.trim()) newErrors['cuisine'] = 'Укажите тип кухни';
       if (!formData.address.street.trim()) newErrors['address.street'] = 'Укажите улицу';
       if (!formData.address.city.trim()) newErrors['address.city'] = 'Укажите город';
       if (!formData.address.country.trim()) newErrors['address.country'] = 'Укажите страну';
       if (!formData.position) newErrors['position'] = 'Укажите местоположение на карте';
-    }
-    
-    // Валидация для второго шага (фотографии и особенности)
-    else if (currentStep === 2) {
-      if (formData.photos.length === 0) {
-        newErrors['photos'] = 'Загрузите хотя бы одну фотографию';
-      }
-    }
-    
-    // Валидация для третьего шага (меню и часы работы)
-    else if (currentStep === 3) {
+    } else if (currentStep === 2) {
+      if (formData.photos.length === 0) newErrors['photos'] = 'Загрузите хотя бы одну фотографию';
+    } else if (currentStep === 3) {
       let hasMenuItems = false;
-      
       for (const category of formData.menuItems) {
         if (category.category.trim() && category.items.some(item => item.name.trim())) {
           hasMenuItems = true;
           break;
         }
       }
-      
-      if (!hasMenuItems) {
-        newErrors['menuItems'] = 'Добавьте хотя бы одно блюдо в меню';
-      }
-    }
-    
-    // Валидация для четвертого шага (контактная информация)
-    else if (currentStep === 4) {
-      if (!formData.contactPerson.name.trim()) {
-        newErrors['contactPerson.name'] = 'Укажите имя контактного лица';
-      }
+      if (!hasMenuItems) newErrors['menuItems'] = 'Добавьте хотя бы одно блюдо в меню';
+    } else if (currentStep === 4) {
+      if (!formData.contactPerson.name.trim()) newErrors['contactPerson.name'] = 'Укажите имя контактного лица';
       if (!formData.contactPerson.email.trim()) {
         newErrors['contactPerson.email'] = 'Укажите email контактного лица';
       } else if (!/\S+@\S+\.\S+/.test(formData.contactPerson.email)) {
         newErrors['contactPerson.email'] = 'Некорректный формат email';
       }
-      if (!formData.contactPerson.phone.trim()) {
-        newErrors['contactPerson.phone'] = 'Укажите телефон контактного лица';
-      }
+      if (!formData.contactPerson.phone.trim()) newErrors['contactPerson.phone'] = 'Укажите телефон контактного лица';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -347,7 +280,6 @@ const AddRestaurantPage: React.FC = () => {
       window.scrollTo(0, 0);
       setCurrentStep(prev => Math.min(prev + 1, totalSteps));
     } else {
-      // Прокрутка к первой ошибке
       setTimeout(() => {
         const firstErrorElement = document.querySelector('.error-message');
         if (firstErrorElement) {
@@ -362,30 +294,91 @@ const AddRestaurantPage: React.FC = () => {
     setCurrentStep(prev => Math.max(prev - 1, 1));
   };
 
+  // Функция для преобразования данных формы в объект, соответствующий модели Restaurant
+  const transformFormDataToRestaurant = (data: RestaurantFormData): Partial<Restaurant> => {
+    // Формируем строку адреса
+    const fullAddress = `${data.address.street}, ${data.address.city}, ${data.address.postalCode}, ${data.address.country}`;
+    // Преобразуем меню: для каждой категории создаём для каждого блюда объект MenuItem с указанием категории
+    const menu: MenuItem[] = [];
+    data.menuItems.forEach((category, catIndex) => {
+      category.items.forEach((item, itemIndex) => {
+        // Генерируем ID можно, например, как строку с индексами
+        menu.push({
+          id: `${catIndex}-${itemIndex}`,
+          name: item.name,
+          description: item.description, // теперь обязательное поле типа string
+          price: item.price,
+          category: category.category
+        });
+      });
+    });
+
+    // Составляем объект контакта
+    const contact = {
+      phone: data.phoneNumber,
+      website: data.website
+      // При необходимости можно расширить (например, добавить email или socialLinks)
+    };
+
+    // Собираем итоговый объект для отправки
+    return {
+      title: data.name, // в модели название ресторана хранится как title
+      description: data.description,
+      location: fullAddress,
+      // Если выбрано местоположение, используем его для coordinates
+      coordinates: data.position ? { lat: data.position.lat, lng: data.position.lng } : undefined,
+      // Фотографии: здесь нужно будет загрузить файлы в Storage и получить URL; для демонстрации оставляем пустой массив или placeholder
+      images: [], // Например, можно потом заполнить массив URLами загруженных фото
+      contact: contact,
+      cuisineTags: data.cuisine ? [data.cuisine] : [],
+      featureTags: data.features,
+      priceRange: data.priceRange,
+      menu: menu,
+      // Дополнительно можно сохранить часы работы (если планируете использовать эту информацию)
+      // openingHours: data.openingHours, // если вы добавите это поле в модель, например, как опциональное
+      // Начальный рейтинг – 0
+      rating: 0,
+      moderationStatus: 'pending',
+      createdAt: new Date(),
+      updatedAt: new Date()
+      // Можно добавить и другие поля, например, информацию о контактном лице, если потребуется
+    };
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (validateCurrentStep()) {
       setSubmitting(true);
-      
       try {
-        // Имитация отправки данных на сервер
-        console.log('Отправка данных о ресторане:', formData);
-        
-        // Имитация задержки запроса
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
+        const photoUrls: string[] = [];
+
+        for (const file of formData.photos) {
+          const photoRef = ref(storage, `restaurants/${Date.now()}-${file.name}`);
+          const snapshot = await uploadBytes(photoRef, file);
+          const url = await getDownloadURL(snapshot.ref);
+          photoUrls.push(url);
+        }
+
+        const restaurantData = {
+          ...transformFormDataToRestaurant(formData),
+          photos: photoUrls,
+          createdAt: serverTimestamp(),
+          approved: false
+        };
+
+        await addDoc(collection(db, 'Restaurants'), restaurantData);
         setShowSuccessModal(true);
       } catch (error) {
-        console.error('Ошибка при отправке данных:', error);
+        console.error('Ошибка при сохранении ресторана:', error);
         setErrors({
-          ...errors,
           general: 'Произошла ошибка при отправке данных. Пожалуйста, попробуйте позже.'
         });
       } finally {
         setSubmitting(false);
       }
     }
+
   };
 
   const handleDone = () => {
@@ -408,14 +401,14 @@ const AddRestaurantPage: React.FC = () => {
         <div className={styles.container}>
           <h1 className={styles.pageTitle}>Добавить ресторан</h1>
           <p className={styles.pageDescription}>
-            Заполните информацию о ресторане, который вы хотите добавить в нашу базу данных. 
+            Заполните информацию о ресторане, который вы хотите добавить в нашу базу данных.
             После проверки модераторами, ресторан будет опубликован на сайте.
           </p>
-          
+
           <SubmissionSteps currentStep={currentStep} totalSteps={totalSteps} />
 
           {errors.general && (
-            <div className={styles.generalError}>
+            <div className={`${styles.generalError} error-message`}>
               {errors.general}
             </div>
           )}
@@ -426,14 +419,12 @@ const AddRestaurantPage: React.FC = () => {
               {currentStep === 1 && (
                 <div className={styles.formStep}>
                   <h2 className={styles.stepTitle}>Основная информация</h2>
-                  
                   <RestaurantForm
                     formData={formData}
                     errors={errors}
                     onInputChange={handleInputChange}
                     onCheckboxChange={handleCheckboxChange}
                   />
-                  
                   <LocationPicker
                     onLocationSelect={handleLocationSelect}
                     initialPosition={formData.position}
@@ -446,37 +437,34 @@ const AddRestaurantPage: React.FC = () => {
               {currentStep === 2 && (
                 <div className={styles.formStep}>
                   <h2 className={styles.stepTitle}>Фотографии и особенности</h2>
-                  
                   <PhotoUploader
                     photos={formData.photos}
                     onPhotoUpload={handlePhotoUpload}
                     onPhotoRemove={handlePhotoRemove}
                     error={errors['photos']}
                   />
-                  
                   <div className={styles.featuresSection}>
                     <h3 className={styles.sectionTitle}>Особенности ресторана</h3>
                     <p className={styles.sectionDescription}>
                       Выберите особенности, которые характеризуют ваш ресторан:
                     </p>
-                    
                     <div className={styles.featuresGrid}>
-                      {['Wi-Fi', 'Терраса', 'Кондиционер', 'Парковка', 'Доставка', 'Бронирование', 
+                      {['Wi-Fi', 'Терраса', 'Кондиционер', 'Парковка', 'Доставка', 'Бронирование',
                         'Живая музыка', 'Веганское меню', 'Детская площадка', 'Просмотр спортивных трансляций',
                         'Безналичный расчет', 'Вид на море', 'Подходит для больших групп', 'Романтическая атмосфера',
                         'Винная карта'].map(feature => (
-                        <div key={feature} className={styles.featureCheckbox}>
-                          <input
-                            type="checkbox"
-                            id={`feature-${feature}`}
-                            name="features"
-                            value={feature}
-                            checked={formData.features.includes(feature)}
-                            onChange={handleCheckboxChange}
-                          />
-                          <label htmlFor={`feature-${feature}`}>{feature}</label>
-                        </div>
-                      ))}
+                          <div key={feature} className={styles.featureCheckbox}>
+                            <input
+                              type="checkbox"
+                              id={`feature-${feature}`}
+                              name="features"
+                              value={feature}
+                              checked={formData.features.includes(feature)}
+                              onChange={handleCheckboxChange}
+                            />
+                            <label htmlFor={`feature-${feature}`}>{feature}</label>
+                          </div>
+                        ))}
                     </div>
                   </div>
                 </div>
@@ -486,17 +474,16 @@ const AddRestaurantPage: React.FC = () => {
               {currentStep === 3 && (
                 <div className={styles.formStep}>
                   <h2 className={styles.stepTitle}>Меню и часы работы</h2>
-                  
                   <div className={styles.menuSection}>
                     <h3 className={styles.sectionTitle}>Меню ресторана</h3>
                     <p className={styles.sectionDescription}>
                       Добавьте категории и блюда вашего меню:
                     </p>
-                    
                     {errors['menuItems'] && (
-                      <div className={`${styles.errorMessage} error-message`}>{errors['menuItems']}</div>
+                      <div className={`${styles.errorMessage} error-message`}>
+                        {errors['menuItems']}
+                      </div>
                     )}
-                    
                     {formData.menuItems.map((category, categoryIndex) => (
                       <div key={categoryIndex} className={styles.menuCategory}>
                         <div className={styles.categoryHeader}>
@@ -507,7 +494,6 @@ const AddRestaurantPage: React.FC = () => {
                             onChange={(e) => handleCategoryNameChange(categoryIndex, e.target.value)}
                             className={styles.categoryInput}
                           />
-                          
                           <button
                             type="button"
                             onClick={() => handleRemoveCategory(categoryIndex)}
@@ -517,7 +503,6 @@ const AddRestaurantPage: React.FC = () => {
                             Удалить категорию
                           </button>
                         </div>
-                        
                         {category.items.map((item, itemIndex) => (
                           <div key={itemIndex} className={styles.menuItem}>
                             <div className={styles.menuItemRow}>
@@ -530,7 +515,6 @@ const AddRestaurantPage: React.FC = () => {
                                   className={styles.menuItemInput}
                                 />
                               </div>
-                              
                               <div className={styles.menuItemField}>
                                 <input
                                   type="text"
@@ -540,7 +524,6 @@ const AddRestaurantPage: React.FC = () => {
                                   className={styles.menuItemPriceInput}
                                 />
                               </div>
-                              
                               <button
                                 type="button"
                                 onClick={() => handleRemoveMenuItem(categoryIndex, itemIndex)}
@@ -550,7 +533,6 @@ const AddRestaurantPage: React.FC = () => {
                                 ✕
                               </button>
                             </div>
-                            
                             <textarea
                               placeholder="Описание блюда"
                               value={item.description}
@@ -560,7 +542,6 @@ const AddRestaurantPage: React.FC = () => {
                             />
                           </div>
                         ))}
-                        
                         <button
                           type="button"
                           onClick={() => handleAddMenuItem(categoryIndex)}
@@ -570,7 +551,6 @@ const AddRestaurantPage: React.FC = () => {
                         </button>
                       </div>
                     ))}
-                    
                     <button
                       type="button"
                       onClick={handleAddCategory}
@@ -579,15 +559,13 @@ const AddRestaurantPage: React.FC = () => {
                       + Добавить категорию меню
                     </button>
                   </div>
-                  
+
                   <div className={styles.hoursSection}>
                     <h3 className={styles.sectionTitle}>Часы работы</h3>
-                    
                     <div className={styles.openingHoursGrid}>
                       {Object.entries(formData.openingHours).map(([day, hours]) => (
                         <div key={day} className={styles.dayRow}>
                           <div className={styles.dayName}>{day}</div>
-                          
                           <div className={styles.dayHours}>
                             <div className={styles.closedCheckbox}>
                               <input
@@ -599,7 +577,6 @@ const AddRestaurantPage: React.FC = () => {
                               />
                               <label htmlFor={`closed-${day}`}>Закрыто</label>
                             </div>
-                            
                             {!hours.closed && (
                               <div className={styles.timeInputs}>
                                 <input
@@ -629,10 +606,8 @@ const AddRestaurantPage: React.FC = () => {
               {currentStep === 4 && (
                 <div className={styles.formStep}>
                   <h2 className={styles.stepTitle}>Контактная информация</h2>
-                  
                   <div className={styles.contactSection}>
                     <h3 className={styles.sectionTitle}>Контактные данные ресторана</h3>
-                    
                     <div className={styles.inputGroup}>
                       <label htmlFor="phoneNumber">Телефон ресторана</label>
                       <input
@@ -644,7 +619,6 @@ const AddRestaurantPage: React.FC = () => {
                         placeholder="+7 (___) ___-__-__"
                       />
                     </div>
-                    
                     <div className={styles.inputGroup}>
                       <label htmlFor="website">Веб-сайт ресторана (если есть)</label>
                       <input
@@ -657,13 +631,12 @@ const AddRestaurantPage: React.FC = () => {
                       />
                     </div>
                   </div>
-                  
+
                   <div className={styles.contactPersonSection}>
                     <h3 className={styles.sectionTitle}>Контактное лицо</h3>
                     <p className={styles.sectionDescription}>
                       Укажите контактную информацию для связи с вами по вопросам модерации:
                     </p>
-                    
                     <div className={styles.contactPersonForm}>
                       <div className={styles.inputGroup}>
                         <label htmlFor="contactPerson.name">Имя и фамилия *</label>
@@ -677,10 +650,11 @@ const AddRestaurantPage: React.FC = () => {
                           className={errors['contactPerson.name'] ? styles.inputError : ''}
                         />
                         {errors['contactPerson.name'] && (
-                          <div className={`${styles.errorMessage} error-message`}>{errors['contactPerson.name']}</div>
+                          <div className={`${styles.errorMessage} error-message`}>
+                            {errors['contactPerson.name']}
+                          </div>
                         )}
                       </div>
-                      
                       <div className={styles.inputGroup}>
                         <label htmlFor="contactPerson.email">Email *</label>
                         <input
@@ -693,10 +667,11 @@ const AddRestaurantPage: React.FC = () => {
                           className={errors['contactPerson.email'] ? styles.inputError : ''}
                         />
                         {errors['contactPerson.email'] && (
-                          <div className={`${styles.errorMessage} error-message`}>{errors['contactPerson.email']}</div>
+                          <div className={`${styles.errorMessage} error-message`}>
+                            {errors['contactPerson.email']}
+                          </div>
                         )}
                       </div>
-                      
                       <div className={styles.inputGroup}>
                         <label htmlFor="contactPerson.phone">Телефон *</label>
                         <input
@@ -709,10 +684,11 @@ const AddRestaurantPage: React.FC = () => {
                           className={errors['contactPerson.phone'] ? styles.inputError : ''}
                         />
                         {errors['contactPerson.phone'] && (
-                          <div className={`${styles.errorMessage} error-message`}>{errors['contactPerson.phone']}</div>
+                          <div className={`${styles.errorMessage} error-message`}>
+                            {errors['contactPerson.phone']}
+                          </div>
                         )}
                       </div>
-                      
                       <div className={styles.checkboxGroup}>
                         <input
                           type="checkbox"
@@ -727,10 +703,10 @@ const AddRestaurantPage: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className={styles.termsAgreement}>
                     <p>
-                      Отправляя форму, вы соглашаетесь с <a href="/terms" target="_blank">условиями использования</a> и подтверждаете, 
+                      Отправляя форму, вы соглашаетесь с <a href="/terms" target="_blank" rel="noopener noreferrer">условиями использования</a> и подтверждаете,
                       что предоставленная информация является достоверной.
                     </p>
                   </div>
@@ -739,29 +715,16 @@ const AddRestaurantPage: React.FC = () => {
 
               <div className={styles.navigationButtons}>
                 {currentStep > 1 && (
-                  <button
-                    type="button"
-                    className={styles.prevButton}
-                    onClick={handlePrevStep}
-                  >
+                  <button type="button" className={styles.prevButton} onClick={handlePrevStep}>
                     Назад
                   </button>
                 )}
-                
                 {currentStep < totalSteps ? (
-                  <button
-                    type="button"
-                    className={styles.nextButton}
-                    onClick={handleNextStep}
-                  >
+                  <button type="button" className={styles.nextButton} onClick={handleNextStep}>
                     Далее
                   </button>
                 ) : (
-                  <button
-                    type="submit"
-                    className={styles.submitButton}
-                    disabled={submitting}
-                  >
+                  <button type="submit" className={styles.submitButton} disabled={submitting}>
                     {submitting ? 'Отправка...' : 'Отправить на модерацию'}
                   </button>
                 )}
@@ -773,9 +736,7 @@ const AddRestaurantPage: React.FC = () => {
 
       <Footer />
 
-      {showSuccessModal && (
-        <SuccessModal onClose={handleDone} />
-      )}
+      {showSuccessModal && <SuccessModal onClose={handleDone} />}
     </div>
   );
 };

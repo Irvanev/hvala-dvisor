@@ -1,4 +1,4 @@
-
+// SearchResultsPage.tsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import NavBar from '../../components/NavBar/NavBar';
@@ -9,11 +9,16 @@ import FilterBar from '../../components/FilterBar/FilterBar';
 import styles from './SearchResultsPage.module.css';
 import { Restaurant } from '../../models/types';
 
+import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
+import { db } from '../../firebase/config';
+
+
+
 const SearchResultsPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>([]);
   const [userFavorites, setUserFavorites] = useState<string[]>([]);
@@ -21,84 +26,32 @@ const SearchResultsPage: React.FC = () => {
   const [showMap, setShowMap] = useState(true);
 
   const query = searchParams.get('query') || '';
-  const location = searchParams.get('location') || '';
+  const locationParam = searchParams.get('location') || '';
 
   useEffect(() => {
     const fetchRestaurants = async () => {
       setLoading(true);
       try {
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        const mockRestaurants: Restaurant[] = [
-          {
-            id: 'rest1',
-            title: 'Au Bourguignon Du Marais',
-            location: 'Подгорица',
-            description: 'Изысканный ресторан с французской кухней',
-            rating: 4.9,
-            images: ['https://placehold.jp/300x200.png'],
-            cuisineTags: ['Французская'],
-            featureTags: ['Терраса', 'Детское меню'],
-            priceRange: '€€€'
-          },
-          {
-            id: 'rest2',
-            title: 'La Maison',
-            location: 'Подгорица',
-            description: 'Современная французская кухня',
-            rating: 4.7,
-            images: ['https://placehold.jp/300x200.png'],
-            cuisineTags: ['Французская'],
-            featureTags: ['Панорамный вид', 'Винная карта'],
-            priceRange: '€€'
-          },
-          {
-            id: 'rest3',
-            title: 'Trattoria Italiana',
-            location: 'Будва',
-            description: 'Итальянская кухня с домашними пастами',
-            rating: 4.8,
-            images: ['https://placehold.jp/300x200.png'],
-            cuisineTags: ['Итальянская'],
-            featureTags: ['Домашняя паста'],
-            priceRange: '€€'
-          },
-          {
-            id: 'rest4',
-            title: 'El Tapas',
-            location: 'Бечичи',
-            description: 'Испанская кухня с тапас и паэльей',
-            rating: 4.5,
-            images: ['https://placehold.jp/300x200.png'],
-            cuisineTags: ['Испанская'],
-            featureTags: ['Винная карта'],
-            priceRange: '€€€'
-          },
-          {
-            id: 'rest5',
-            title: 'Konoba Stari Mlini',
-            location: 'Котор',
-            description: 'Традиционная черногорская кухня',
-            rating: 4.9,
-            images: ['https://placehold.jp/300x200.png'],
-            cuisineTags: ['Черногорская'],
-            featureTags: ['Вид на море'],
-            priceRange: '€€'
-          },
-          {
-            id: 'rest6',
-            title: 'Balkan Grill',
-            location: 'Подгорица',
-            description: 'Лучшие блюда балканской кухни',
-            rating: 4.6,
-            images: ['https://placehold.jp/300x200.png'],
-            cuisineTags: ['Балканская'],
-            featureTags: ['Терраса'],
-            priceRange: '€'
-          }
-        ];
-
-        let filtered = [...mockRestaurants];
+        // Пример запроса: выбираем рестораны со статусом "approved"
+        const restaurantsQuery = query(
+          collection(db, 'Restaurants'),
+          where('moderationStatus', '==', 'approved'),
+          // Если нужно сортировать, например, по рейтингу или дате создания:
+          orderBy('rating', 'desc')
+        );
+        const querySnapshot = await getDocs(restaurantsQuery);
+  
+        const fetchedRestaurants: Restaurant[] = querySnapshot.docs.map(doc => {
+          // Приводим данные к типу Restaurant. Возможно, понадобится дополнительная обработка,
+          // если поля, например, timestamps, приходят в виде объектов.
+          return {
+            id: doc.id,
+            ...doc.data()
+          } as Restaurant;
+        });
+  
+        // Фильтруем данные по поисковому запросу и локации, если они заданы в параметрах URL
+        let filtered = [...fetchedRestaurants];
         if (query) {
           filtered = filtered.filter(restaurant =>
             restaurant.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -110,9 +63,10 @@ const SearchResultsPage: React.FC = () => {
             restaurant.location.toLowerCase().includes(location.toLowerCase())
           );
         }
-
-        setRestaurants(mockRestaurants);
+  
+        setRestaurants(fetchedRestaurants);
         setFilteredRestaurants(filtered);
+        // Можно по умолчанию загрузить избранные рестораны, если такая логика нужна
         setUserFavorites(['rest1', 'rest3']);
         setLoading(false);
       } catch (err) {
@@ -120,9 +74,22 @@ const SearchResultsPage: React.FC = () => {
         setLoading(false);
       }
     };
-
+  
     fetchRestaurants();
   }, [query, location]);
+
+  // Передаем также выбранный ресторан объект через state
+  const handleRestaurantClick = useCallback(
+    (id: string) => {
+      const selected = filteredRestaurants.find(r => r.id === id);
+      if (selected) {
+        navigate(`/restaurant/${id}`, { state: selected });
+      } else {
+        navigate(`/restaurant/${id}`);
+      }
+    },
+    [filteredRestaurants, navigate]
+  );
 
   const handleSaveToggle = useCallback((id: string, isSaved: boolean, event?: React.MouseEvent) => {
     if (event) {
@@ -134,41 +101,48 @@ const SearchResultsPage: React.FC = () => {
     );
   }, []);
 
-  const handleRestaurantClick = (id: string) => {
-    navigate(`/restaurant/${id}`);
-  };
-
   const handleMapToggle = () => {
     setShowMap(prev => !prev);
+  };
+
+  const handleNavBarSearch = useCallback((searchQuery: string) => {
+    navigate(`/s?query=${encodeURIComponent(searchQuery)}`);
+  }, [navigate]);
+
+  const handleLanguageChange = (language: string) => {
+    console.log(`Язык изменен на: ${language}`);
+  };
+
+  const handleWelcomeClick = () => {
+    navigate('/login');
   };
 
   if (loading) {
     return <div className={styles.loadingContainer}>Загрузка...</div>;
   }
-
   if (error) {
-    return <div className={styles.errorContainer}>{error}</div>;
+    return (
+      <div className={styles.errorContainer}>
+        <p className={styles.errorMessage}>{error}</p>
+        <button onClick={() => window.location.reload()}>Попробовать снова</button>
+      </div>
+    );
   }
 
   return (
     <div className={styles.searchResultsPage}>
       <NavBar
-        onSearch={(searchQuery: string) => navigate(`/s?query=${encodeURIComponent(searchQuery)}`)}
-        onLanguageChange={(language: string) => console.log(`Язык изменен на: ${language}`)}
+        onSearch={handleNavBarSearch}
+        onLanguageChange={handleLanguageChange}
         currentLanguage="ru"
         logoText="HvalaDviser"
-        onWelcomeClick={() => navigate('/login')}
+        onWelcomeClick={handleWelcomeClick}
         isStatic={true}
       />
-      
       <div className={styles.pageContainer}>
-        <FilterBar 
-          showMap={showMap}
-          onMapToggle={handleMapToggle}
-        />
-        
+        <FilterBar showMap={showMap} onMapToggle={handleMapToggle} />
         <div className={styles.contentContainer}>
-          <div className={`${showMap ? '' : styles.fullWidth}`}>
+          <div className={showMap ? '' : styles.fullWidth}>
             <RestaurantList
               restaurants={filteredRestaurants}
               userFavorites={userFavorites}
@@ -180,7 +154,6 @@ const SearchResultsPage: React.FC = () => {
           {showMap && <MapPlaceholder />}
         </div>
       </div>
-      
       <Footer />
     </div>
   );
