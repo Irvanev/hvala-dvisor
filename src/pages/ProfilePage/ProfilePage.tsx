@@ -8,6 +8,8 @@ import UserInfoCard from '../../components/UserInfoCard/UserInfoCard';
 import TabsNavigation from '../../components/TabsNavigation/TabsNavigation';
 import styles from './ProfilePage.module.css';
 import { db } from '../../firebase/config';
+
+
 import {
   collection,
   query,

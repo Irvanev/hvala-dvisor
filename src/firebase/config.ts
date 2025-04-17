@@ -1,7 +1,7 @@
 // src/firebase/config.ts
 import { initializeApp } from 'firebase/app';
+import { getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
 
 
@@ -17,8 +17,22 @@ const firebaseConfig = {
   measurementId: "G-6JXE878T5G"
 };
 
+// Инициализация Firebase
 const app = initializeApp(firebaseConfig);
 
-export const db = getFirestore(app);
-export const auth = getAuth(app);
-export const storage = getStorage(app);
+// Инициализация сервисов Firebase
+const auth = getAuth(app);
+const firestore = getFirestore(app);
+const storage = getStorage(app);
+
+// Установка персистентности для аутентификации
+// Это позволит пользователям оставаться в системе даже после закрытия браузера
+setPersistence(auth, browserLocalPersistence)
+  .catch((error) => {
+    console.error('Ошибка при установке персистентности авторизации:', error);
+  });
+
+// Алиас для firestore для совместимости с существующим кодом
+const db = firestore;
+
+export { auth, firestore, db, storage };

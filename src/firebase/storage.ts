@@ -1,8 +1,6 @@
+// src/firebase/storageService.ts
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import app from './config';
-
-// Инициализация Firebase Storage
-const storage = getStorage(app);
+import { auth, storage } from './config'; // Импортируем напрямую из config
 
 /**
  * Загружает файл изображения в Firebase Storage
@@ -34,4 +32,5 @@ export const uploadImage = async (file: File, path: string): Promise<string> => 
   }
 };
 
-export default storage;
+// Экспортируем storage напрямую, если это необходимо
+export { storage };

@@ -9,10 +9,8 @@ import FilterBar from '../../components/FilterBar/FilterBar';
 import styles from './SearchResultsPage.module.css';
 import { Restaurant } from '../../models/types';
 
-import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
-import { db } from '../../firebase/config';
-
-
+import { collection, getDocs, query as firestoreQuery, where, orderBy } from 'firebase/firestore';
+import { firestore } from '../../firebase/config';
 
 const SearchResultsPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -25,58 +23,109 @@ const SearchResultsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showMap, setShowMap] = useState(true);
 
-  const query = searchParams.get('query') || '';
+  const searchQuery = searchParams.get('query') || '';
   const locationParam = searchParams.get('location') || '';
 
   useEffect(() => {
-    const fetchRestaurants = async () => {
-      setLoading(true);
-      try {
-        // Пример запроса: выбираем рестораны со статусом "approved"
-        const restaurantsQuery = query(
-          collection(db, 'Restaurants'),
-          where('moderationStatus', '==', 'approved'),
-          // Если нужно сортировать, например, по рейтингу или дате создания:
-          orderBy('rating', 'desc')
-        );
-        const querySnapshot = await getDocs(restaurantsQuery);
-  
-        const fetchedRestaurants: Restaurant[] = querySnapshot.docs.map(doc => {
-          // Приводим данные к типу Restaurant. Возможно, понадобится дополнительная обработка,
-          // если поля, например, timestamps, приходят в виде объектов.
+    // Модифицированный fetchRestaurants:
+const fetchRestaurants = async () => {
+  setLoading(true);
+  try {
+    // Создаем запрос с учетом возможного отсутствия индекса
+    let fetchedRestaurants: Restaurant[] = [];
+    
+    try {
+      // Пробуем выполнить запрос с фильтрацией и сортировкой
+      const restaurantsQuery = firestoreQuery(
+        collection(firestore, 'Restaurants'),
+        where('moderationStatus', '==', 'approved'),
+        orderBy('rating', 'desc')
+      );
+      const querySnapshot = await getDocs(restaurantsQuery);
+      
+      fetchedRestaurants = querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          title: data.title || '',
+          description: data.description || '',
+          location: data.location || '',
+          rating: data.rating || 0,
+          images: data.images || [],
+          cuisineTags: data.cuisineTags || [],
+          featureTags: data.featureTags || [],
+          priceRange: data.priceRange || '',
+          ...data
+        } as Restaurant;
+      });
+    } catch (indexError) {
+      console.error("Ошибка индекса:", indexError);
+      
+      // Если получили ошибку индекса, используем более простой запрос без сортировки
+      const simpleQuery = firestoreQuery(
+        collection(firestore, 'Restaurants')
+      );
+      const simpleSnapshot = await getDocs(simpleQuery);
+      
+      fetchedRestaurants = simpleSnapshot.docs
+        .map(doc => {
+          const data = doc.data();
           return {
             id: doc.id,
-            ...doc.data()
+            title: data.title || '',
+            description: data.description || '',
+            location: data.location || '',
+            rating: data.rating || 0,
+            images: data.images || [],
+            cuisineTags: data.cuisineTags || [],
+            featureTags: data.featureTags || [],
+            priceRange: data.priceRange || '',
+            ...data
           } as Restaurant;
-        });
-  
-        // Фильтруем данные по поисковому запросу и локации, если они заданы в параметрах URL
-        let filtered = [...fetchedRestaurants];
-        if (query) {
-          filtered = filtered.filter(restaurant =>
-            restaurant.title.toLowerCase().includes(query.toLowerCase()) ||
-            restaurant.description.toLowerCase().includes(query.toLowerCase())
+        })
+        .filter(restaurant => restaurant.moderationStatus === 'approved');
+    }
+    
+    // Если даже простой запрос не сработал, используем мок-данные
+
+    
+    // Фильтрация на стороне клиента
+    let filtered = [...fetchedRestaurants];
+    
+    if (searchQuery) {
+      filtered = filtered.filter(restaurant =>
+        restaurant.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (restaurant.description && restaurant.description.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+    }
+    
+    if (locationParam) {
+      filtered = filtered.filter(restaurant => {
+        if (typeof restaurant.location === 'string') {
+          return restaurant.location.toLowerCase().includes(locationParam.toLowerCase());
+        } else if (typeof restaurant.location === 'object' && restaurant.location) {
+          const locationObj = restaurant.location as any;
+          return Object.values(locationObj).some(value => 
+            typeof value === 'string' && value.toLowerCase().includes(locationParam.toLowerCase())
           );
         }
-        if (location) {
-          filtered = filtered.filter(restaurant =>
-            restaurant.location.toLowerCase().includes(location.toLowerCase())
-          );
-        }
-  
-        setRestaurants(fetchedRestaurants);
-        setFilteredRestaurants(filtered);
-        // Можно по умолчанию загрузить избранные рестораны, если такая логика нужна
-        setUserFavorites(['rest1', 'rest3']);
-        setLoading(false);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Ошибка загрузки данных');
-        setLoading(false);
-      }
-    };
+        return false;
+      });
+    }
+
+    setRestaurants(fetchedRestaurants);
+    setFilteredRestaurants(filtered);
+    setUserFavorites(['rest1', 'rest3']);
+    setLoading(false);
+  } catch (err) {
+    setError("Ошибка загрузки данных. Требуется создать индекс в Firebase. Перейдите в консоль Firebase и создайте индекс для коллекции 'Restaurants' с полями 'moderationStatus' и 'rating'.");
+    console.error('Ошибка при загрузке ресторанов:', err);
+    setLoading(false);
+  }
+};
   
     fetchRestaurants();
-  }, [query, location]);
+  }, [searchQuery, locationParam]);
 
   // Передаем также выбранный ресторан объект через state
   const handleRestaurantClick = useCallback(

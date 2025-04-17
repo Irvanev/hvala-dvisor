@@ -53,7 +53,8 @@ const LoginPage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const success = await login(formData.email, formData.password, formData.rememberMe);
+      // Обратите внимание: здесь передаем только email и password, без rememberMe
+      const success = await login(formData.email, formData.password);
       if (success) {
         navigate('/profile');
       } else {

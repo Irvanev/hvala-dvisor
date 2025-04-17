@@ -1,5 +1,4 @@
 import React from 'react';
-import ContactInfo from '../ContactInfo/ContactInfo';
 import styles from './RestaurantOverview.module.css';
 
 interface Review {
@@ -14,12 +13,15 @@ interface Review {
 interface RestaurantOverviewProps {
   description?: string;
   features?: string[];
-  address?: string;
+  address?: string | {
+    street: string;
+    city: string;
+    postalCode: string;
+    country: string;
+  };
   phoneNumber?: string;
   website?: string;
-  openingHours?: {
-    [key: string]: string;
-  };
+  openingHours?: { [key: string]: string };
   reviews?: Review[];
   onShowAllReviews: () => void;
 }
@@ -34,6 +36,17 @@ const RestaurantOverview: React.FC<RestaurantOverviewProps> = ({
   reviews = [],
   onShowAllReviews
 }) => {
+  // Функция для форматирования адреса независимо от его типа
+  const formattedAddress = () => {
+    if (typeof address === 'string') {
+      return address;
+    } else if (address) {
+      // Форматируем объект в строку адреса
+      return `${address.street}, ${address.city}, ${address.postalCode}, ${address.country}`;
+    }
+    return 'Адрес не указан';
+  };
+
   return (
     <div className={styles.overviewSection}>
       <div className={styles.overviewColumns}>
@@ -58,13 +71,35 @@ const RestaurantOverview: React.FC<RestaurantOverviewProps> = ({
             </section>
           )}
           
-          <ContactInfo
-            address={address}
-            phoneNumber={phoneNumber}
-            website={website}
-            openingHours={openingHours}
-            showHours={false} // Не показываем часы в контактной секции
-          />
+          <section className={styles.infoSection}>
+            <h2 className={styles.sectionTitle}>Информация</h2>
+            <div className={styles.infoList}>
+              {address && (
+                <div className={styles.infoItem}>
+                  <h3 className={styles.infoTitle}>Адрес</h3>
+                  <div className={styles.infoValue}>{formattedAddress()}</div>
+                </div>
+              )}
+              
+              {phoneNumber && (
+                <div className={styles.infoItem}>
+                  <h3 className={styles.infoTitle}>Телефон</h3>
+                  <div className={styles.infoValue}>{phoneNumber}</div>
+                </div>
+              )}
+              
+              {website && (
+                <div className={styles.infoItem}>
+                  <h3 className={styles.infoTitle}>Сайт</h3>
+                  <div className={styles.infoValue}>
+                    <a href={website} target="_blank" rel="noopener noreferrer" className={styles.infoLink}>
+                      {website}
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
           
           <section className={styles.mapSection}>
             <h2 className={styles.sectionTitle}>Местоположение</h2>
@@ -85,7 +120,7 @@ const RestaurantOverview: React.FC<RestaurantOverviewProps> = ({
               <div className={styles.sidebarHours}>
                 {Object.entries(openingHours).map(([day, hours], index) => (
                   <div key={index} className={styles.sidebarHourRow}>
-                    <div className={styles.sidebarDay}>{day.substring(0, 3)}</div>
+                    <div className={styles.sidebarDay}>{day}</div>
                     <div className={styles.sidebarTime}>{hours}</div>
                   </div>
                 ))}

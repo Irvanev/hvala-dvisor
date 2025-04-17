@@ -27,7 +27,13 @@ interface CardProps {
   images: string[];
   image?: string;
   title: string;
-  location?: string;
+  location?: string | {
+    city?: string;
+    country?: string;
+    address?: string;
+    street?: string;
+    postalCode?: string;
+  };
   rating?: number;
   cuisineTags?: string[];
   featureTags?: string[];
@@ -56,6 +62,35 @@ const Card: React.FC<CardProps> = ({
   const allImages = images.length > 0 ? images : image ? [image] : [];
   const [isSaved, setIsSaved] = useState(savedStatus);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Форматируем местоположение для отображения
+  const formattedLocation = () => {
+    if (!location) return '';
+    
+    if (typeof location === 'string') {
+      return location;
+    }
+    
+    // Если location - объект, форматируем его в строку
+    if (typeof location === 'object') {
+      const locationObj = location as any;
+      
+      if (locationObj.city && locationObj.country) {
+        return `${locationObj.city}, ${locationObj.country}`;
+      } else if (locationObj.address) {
+        return locationObj.address;
+      } else if (locationObj.street && locationObj.city) {
+        return `${locationObj.street}, ${locationObj.city}${locationObj.postalCode ? `, ${locationObj.postalCode}` : ''}`;
+      } else {
+        // Собираем все непустые значения
+        return Object.values(locationObj)
+          .filter(val => val && typeof val === 'string')
+          .join(', ');
+      }
+    }
+    
+    return '';
+  };
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -187,7 +222,7 @@ const Card: React.FC<CardProps> = ({
             </div>
           )}
         </div>
-        {location && <p className={styles.cardLocation}>{location}</p>}
+        {location && <p className={styles.cardLocation}>{formattedLocation()}</p>}
         <div className={styles.iconTagsRow}>{renderIconTags([...cuisineTags, ...featureTags])}</div>
       </div>
     </div>

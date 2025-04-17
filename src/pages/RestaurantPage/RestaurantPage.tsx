@@ -269,14 +269,15 @@ const RestaurantPage: React.FC = () => {
           onTabChange={handleTabChange}
         />
 
+
         <div className={styles.mainContent}>
           {activeTab === 'overview' && (
             <RestaurantOverview
               description={restaurant.description}
               features={restaurant.features}
               address={restaurant.location}
-              phoneNumber={restaurant.contact.phone || restaurant.phoneNumber}
-              website={restaurant.contact.website || restaurant.website}
+              phoneNumber={(restaurant.contact?.phone || restaurant.phoneNumber) ?? ''}
+              website={(restaurant.contact?.website || restaurant.website) ?? ''}
               openingHours={restaurant.openingHours}
               reviews={restaurant.reviews}
               onShowAllReviews={() => setActiveTab('reviews')}
@@ -284,7 +285,15 @@ const RestaurantPage: React.FC = () => {
           )}
 
           {activeTab === 'menu' && restaurant.groupedMenu && (
-            <RestaurantMenu menu={restaurant.groupedMenu} />
+            <RestaurantMenu
+              menu={restaurant.groupedMenu.map(category => ({
+                category: category.category,
+                items: category.items.map(item => ({
+                  ...item,
+                  description: item.description || '' // Гарантируем, что description всегда строка
+                }))
+              }))}
+            />
           )}
 
           {activeTab === 'reviews' && (

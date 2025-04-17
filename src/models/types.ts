@@ -25,53 +25,45 @@ export interface User {
   }>;
 }
 
-// Модель ресторана с расширенной информацией и гибкими полями
+// models/types.ts
 export interface Restaurant {
   id: string;
   title: string;
   description: string;
-  location: {
+  // Поддерживаем оба формата - и строку, и объект
+  location: string | {
     street: string;
     city: string;
     postalCode: string;
     country: string;
   };
-  coordinates?: {
-    lat: number;
-    lng: number;
-  };
+  coordinates?: { lat: number; lng: number };
   images: string[];
-  contact: {
+  contact?: {
     phone?: string;
-    email?: string;
     website?: string;
-    socialLinks?: { [platform: string]: string };
+    socialLinks?: {
+      facebook?: string;
+      instagram?: string;
+      twitter?: string;
+    };
   };
   cuisineTags?: string[];
   featureTags?: string[];
   priceRange?: string;
-  menu?: MenuItem[];
   rating?: number;
-  moderationStatus: 'pending' | 'approved' | 'rejected';
-  createdBy?: string;
-  createdAt: Date;
-  updatedAt: Date;
-  changeHistory?: Array<{
-    modifiedAt: Date;
-    modifiedBy: string;
-    changes: string;
-  }>;
+  moderationStatus?: 'pending' | 'approved' | 'rejected';
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-
-// Модель позиции меню с уникальным идентификатором для расширения функционала
 export interface MenuItem {
   id: string;
   name: string;
-  description: string; // Теперь обязательно
-  price: string;       // Используем string, чтобы можно было указывать "12€" и т.п.
-  isPopular?: boolean; // Опциональное поле
+  description?: string;
+  price: string;
   image?: string;
+  isPopular?: boolean;
   category?: string;
 }
 
@@ -80,22 +72,14 @@ export interface MenuCategory {
   items: MenuItem[];
 }
 
-// Модель отзыва с флагом модерации
 export interface Review {
   id: string;
-  userId: string;
-  restaurantId: string;
-  content: string;
-  rating: number;                  // Например, значение от 1 до 5
-  createdAt: Date;
-  updatedAt?: Date;
-  moderationStatus: 'pending' | 'approved' | 'rejected';
-  // Можно добавлять дополнительные поля, например, для редактирования отзыва
-  changeHistory?: Array<{
-    modifiedAt: Date;
-    modifiedBy: string;
-    changes: string;
-  }>;
+  author: string;
+  authorAvatar?: string;
+  rating: number;
+  comment: string;
+  date: string;
+  likes?: number;
 }
 
 // Модель лайка, реализуемая как отдельная сущность для гибкости
