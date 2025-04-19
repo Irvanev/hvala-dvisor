@@ -283,3 +283,84 @@
     order: 1;
   }
 }
+
+/* Стили для кнопки Google в странице регистрации */
+/* Переработанные стили кнопки Google для лучшей мобильной адаптации */
+.googleButton {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Выравнивание по левому краю */
+  width: 100%;
+  padding: 10px 15px; /* Уменьшенные отступы для лучшего отображения на мобильных */
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #202124;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  margin-bottom: 15px;
+  white-space: nowrap;
+  min-height: 46px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.googleButton:hover {
+  background-color: #f8f9fa;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.googleButton:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.googleIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px; /* Чуть меньше отступ для мобильных */
+}
+
+/* Разделитель сделан проще для лучшей совместимости */
+.divider {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 12px 0;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.12);
+}
+
+.divider span {
+  padding: 0 8px;
+}
+
+/* Мобильная адаптация */
+@media (max-width: 480px) {
+  .googleButton {
+    padding: 8px 12px;
+    font-size: 14px;
+    min-height: 42px;
+  }
+  
+  .googleIcon {
+    margin-right: 6px;
+  }
+  
+  .googleIcon svg {
+    width: 18px;
+    height: 18px;
+  }
+}
