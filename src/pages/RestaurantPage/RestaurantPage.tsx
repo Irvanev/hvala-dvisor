@@ -9,9 +9,35 @@ import RestaurantMenu from '../../components/RestaurantMenu/RestaurantMenu';
 import RestaurantReviews from '../../components/RestaurantReviews/RestaurantReviews';
 import RestaurantPhotos from '../../components/RestaurantPhotos/RestaurantPhotos';
 import styles from './RestaurantPage.module.css';
-import { Restaurant, MenuItem, Review, MenuCategory } from '../../models/types';
+import { Restaurant } from '../../models/types';
+import { doc, getDoc } from 'firebase/firestore';
+import { firestore } from '../../firebase/config';
+import { adaptRestaurantFromFirestore, adaptRestaurantForDetailsPage } from '../../utils/adapters/restaurantAdapter';
 
-interface RestaurantDetails extends Restaurant {
+// Интерфейс для страницы ресторана с дополнительными полями
+interface RestaurantDetails {
+  id: string;
+  title: string;
+  description: string;
+  location: string;
+  coordinates?: { lat: number; lng: number };
+  images: string[];
+  contact?: {
+    phone?: string;
+    website?: string;
+    socialLinks?: {
+      facebook?: string;
+      instagram?: string;
+      twitter?: string;
+    };
+  };
+  cuisineTags?: string[];
+  featureTags?: string[];
+  priceRange?: string;
+  rating: number;
+  moderationStatus?: 'pending' | 'approved' | 'rejected';
+  createdAt?: Date;
+  updatedAt?: Date;
   openingHours?: { [key: string]: string };
   reviews?: Array<{
     id: string;
@@ -23,7 +49,16 @@ interface RestaurantDetails extends Restaurant {
     likes?: number;
   }>;
   photos?: string[];
-  groupedMenu?: MenuCategory[];
+  groupedMenu?: Array<{
+    category: string;
+    items: Array<{
+      id: string;
+      name: string;
+      description?: string;
+      price: string;
+      isPopular?: boolean;
+    }>;
+  }>;
   cuisine?: string;
   phoneNumber?: string;
   website?: string;
@@ -116,7 +151,6 @@ const RestaurantPage: React.FC = () => {
         features: ["Уютная атмосфера", "Обслуживание на высшем уровне"],
         cuisine: "Французская"
       },
-      // ... Добавь остальные mock-рестораны, если необходимо
     ];
 
     return mockRestaurants.find(r => r.id === restaurantId) || null;
@@ -128,32 +162,47 @@ const RestaurantPage: React.FC = () => {
       try {
         // Если объект ресторана передан через state, используем его
         const stateRestaurant = location.state as RestaurantDetails | undefined;
+        
         if (stateRestaurant && stateRestaurant.id === id) {
           setRestaurant(stateRestaurant);
         } else {
-          // Иначе используем fallback (или здесь можно добавить запрос к Firestore)
-          const data = loadMockRestaurant(id || '');
-          if (data) {
-            setRestaurant(data);
+          // Пытаемся загрузить данные из Firestore
+          if (id) {
+            const docRef = doc(firestore, 'restaurants', id);
+            const docSnap = await getDoc(docRef);
+            
+            if (docSnap.exists()) {
+              // Преобразуем данные из Firestore в формат для страницы
+              const firestoreData = docSnap.data();
+              const restaurantData = adaptRestaurantFromFirestore(id, firestoreData);
+              const displayRestaurant = adaptRestaurantForDetailsPage(restaurantData);
+              
+              setRestaurant(displayRestaurant);
+            } else {
+              // Используем fallback данные
+              const mockData = loadMockRestaurant(id);
+              if (mockData) {
+                setRestaurant(mockData);
+              } else {
+                setError('Ресторан не найден');
+              }
+            }
           } else {
-            setError('Ресторан не найден');
+            setError('ID ресторана не указан');
           }
         }
-        // Можем имитировать задержку
-        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        // Имитация задержки для лучшего UX
+        await new Promise(resolve => setTimeout(resolve, 500));
         setLoading(false);
       } catch (e) {
+        console.error('Ошибка при загрузке данных:', e);
         setError(e instanceof Error ? e.message : 'Произошла ошибка при загрузке данных');
         setLoading(false);
       }
     };
 
-    if (id) {
-      fetchRestaurantDetails();
-    } else {
-      setError('ID ресторана не указан');
-      setLoading(false);
-    }
+    fetchRestaurantDetails();
   }, [id, location.state]);
 
   const handleNavBarSearch = (query: string) => {
@@ -165,7 +214,7 @@ const RestaurantPage: React.FC = () => {
   };
 
   const handleWelcomeClick = () => {
-    console.log('Переход на страницу авторизации');
+    navigate('/login');
   };
 
   const handleFavoriteToggle = () => {
@@ -298,9 +347,10 @@ const RestaurantPage: React.FC = () => {
 
           {activeTab === 'reviews' && (
             <RestaurantReviews
-              rating={restaurant.rating ?? 0}
+              restaurantId={id || ''}
               reviews={restaurant.reviews || []}
-              onWriteReview={() => console.log('Write review')}
+              onWriteReviewClick={() => console.log('Write review')}
+              onSubmitReview={async () => false}
             />
           )}
 

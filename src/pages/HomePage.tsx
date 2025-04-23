@@ -9,8 +9,11 @@ import styles from './HomePage.module.css';
 import backgroundImage from '../assets/background.webp';
 import Footer from '../components/Footer/Footer';
 import RestaurantGrid from '../components/RestaurantGrid/RestaurantGrid';
-// Импортируем типы из единого файла моделей
-import { Restaurant, Country, FeaturedCard } from '../models/types';
+// Импортируем только тип Restaurant
+import { Restaurant } from '../models/types';
+// Импортируем необходимые функции Firebase
+import { collection, getDocs, query, orderBy, limit, Timestamp, GeoPoint } from 'firebase/firestore';
+import { firestore } from '../firebase/config'; // Импортируем конфигурацию Firebase
 
 const CONSTANTS = {
   APP_NAME: 'HvalaDviser',
@@ -20,12 +23,62 @@ const CONSTANTS = {
   SEARCH_PLACEHOLDER: 'Поиск',
 } as const;
 
+// Определяем отсутствующие типы локально
+interface Country {
+  id: string;
+  title: string;
+  image: string;
+}
+
+interface FeaturedCard {
+  id: string;
+  title: string;
+  subtitle: string;
+  image: string;
+}
+
+// Адаптер для преобразования данных из Firestore в формат для RestaurantGrid
+function adaptRestaurantForGrid(firestoreData: any, docId: string): Restaurant {
+  return {
+    id: docId,
+    ownerId: firestoreData.ownerId || '',
+    title: firestoreData.title || '',
+    description: firestoreData.description || '',
+    address: firestoreData.address || {
+      street: '',
+      city: '',
+      country: ''
+    },
+    location: firestoreData.location || new GeoPoint(0, 0),
+    mainImageUrl: firestoreData.mainImageUrl || 'https://placehold.jp/300x200.png',
+    galleryUrls: firestoreData.galleryUrls || [],
+    contact: firestoreData.contact || {
+      phone: '',
+      website: '',
+      social: {}
+    },
+    cuisineTags: firestoreData.cuisineTags || [],
+    featureTags: firestoreData.featureTags || [],
+    priceRange: firestoreData.priceRange || '$',
+    rating: firestoreData.rating || 0,
+    reviewsCount: firestoreData.reviewsCount || 0,
+    likesCount: firestoreData.likesCount || 0,
+    moderation: firestoreData.moderation || {
+      status: 'pending'
+    },
+    createdAt: firestoreData.createdAt || Timestamp.now(),
+    updatedAt: firestoreData.updatedAt || Timestamp.now()
+  };
+}
+
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(true);
   const [userFavorites, setUserFavorites] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [showFloatingButtonText, setShowFloatingButtonText] = useState<boolean>(true);
+  // Состояние для хранения ресторанов из Firebase
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
 
   // Данные для секций
   const featuredCards: FeaturedCard[] = [
@@ -43,120 +96,55 @@ const HomePage: React.FC = () => {
     },
   ];
 
-  // Массив ресторанов с обновлённой структурой (используем поле images вместо устаревшего image, но для обратной совместимости оставляем его тоже)
-  const restaurants: Restaurant[] = [
-    {
-      id: 'rest1',
-      title: 'Au Bourguignon Du Marais',
-      location: 'Paris',
-      description: 'Изысканный ресторан с французской кухней',
-      rating: 4.9,
-      images: [
-        'https://placehold.jp/300x200.png',
-        'https://placehold.jp/400x200.png',
-        'https://placehold.jp/350x200.png'
-      ],
-      image: 'https://placehold.jp/300x200.png',
-      cuisineTags: ['Французская'],
-      featureTags: ['Терраса', 'Детское меню'],
-      priceRange: '€€€',
-      moderationStatus: 'approved',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      contact: {
-        phone: '+38212345678',
-        website: 'https://aubourguignon.example.com'
-      }
-    },
-    {
-      id: 'rest2',
-      title: 'La Maison',
-      location: 'Paris',
-      description: 'Современная французская кухня с акцентом на местные продукты',
-      rating: 4.9,
-      images: [
-        'https://placehold.jp/300x200.png',
-        'https://placehold.jp/300x210.png'
-      ],
-      image: 'https://placehold.jp/300x200.png',
-      cuisineTags: ['Французская'],
-      featureTags: ['Панорамный вид', 'Винная карта', 'Веганское меню', 'Терраса'],
-      priceRange: '€€',
-      moderationStatus: 'approved',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      contact: {
-        phone: '+38298765432',
-        website: 'https://lamaison.example.com'
-      }
-    },
-    {
-      id: 'rest3',
-      title: 'Trattoria Italiana',
-      location: 'Rome',
-      description: 'Итальянская кухня с домашними пастами и пиццей',
-      rating: 4.8,
-      images: [
-        'https://placehold.jp/300x200.png',
-        'https://placehold.jp/320x200.png',
-        'https://placehold.jp/310x200.png',
-        'https://placehold.jp/330x200.png'
-      ],
-      image: 'https://placehold.jp/300x200.png',
-      cuisineTags: ['Итальянская'],
-      featureTags: ['Домашняя паста', 'Дровяная печь'],
-      priceRange: '€€',
-      moderationStatus: 'approved',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      contact: {
-        phone: '+38211223344',
-        website: 'https://trattoria.example.com'
-      }
-    },
-    {
-      id: 'rest4',
-      title: 'El Tapas',
-      location: 'Barcelona',
-      description: 'Испанская кухня с акцентом на тапас и паэлью',
-      rating: 4.8,
-      images: [
-        'https://placehold.jp/300x200.png',
-        'https://placehold.jp/305x200.png'
-      ],
-      image: 'https://placehold.jp/300x200.png',
-      cuisineTags: ['Испанская'],
-      featureTags: ['Винная карта', 'Панорамный вид'],
-      priceRange: '€€€',
-      moderationStatus: 'approved',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      contact: {
-        phone: '+38255667788',
-        website: 'https://eltapas.example.com'
-      }
-    },
-  ];
-
   const countries: Country[] = [
     { id: 'mne', title: 'Черногория', image: 'https://placehold.jp/400x300.png' },
     { id: 'hrv', title: 'Хорватия', image: 'https://placehold.jp/400x300.png' },
     { id: 'alb', title: 'Албания', image: 'https://placehold.jp/400x300.png' },
   ];
 
-  // Загрузка данных: здесь используем mock-данные
+  // Загрузка данных из Firebase
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Имитация избранных ресторанов
-        const demoFavorites = ['rest1', 'rest3'];
+        // Получаем рестораны из Firestore
+        const restaurantsQuery = query(
+          collection(firestore, 'restaurants'),
+          orderBy('createdAt', 'desc'), // Сортируем по дате создания (новые первыми)
+          limit(8) // Ограничиваем выборку до 8 ресторанов
+        );
+        
+        const restaurantsSnapshot = await getDocs(restaurantsQuery);
+        const restaurantsData: Restaurant[] = [];
+        
+        restaurantsSnapshot.forEach((doc) => {
+          const data = doc.data();
+          // Используем функцию-адаптер для преобразования данных
+          const restaurant = adaptRestaurantForGrid(data, doc.id);
+          
+          // Проверка на статус модерации - показываем только одобренные рестораны
+          if (data.moderation && data.moderation.status === 'approved') {
+            restaurantsData.push(restaurant);
+          } else if (!data.moderation) {
+            // Для обратной совместимости: если поле модерации отсутствует, показываем ресторан
+            restaurantsData.push(restaurant);
+          }
+        });
+        
+        setRestaurants(restaurantsData);
+        
+        // Загружаем избранные рестораны пользователя
+        // Здесь можно добавить логику получения избранных ресторанов, если пользователь авторизован
+        const demoFavorites: string[] = [];
         setUserFavorites(demoFavorites);
+        
         setLoading(false);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Произошла ошибка');
+        console.error('Ошибка при загрузке данных:', err);
+        setError(err instanceof Error ? err.message : 'Произошла ошибка при загрузке данных');
         setLoading(false);
       }
     };
+    
     fetchData();
   }, []);
 
@@ -192,6 +180,9 @@ const HomePage: React.FC = () => {
       setUserFavorites((prev) =>
         isSaved ? [...prev, id] : prev.filter((itemId) => itemId !== id)
       );
+      
+      // Здесь можно добавить логику сохранения избранных ресторанов в Firebase
+      // для авторизованных пользователей
     },
     []
   );
@@ -202,18 +193,20 @@ const HomePage: React.FC = () => {
 
   const handleMainSearch = useCallback((query: string, location: string) => {
     console.log(`Поиск: ${query} в ${location}`);
-  }, []);
+    navigate(`/s?query=${encodeURIComponent(query)}&location=${encodeURIComponent(location)}`);
+  }, [navigate]);
 
   const handleLanguageChange = (language: string) => {
     console.log(`Язык изменен на: ${language}`);
   };
 
   const handleWelcomeClick = () => {
-    navigate('/auth');
+    navigate('/login');
   };
 
   const handleFeaturedCardClick = (cardId: string) => {
     console.log(`Clicked on featured card: ${cardId}`);
+    navigate(`/best?category=${cardId}`);
   };
 
   const handleAddRestaurantClick = () => {
@@ -289,13 +282,18 @@ const HomePage: React.FC = () => {
             ))}
           </div>
 
-          <Section title="Top">
-            {/* Для демонстрации используем дублирование ресторана, чтобы получить 8 карточек */}
-            <RestaurantGrid
-              restaurants={[...restaurants, ...restaurants]}
-              userFavorites={userFavorites}
-              onSaveToggle={handleSaveToggle}
-            />
+          <Section title="Новые рестораны">
+            {restaurants.length > 0 ? (
+              <RestaurantGrid
+                restaurants={restaurants}
+                userFavorites={userFavorites}
+                onSaveToggle={handleSaveToggle}
+              />
+            ) : (
+              <div className={styles.noDataMessage}>
+                <p>Пока нет доступных ресторанов. Станьте первым, кто добавит ресторан!</p>
+              </div>
+            )}
           </Section>
 
           <Section title="Популярные Страны">
