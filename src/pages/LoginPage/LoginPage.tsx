@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom'; // Добавлен импорт Link
 import { useAuth } from '../../contexts/AuthContext';
 import NavBar from '../../components/NavBar';
 import Footer from '../../components/Footer/Footer';
@@ -11,9 +11,18 @@ interface LoginFormData {
   rememberMe: boolean;
 }
 
+interface LocationState {
+  from?: string;
+}
+
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, loginWithGoogle, isLoading: authLoading } = useAuth();
+
+  // Получаем URL для перенаправления из location.state
+  const state = location.state as LocationState;
+  const redirectUrl = state?.from || '/profile';
 
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
@@ -53,10 +62,10 @@ const LoginPage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // Обратите внимание: здесь передаем только email и password, без rememberMe
       const success = await login(formData.email, formData.password);
       if (success) {
-        navigate('/profile');
+        // Перенаправляем пользователя на предыдущую страницу или профиль по умолчанию
+        navigate(redirectUrl);
       } else {
         setGeneralError('Неверный email или пароль');
       }
@@ -73,7 +82,10 @@ const LoginPage: React.FC = () => {
     setGeneralError('');
     try {
       const success = await loginWithGoogle();
-      if (success) navigate('/profile');
+      if (success) {
+        // Перенаправляем пользователя на предыдущую страницу или профиль по умолчанию
+        navigate(redirectUrl);
+      }
       else setGeneralError('Не удалось войти через Google. Попробуйте другой способ.');
     } catch (error) {
       console.error('Ошибка при входе через Google:', error);
@@ -178,7 +190,8 @@ const LoginPage: React.FC = () => {
               {isGoogleSubmitting ? 'Выполняется вход...' : 'Войти через Google'}
             </button>
             <div className={styles.registerLink}>
-              Нет аккаунта? <a href="/register">Зарегистрироваться</a>
+              {/* Заменяем тег <a> на компонент <Link> */}
+              Нет аккаунта? <Link to={`/register${location.search}`} state={{ from: redirectUrl }}>Зарегистрироваться</Link>
             </div>
           </form>
         </div>

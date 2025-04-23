@@ -1,0 +1,307 @@
+.reviewFormContainer {
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    padding: 40px;
+    margin-bottom: 40px;
+  }
+  
+  .formTitle {
+    font-size: 26px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 30px;
+  }
+  
+  .reviewForm {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  .formGroup {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  
+  .label {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+  }
+  
+  .input,
+  .textarea {
+    width: 100%;
+    padding: 15px 16px;
+    border: 1px solid #e4e9f2;
+    border-radius: 12px;
+    font-size: 16px;
+    color: #333;
+    transition: all 0.3s ease;
+    background-color: #fff;
+    font-family: inherit;
+  }
+  
+  .textarea {
+    resize: vertical;
+    min-height: 150px;
+  }
+  
+  .input:focus,
+  .textarea:focus {
+    outline: none;
+    border-color: #4d98e9;
+    box-shadow: 0 0 0 3px rgba(77, 152, 233, 0.15);
+  }
+  
+  .input::placeholder,
+  .textarea::placeholder {
+    color: #a0a9b8;
+  }
+  
+  .inputError {
+    border-color: #ff4d6a;
+  }
+  
+  .inputError:focus {
+    box-shadow: 0 0 0 3px rgba(255, 77, 106, 0.15);
+  }
+  
+  .errorText {
+    font-size: 13px;
+    color: #ff4d6a;
+    margin-top: 8px;
+  }
+  
+  .errorMessage {
+    background-color: rgba(255, 77, 106, 0.1);
+    color: #ff4d6a;
+    padding: 14px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    font-size: 14px;
+  }
+  
+  .charCounter {
+    font-size: 12px;
+    color: #6e7a8a;
+    text-align: right;
+    margin-top: 5px;
+  }
+  
+  .minCharsWarning {
+    color: #ff9800;
+  }
+  
+  /* Rating stars styling */
+  .ratingContainer {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  
+  .starButton {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: #d1d5db;
+    transition: color 0.2s;
+    font-size: 0;
+  }
+  
+  .starButton:hover,
+  .starActive {
+    color: #ffc107;
+  }
+  
+  /* Images upload styling */
+  .imageUploadContainer {
+    margin-top: 10px;
+  }
+  
+  .imagePreviewsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  
+  .imagePreview {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e4e9f2;
+  }
+  
+  .imagePreview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .removeImageButton {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .removeImageButton:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+  
+  .uploadButtonContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .uploadButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #f1f3f7;
+    color: #4d98e9;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+  }
+  
+  .uploadButton:hover {
+    background-color: #e4e9f2;
+  }
+  
+  .fileInput {
+    display: none;
+  }
+  
+  .uploadHint {
+    font-size: 12px;
+    color: #6e7a8a;
+    margin-top: 8px;
+  }
+  
+  /* Checkbox styling */
+  .checkboxContainer {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+  }
+  
+  .checkbox {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    accent-color: #4d98e9;
+  }
+  
+  .checkboxLabel {
+    font-size: 15px;
+    color: #333;
+  }
+  
+  /* Button group styling */
+  .buttonGroup {
+    display: flex;
+    gap: 16px;
+    margin-top: 10px;
+  }
+  
+  .submitButton {
+    flex: 1;
+    padding: 15px;
+    background: linear-gradient(135deg, #4d98e9 0%, #3372c0 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(77, 152, 233, 0.25);
+  }
+  
+  .submitButton:hover {
+    background: linear-gradient(135deg, #3d8ae0 0%, #2e66b0 100%);
+    box-shadow: 0 6px 15px rgba(77, 152, 233, 0.35);
+    transform: translateY(-2px);
+  }
+  
+  .submitButton:disabled {
+    background: linear-gradient(135deg, #a3c7f1 0%, #7ea3d8 100%);
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+  
+  .cancelButton {
+    padding: 15px 25px;
+    background-color: #f1f3f7;
+    color: #6e7a8a;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .cancelButton:hover {
+    background-color: #e4e9f2;
+    transform: translateY(-2px);
+  }
+  
+  .cancelButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  /* Mobile styles */
+  @media (max-width: 480px) {
+    .reviewFormContainer {
+      padding: 25px 20px;
+      border-radius: 12px;
+    }
+    
+    .formTitle {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+    
+    .input,
+    .textarea {
+      padding: 12px 14px;
+      font-size: 15px;
+    }
+    
+    .buttonGroup {
+      flex-direction: column;
+    }
+    
+    .cancelButton {
+      order: 2;
+    }
+    
+    .submitButton {
+      order: 1;
+    }
+  }

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import NavBar from '../../components/NavBar';
 import Footer from '../../components/Footer/Footer';
 import styles from './RegistrationPage.module.css';
 import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate, useLocation, Link } from 'react-router-dom'; // Добавлен импорт Link
+
 
 interface RegistrationFormData {
   name: string;
@@ -20,9 +21,18 @@ interface RegistrationFormErrors extends Partial<Record<keyof RegistrationFormDa
   general?: string;
 }
 
+interface LocationState {
+  from?: string;
+}
+
 const RegistrationPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { register, registerWithGoogle, isLoading } = useAuth();
+
+  // Получаем URL для перенаправления из location.state
+  const state = location.state as LocationState;
+  const redirectUrl = state?.from || '/profile';
 
   const [avatarPreview, setAvatarPreview] = useState<string>('https://placehold.jp/300x300.png');
   const [formData, setFormData] = useState<RegistrationFormData>({
@@ -105,7 +115,10 @@ const RegistrationPage: React.FC = () => {
         city: formData.city,
         avatar: formData.avatar
       });
-      if (success) navigate('/profile');
+      if (success) {
+        // Перенаправляем пользователя на страницу ресторана или профиль
+        navigate(redirectUrl);
+      }
       else setErrors({ general: 'Не удалось зарегистрироваться. Возможно, такой email уже используется.' });
     } catch (error) {
       console.error('Ошибка при регистрации:', error);
@@ -120,7 +133,8 @@ const RegistrationPage: React.FC = () => {
     try {
       const success = await registerWithGoogle();
       if (success) {
-        navigate('/profile');
+        // Перенаправляем пользователя на страницу ресторана или профиль
+        navigate(redirectUrl);
       } else {
         setErrors({ general: 'Не удалось зарегистрироваться через Google. Попробуйте другой способ.' });
       }
@@ -177,12 +191,6 @@ const RegistrationPage: React.FC = () => {
               </div>
             </>
           )}
-          {/* 
-          {registrationStep === 1 && (
-            <div className={styles.divider}>
-              <span>или</span>
-            </div>
-          )} */}
 
           <form onSubmit={handleSubmit} className={styles.registrationForm}>
             {registrationStep === 1 ? (
@@ -216,6 +224,26 @@ const RegistrationPage: React.FC = () => {
                     </span>
                     <input
                       type="password"
+                      id="password"
+                      name="password"
+                      className={`${styles.input} ${errors.password ? styles.inputError : ''}`}
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      placeholder="Пароль (минимум 8 символов)"
+                      autoComplete="new-password"
+                    />
+                  </div>
+                  {errors.password && <p className={styles.errorText}>{errors.password}</p>}
+                </div>
+                <div className={styles.formGroup}>
+                  <div className={styles.inputWrapper}>
+                    <span className={styles.inputIcon}>
+                      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18 8H17V6C17 3.24 14.76 1 12 1C9.24 1 7 3.24 7 6V8H6C4.9 8 4 8.9 4 10V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V10C20 8.9 19.1 8 18 8ZM12 17C10.9 17 10 16.1 10 15C10 13.9 10.9 13 12 13C13.1 13 14 13.9 14 15C14 16.1 13.1 17 12 17ZM15 8H9V6C9 4.34 10.34 3 12 3C13.66 3 15 4.34 15 6V8Z" fill="currentColor" />
+                      </svg>
+                    </span>
+                    <input
+                      type="password"
                       id="confirmPassword"
                       name="confirmPassword"
                       className={`${styles.input} ${errors.confirmPassword ? styles.inputError : ''}`}
@@ -231,7 +259,7 @@ const RegistrationPage: React.FC = () => {
                   ДАЛЕЕ
                 </button>
                 <div className={styles.loginLink}>
-                  Уже есть аккаунт? <a href="/login">Войти</a>
+                  Уже есть аккаунт? <Link to={`/login${location.search}`} state={{ from: redirectUrl }}>Войти</Link>
                 </div>
               </>
             ) : (
