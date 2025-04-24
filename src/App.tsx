@@ -3,6 +3,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
+import ModeratorRoute from './components/ModeratorRoute';
+import AdminRoute from './components/AdminRoute';
 import { NotificationProvider } from './contexts/NotificationContext';
 
 // Pages
@@ -16,6 +18,8 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage/ForgotPasswordPage';
 import AddRestaurantPage from './pages/AddRestaurantPage/AddRestaurantPage';
 import BestRestaurantsPage from './pages/BestRestaurantsPage/BestRestaurantsPage';
 import SearchResultsPage from './pages/SearchResultsPage/SearchResultsPage';
+import ModeratorPage from './pages/ModeratorPage/ModeratorPage';
+import AdminUsersPage from './pages/AdminUsersPage/AdminUsersPage';
 
 import './App.css';
 
@@ -42,10 +46,14 @@ const App: React.FC = () => {
               {/* Здесь можно добавить другие защищенные маршруты */}
             </Route>
 
-            {/* Защищенные маршруты только для администраторов */}
-            <Route element={<PrivateRoute adminOnly={true} />}>
-              <Route path="/admin" element={<div>Админ панель</div>} />
-              {/* Здесь можно добавить другие маршруты для администраторов */}
+            {/* Маршруты для модераторов */}
+            <Route element={<ModeratorRoute />}>
+              <Route path="/moderator" element={<ModeratorPage />} />
+            </Route>
+
+            {/* Маршруты только для администраторов */}
+            <Route element={<AdminRoute />}>
+              <Route path="/admin/users" element={<AdminUsersPage />} />
             </Route>
 
             {/* Маршрут для обработки несуществующих страниц */}

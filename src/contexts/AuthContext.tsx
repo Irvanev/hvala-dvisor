@@ -7,10 +7,14 @@ import {
   signInWithPopup, 
   GoogleAuthProvider, 
   createUserWithEmailAndPassword, 
-  updateProfile 
+  updateProfile,
+  getIdTokenResult 
 } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { auth, firestore } from '../firebase/config';
+
+// Расширяем типы ролей пользователей
+export type UserRole = 'guest' | 'registered' | 'owner' | 'moderator' | 'admin';
 
 // Интерфейс для хранения дополнительной информации о пользователе
 interface UserProfile {
@@ -21,7 +25,7 @@ interface UserProfile {
   email: string;
   city?: string;
   avatar?: string;
-  role?: 'user' | 'admin';
+  role?: UserRole;
   createdAt?: Date;
   updatedAt?: Date;
   favorites?: string[]; // Список ID избранных ресторанов
@@ -42,12 +46,16 @@ interface AuthContextType {
   user: UserProfile | null; // Алиас для userProfile для совместимости со старым кодом
   isLoading: boolean;
   isAuthenticated: boolean;
+  isAdmin: boolean; // Новое свойство
+  isModerator: boolean; // Новое свойство
+  userRole: UserRole; // Новое свойство
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   loginWithGoogle: () => Promise<boolean>;
   register: (data: RegisterData) => Promise<boolean>;
   registerWithGoogle: () => Promise<boolean>;
   updateUser: (data: Partial<UserProfile>) => Promise<boolean>;
+  checkAdminRights: () => boolean; // Новый метод
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -55,6 +63,7 @@ const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [userRole, setUserRole] = useState<UserRole>('guest');
   const [isLoading, setIsLoading] = useState(true);
 
   // Получение профиля пользователя из Firestore
@@ -70,14 +79,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           id: uid, // Добавляем id как алиас для uid
           ...userData 
         };
+        
         setUserProfile(profile);
+        
+        // Устанавливаем роль пользователя из профиля
+        if (profile.role) {
+          setUserRole(profile.role);
+        } else {
+          setUserRole('registered');
+        }
       } else {
         console.log('Профиль пользователя не найден в Firestore');
         setUserProfile(null);
+        setUserRole('guest');
       }
+      
+      // Проверяем custom claims для получения роли пользователя
+      try {
+        const idTokenResult = await getIdTokenResult(auth.currentUser!);
+        if (idTokenResult.claims.role) {
+          const claimRole = idTokenResult.claims.role as UserRole;
+          setUserRole(claimRole);
+          
+          // Если роль в claims отличается от роли в профиле, обновляем профиль
+          if (userDoc.exists() && userDoc.data().role !== claimRole) {
+            await setDoc(userDocRef, { role: claimRole, updatedAt: new Date() }, { merge: true });
+          }
+        }
+      } catch (error) {
+        console.error('Ошибка при получении custom claims:', error);
+      }
+      
     } catch (error) {
       console.error('Ошибка при получении профиля пользователя:', error);
       setUserProfile(null);
+      setUserRole('guest');
     }
   };
 
@@ -105,7 +141,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           username: data.username || '',
           city: data.city || '',
           avatar: data.avatar || '',
-          role: 'user',
+          role: data.role || 'registered', // По умолчанию зарегистрированный пользователь
           createdAt: new Date(),
           updatedAt: new Date(),
           favorites: [] // Инициализируем пустым массивом
@@ -129,6 +165,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await fetchUserProfile(user.uid);
       } else {
         setUserProfile(null);
+        setUserRole('guest');
       }
       
       setIsLoading(false);
@@ -203,6 +240,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         name: data.name,
         username: data.username,
         city: data.city,
+        role: 'registered', // По умолчанию зарегистрированный пользователь
         // Здесь нужно загрузить аватар на Firebase Storage и получить URL
         // avatar: avatarUrl
       });
@@ -231,6 +269,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email: user.email || '',
         name: user.displayName || '',
         avatar: user.photoURL || '',
+        role: 'registered', // По умолчанию зарегистрированный пользователь
       });
       
       await fetchUserProfile(user.uid);
@@ -280,18 +319,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Проверка прав администратора
+  const checkAdminRights = () => {
+    return userRole === 'admin' || userRole === 'moderator';
+  };
+
+  // Вычисляемые свойства для проверки ролей
+  const isAdmin = userRole === 'admin';
+  const isModerator = userRole === 'moderator' || userRole === 'admin';
+
   const value = {
     currentUser,
     userProfile,
     user: userProfile, // Добавляем алиас user для userProfile
     isLoading,
     isAuthenticated: !!currentUser,
+    isAdmin,
+    isModerator,
+    userRole,
     login,
     logout,
     loginWithGoogle,
     register,
     registerWithGoogle,
-    updateUser
+    updateUser,
+    checkAdminRights
   };
 
   return (

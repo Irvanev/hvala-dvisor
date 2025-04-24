@@ -1,0 +1,353 @@
+
+
+.adminPage {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f7f9fc;
+  }
+  
+  .mainContent {
+    padding-top: 90px; /* Учитываем высоту navbar */
+    padding-bottom: 50px;
+    flex: 1;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 0 16px;
+  }
+  
+  .pageTitle {
+    font-size: 28px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 24px;
+    text-align: center;
+  }
+  
+  .errorMessage {
+    background-color: #feedeb;
+    color: #e53935;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    text-align: center;
+  }
+  
+  .searchContainer {
+    margin-bottom: 24px;
+  }
+  
+  .searchInput {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+  }
+  
+  .searchInput:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
+  }
+  
+  .tableContainer {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    margin-bottom: 40px;
+  }
+  
+  .loadingSpinner {
+    text-align: center;
+    padding: 40px 0;
+    font-size: 16px;
+    color: #666;
+  }
+  
+  .emptyMessage {
+    text-align: center;
+    padding: 40px 0;
+    font-size: 16px;
+    color: #666;
+    background-color: #f2f2f2;
+    border-radius: 8px;
+  }
+  
+  /* Стили для таблицы пользователей */
+  .usersTable {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .usersTable th {
+    background-color: #f5f5f5;
+    text-align: left;
+    padding: 14px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .usersTable td {
+    padding: 14px 16px;
+    font-size: 14px;
+    color: #333;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .usersTable tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .usersTable tr:hover {
+    background-color: #f9f9f9;
+  }
+  
+  .roleCell {
+    text-align: center;
+  }
+  
+  .roleTag {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .registered {
+    background-color: #e8f5e9;
+    color: #43a047;
+  }
+  
+  .owner {
+    background-color: #e3f2fd;
+    color: #1976d2;
+  }
+  
+  .moderator {
+    background-color: #fff8e1;
+    color: #ffa000;
+  }
+  
+  .admin {
+    background-color: #fce4ec;
+    color: #e91e63;
+  }
+  
+  .editButton {
+    background-color: #f2f2f2;
+    color: #555;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .editButton:hover {
+    background-color: #e0e0e0;
+    color: #333;
+  }
+  
+  /* Модальное окно */
+  .modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+  }
+  
+  .modal {
+    background-color: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .modalTitle {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+  }
+  
+  .closeButton {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #666;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+  }
+  
+  .closeButton:hover {
+    color: #333;
+  }
+  
+  .modalBody {
+    padding: 24px;
+  }
+  
+  .userInfo {
+    margin-bottom: 20px;
+  }
+  
+  .userInfo p {
+    margin: 8px 0;
+    font-size: 14px;
+    color: #555;
+  }
+  
+  .roleSelection {
+    margin-bottom: 20px;
+  }
+  
+  .roleSelection label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 8px;
+  }
+  
+  .roleSelect {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #333;
+    background-color: white;
+  }
+  
+  .warning {
+    background-color: #fff8e1;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+  }
+  
+  .warning p {
+    margin: 0;
+    font-size: 12px;
+    color: #ff8f00;
+  }
+  
+  .modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+  
+  .cancelButton,
+  .saveButton {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .cancelButton {
+    background-color: #f2f2f2;
+    color: #555;
+    border: 1px solid #e0e0e0;
+  }
+  
+  .cancelButton:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .saveButton {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+  }
+  
+  .saveButton:hover {
+    background-color: #43a047;
+  }
+  
+  .saveButton:disabled {
+    background-color: #a5d6a7;
+    cursor: not-allowed;
+  }
+  
+  /* Адаптивность для мобильных устройств */
+  @media (max-width: 768px) {
+    .pageTitle {
+      font-size: 24px;
+    }
+    
+    .usersTable {
+      display: block;
+      overflow-x: auto;
+    }
+    
+    .usersTable th,
+    .usersTable td {
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+    
+    .roleTag {
+      font-size: 11px;
+      padding: 3px 8px;
+    }
+    
+    .modal {
+      width: 95%;
+    }
+    
+    .modalHeader {
+      padding: 12px 16px;
+    }
+    
+    .modalTitle {
+      font-size: 18px;
+    }
+    
+    .modalBody {
+      padding: 16px;
+    }
+    
+    .modalActions {
+      flex-direction: column-reverse;
+    }
+    
+    .cancelButton,
+    .saveButton {
+      width: 100%;
+      padding: 12px;
+    }
+  }

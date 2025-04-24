@@ -1,0 +1,110 @@
+/* src/components/AdminNavigation/AdminNavigation.module.css */
+.adminNavContainer {
+    background-color: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    margin-top: 70px; /* Отступ под основной навигацией */
+    position: sticky;
+    top: 70px;
+    z-index: 100;
+  }
+  
+  .adminNav {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .navTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 20px 0 0;
+  }
+  
+  .navList {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex: 1;
+  }
+  
+  .navItem {
+    margin-right: 10px;
+  }
+  
+  .navLink {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 6px;
+    color: #555;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.3s ease;
+  }
+  
+  .navLink:hover {
+    background-color: #f5f5f5;
+    color: #333;
+  }
+  
+  .activeLink {
+    background-color: #e8f5e9;
+    color: #43a047;
+  }
+  
+  .navIcon {
+    margin-right: 8px;
+    font-size: 16px;
+  }
+  
+  .roleInfo {
+    margin-left: auto;
+  }
+  
+  .roleTag {
+    background-color: #f5f5f5;
+    color: #555;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  /* Адаптивность для мобильных устройств */
+  @media (max-width: 768px) {
+    .adminNav {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .navTitle {
+      margin-bottom: 10px;
+    }
+    
+    .navList {
+      flex-direction: column;
+      width: 100%;
+    }
+    
+    .navItem {
+      margin-right: 0;
+      margin-bottom: 6px;
+      width: 100%;
+    }
+    
+    .navLink {
+      width: 100%;
+    }
+    
+    .roleInfo {
+      margin-left: 0;
+      margin-top: 10px;
+      align-self: flex-end;
+    }
+  }
