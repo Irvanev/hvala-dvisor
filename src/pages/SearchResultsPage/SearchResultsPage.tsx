@@ -28,10 +28,10 @@ function adaptRestaurantFromFirestore(docId: string, data: any): Restaurant {
     },
     // Обрабатываем геоданные
     location: data.location instanceof GeoPoint ? data.location :
-              data.coordinates ? new GeoPoint(
-                parseFloat(data.coordinates.lat || '0'),
-                parseFloat(data.coordinates.lng || '0')
-              ) : new GeoPoint(0, 0),
+      data.coordinates ? new GeoPoint(
+        parseFloat(data.coordinates.lat || '0'),
+        parseFloat(data.coordinates.lng || '0')
+      ) : new GeoPoint(0, 0),
     // Обрабатываем изображения
     mainImageUrl: data.mainImageUrl || data.image || '',
     galleryUrls: data.galleryUrls || data.images || [],
@@ -56,17 +56,17 @@ function adaptRestaurantFromFirestore(docId: string, data: any): Restaurant {
       status: data.moderationStatus || 'pending'
     },
     // Даты
-    createdAt: data.createdAt instanceof Timestamp ? data.createdAt : 
-               data.createdAt ? Timestamp.fromDate(new Date(data.createdAt)) : Timestamp.now(),
-    updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt : 
-               data.updatedAt ? Timestamp.fromDate(new Date(data.updatedAt)) : Timestamp.now()
+    createdAt: data.createdAt instanceof Timestamp ? data.createdAt :
+      data.createdAt ? Timestamp.fromDate(new Date(data.createdAt)) : Timestamp.now(),
+    updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt :
+      data.updatedAt ? Timestamp.fromDate(new Date(data.updatedAt)) : Timestamp.now()
   };
 }
 
 const SearchResultsPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  
+
   const [loading, setLoading] = useState<boolean>(true);
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>([]);
@@ -78,89 +78,122 @@ const SearchResultsPage: React.FC = () => {
   const locationParam = searchParams.get('location') || '';
 
   useEffect(() => {
+    // Updated fetchRestaurants function for SearchResultsPage.tsx
+    // This should replace the existing fetchRestaurants function
+
     const fetchRestaurants = async () => {
       setLoading(true);
       try {
-        // Создаем запрос к коллекции restaurants (с маленькой буквы)
+        // Create a reference to the restaurants collection
         const restaurantsCollection = collection(firestore, 'restaurants');
         let querySnapshot;
+        let queryBuilder;
 
-        try {
-          // Пробуем выполнить запрос с фильтрацией по статусу модерации
-          const restaurantsQuery = firestoreQuery(
-            restaurantsCollection,
-            orderBy('createdAt', 'desc')
-          );
-          querySnapshot = await getDocs(restaurantsQuery);
-        } catch (indexError) {
-          console.error("Ошибка индекса:", indexError);
-          
-          // Если получили ошибку индекса, используем более простой запрос без сортировки
-          const simpleQuery = firestoreQuery(restaurantsCollection);
-          querySnapshot = await getDocs(simpleQuery);
+        // Start with a base query
+        queryBuilder = firestoreQuery(restaurantsCollection);
+
+        // If we have location param, try to filter by it in Firestore
+        // Note: For optimal performance, you may need to create composite indexes in Firebase
+        if (locationParam) {
+          try {
+            // Try different location fields - adjust based on your data structure
+            queryBuilder = firestoreQuery(
+              restaurantsCollection,
+              where('address.country', '==', locationParam)
+            );
+            querySnapshot = await getDocs(queryBuilder);
+
+            // If no results with country, try city
+            if (querySnapshot.empty) {
+              queryBuilder = firestoreQuery(
+                restaurantsCollection,
+                where('address.city', '==', locationParam)
+              );
+              querySnapshot = await getDocs(queryBuilder);
+            }
+          } catch (indexError) {
+            console.warn("Index error for location query, falling back to client-side filtering", indexError);
+            // If we hit an index error, fall back to basic query
+            queryBuilder = firestoreQuery(restaurantsCollection);
+            querySnapshot = await getDocs(queryBuilder);
+          }
+        } else {
+          // If no location specified, get all restaurants
+          querySnapshot = await getDocs(queryBuilder);
         }
-        
-        // Преобразуем данные из Firestore в модель Restaurant
+
+        // Convert Firestore documents to Restaurant objects
         const fetchedRestaurants: Restaurant[] = [];
         querySnapshot.forEach(doc => {
           const data = doc.data();
-          // Используем функцию-адаптер для преобразования
+          // Use adapter function to convert to Restaurant type
           const restaurant = adaptRestaurantFromFirestore(doc.id, data);
-          
-          // Фильтруем только одобренные рестораны или где поле модерации отсутствует
-          const moderationStatus = 
-            data.moderation?.status || 
+
+          // Filter approved restaurants only (or where moderation is not defined)
+          const moderationStatus =
+            data.moderation?.status ||
             data.moderationStatus ||
             'pending';
-            
-          if (moderationStatus === 'approved' || !moderationStatus) {
+
+          if (moderationStatus === 'approved' || moderationStatus === undefined) {
             fetchedRestaurants.push(restaurant);
           }
         });
-        
-        // Фильтрация на стороне клиента по поисковому запросу
+
+        // Client-side filtering for search query and further location refinement
         let filtered = [...fetchedRestaurants];
-        
+
+        // Filter by search query if provided
         if (searchQuery) {
+          const searchTermLower = searchQuery.toLowerCase();
           filtered = filtered.filter(restaurant =>
-            restaurant.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            restaurant.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            restaurant.cuisineTags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
-            (restaurant.tagsSearchable && restaurant.tagsSearchable.some(tag => 
-              tag.toLowerCase().includes(searchQuery.toLowerCase())
+            // Check title, description and tags
+            restaurant.title.toLowerCase().includes(searchTermLower) ||
+            restaurant.description.toLowerCase().includes(searchTermLower) ||
+            (restaurant.cuisineTags && restaurant.cuisineTags.some(tag =>
+              tag.toLowerCase().includes(searchTermLower)
+            )) ||
+            (restaurant.featureTags && restaurant.featureTags.some(tag =>
+              tag.toLowerCase().includes(searchTermLower)
+            )) ||
+            (restaurant.tagsSearchable && restaurant.tagsSearchable.some(tag =>
+              tag.toLowerCase().includes(searchTermLower)
             ))
           );
         }
-        
-        // Фильтрация по местоположению
+
+        // Further filter by location (case insensitive and partial matching)
         if (locationParam) {
+          const locationLower = locationParam.toLowerCase();
           filtered = filtered.filter(restaurant => {
-            // Проверяем адрес
+            // Check all address fields
             if (restaurant.address) {
               const { street, city, country } = restaurant.address;
               return (
-                (street && street.toLowerCase().includes(locationParam.toLowerCase())) ||
-                (city && city.toLowerCase().includes(locationParam.toLowerCase())) ||
-                (country && country.toLowerCase().includes(locationParam.toLowerCase()))
+                (street && street.toLowerCase().includes(locationLower)) ||
+                (city && city.toLowerCase().includes(locationLower)) ||
+                (country && country.toLowerCase().includes(locationLower))
               );
             }
             return false;
           });
         }
 
+        // Set state with fetched and filtered restaurants
         setRestaurants(fetchedRestaurants);
         setFilteredRestaurants(filtered);
-        
-        // Получение избранных ресторанов (в реальном приложении нужно загружать из Firebase)
+
+        // Set favorites (in a real app, load this from user profile in Firebase)
         setUserFavorites(['rest1', 'rest3']);
+
         setLoading(false);
       } catch (err) {
-        console.error('Ошибка при загрузке ресторанов:', err);
-        setError("Произошла ошибка при загрузке данных. Пожалуйста, попробуйте позже.");
+        console.error('Error loading restaurants:', err);
+        setError("An error occurred while loading data. Please try again later.");
         setLoading(false);
       }
     };
-  
+
     fetchRestaurants();
   }, [searchQuery, locationParam]);
 

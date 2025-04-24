@@ -15,6 +15,7 @@ import { Restaurant } from '../models/types';
 import { collection, getDocs, query, orderBy, limit, Timestamp, GeoPoint } from 'firebase/firestore';
 import { firestore } from '../firebase/config'; // Импортируем конфигурацию Firebase
 
+
 const CONSTANTS = {
   APP_NAME: 'HvalaDviser',
   CURRENT_YEAR: '2024',
@@ -80,6 +81,10 @@ const HomePage: React.FC = () => {
   // Состояние для хранения ресторанов из Firebase
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
 
+  const [searchSuggestions, setSearchSuggestions] = useState<{ id: string, title: string }[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+
+
   // Данные для секций
   const featuredCards: FeaturedCard[] = [
     {
@@ -102,6 +107,22 @@ const HomePage: React.FC = () => {
     { id: 'alb', title: 'Албания', image: 'https://placehold.jp/400x300.png' },
   ];
 
+  const handleMainSearch = useCallback((searchQuery: string, location: string) => {
+    // Сохраняем параметры поиска в локальное хранилище, чтобы 
+    // потом можно было их использовать при возврате на главную страницу
+    if (searchQuery || location) {
+      localStorage.setItem('lastSearchQuery', searchQuery);
+      localStorage.setItem('lastSearchLocation', location);
+    }
+
+    console.log(`Поиск: ${searchQuery} в ${location}`);
+
+    // Если есть запрос или локация, переходим на страницу результатов
+    if (searchQuery.trim() || location.trim()) {
+      navigate(`/s?query=${encodeURIComponent(searchQuery.trim())}&location=${encodeURIComponent(location.trim())}`);
+    }
+  }, [navigate]);
+
   // Загрузка данных из Firebase
   useEffect(() => {
     const fetchData = async () => {
@@ -112,15 +133,15 @@ const HomePage: React.FC = () => {
           orderBy('createdAt', 'desc'), // Сортируем по дате создания (новые первыми)
           limit(8) // Ограничиваем выборку до 8 ресторанов
         );
-        
+
         const restaurantsSnapshot = await getDocs(restaurantsQuery);
         const restaurantsData: Restaurant[] = [];
-        
+
         restaurantsSnapshot.forEach((doc) => {
           const data = doc.data();
           // Используем функцию-адаптер для преобразования данных
           const restaurant = adaptRestaurantForGrid(data, doc.id);
-          
+
           // Проверка на статус модерации - показываем только одобренные рестораны
           if (data.moderation && data.moderation.status === 'approved') {
             restaurantsData.push(restaurant);
@@ -129,14 +150,14 @@ const HomePage: React.FC = () => {
             restaurantsData.push(restaurant);
           }
         });
-        
+
         setRestaurants(restaurantsData);
-        
+
         // Загружаем избранные рестораны пользователя
         // Здесь можно добавить логику получения избранных ресторанов, если пользователь авторизован
         const demoFavorites: string[] = [];
         setUserFavorites(demoFavorites);
-        
+
         setLoading(false);
       } catch (err) {
         console.error('Ошибка при загрузке данных:', err);
@@ -144,7 +165,7 @@ const HomePage: React.FC = () => {
         setLoading(false);
       }
     };
-    
+
     fetchData();
   }, []);
 
@@ -180,7 +201,7 @@ const HomePage: React.FC = () => {
       setUserFavorites((prev) =>
         isSaved ? [...prev, id] : prev.filter((itemId) => itemId !== id)
       );
-      
+
       // Здесь можно добавить логику сохранения избранных ресторанов в Firebase
       // для авторизованных пользователей
     },
@@ -191,10 +212,6 @@ const HomePage: React.FC = () => {
     console.log(`Поиск в NavBar: ${query}`);
   }, []);
 
-  const handleMainSearch = useCallback((query: string, location: string) => {
-    console.log(`Поиск: ${query} в ${location}`);
-    navigate(`/s?query=${encodeURIComponent(query)}&location=${encodeURIComponent(location)}`);
-  }, [navigate]);
 
   const handleLanguageChange = (language: string) => {
     console.log(`Язык изменен на: ${language}`);

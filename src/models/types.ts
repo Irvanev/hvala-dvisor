@@ -7,32 +7,9 @@ export type UserRole =
   | 'admin';      // бог‑режим
 import { Timestamp, GeoPoint } from 'firebase/firestore';
 
-// Модель пользователя с дополнительными полями аудита
-// export interface User {
-//   id: string;                        // Уникальный идентификатор
-//   firstName: string;
-//   lastName: string;
-//   nickname: string;
-//   email: string;
-//   city: string;
-//   password: string;                  // Используется при собственной регистрации
-//   role: UserRole;
-//   googleProfile?: {                  // Данные из Google
-//     googleId: string;
-//     avatarUrl: string;
-//   };
-//   createdAt: Date;
-//   lastLoginAt?: Date;
-//   updatedAt: Date;
-//   // Поле для хранения истории входов или дополнительного аудита (можно хранить массив записей)
-//   auditLogs?: Array<{
-//     loginAt: Date;
-//     ipAddress: string;
-//   }>;
-// }
 
 export interface User {
-  /** UID из Firebase Auth — используем как id в Firestore */
+  /** UID из Firebase Auth — используем как id в Firestore */
   id: string;
 
   /** Основные данные профиля */
@@ -62,7 +39,6 @@ export interface User {
   lastLoginAt?: Timestamp;    // обновляем onAuthStateChanged + server timestamp
 }
 
-/** Лог входа храним в под‑коллекции /users/{uid}/logins/{loginId} */
 export interface UserLoginLog {
   id: string;                 // = loginId
   ipAddress?: string;
@@ -70,36 +46,6 @@ export interface UserLoginLog {
   loginAt: Timestamp;         // serverTimestamp()
 }
 
-// export interface Restaurant {
-//   id: string;
-//   title: string;
-//   description: string;
-//   // Поддерживаем оба формата - и строку, и объект
-//   location: string | {
-//     street: string;
-//     city: string;
-//     postalCode: string;
-//     country: string;
-//   };
-//   coordinates?: { lat: number; lng: number };
-//   images: string[];
-//   contact?: {
-//     phone?: string;
-//     website?: string;
-//     socialLinks?: {
-//       facebook?: string;
-//       instagram?: string;
-//       twitter?: string;
-//     };
-//   };
-//   cuisineTags?: string[];
-//   featureTags?: string[];
-//   priceRange?: string;
-//   rating?: number;
-//   moderationStatus?: 'pending' | 'approved' | 'rejected';
-//   createdAt?: Date;
-//   updatedAt?: Date;
-// }
 
 export interface Restaurant {
   id: string;
@@ -131,14 +77,31 @@ export interface Restaurant {
   rating: number;
   reviewsCount: number;
   likesCount: number;
+  menu?: MenuItem[];                    // Добавляем меню
+  openingHours?: RestaurantOpeningHours; // Добавляем часы работы
   isArchived?: boolean;                 // для скрытия
   moderation: {
     status: 'pending' | 'approved' | 'rejected';
     moderatorId?: string;
     reviewedAt?: Timestamp;
+    rejectionReason?: string;           // Причина отклонения
+    contactPerson?: {                   // Информация о контактном лице
+      name: string;
+      email: string;
+      phone: string;
+      isOwner: boolean;
+    }
   };
   createdAt: Timestamp;
   updatedAt: Timestamp;
+}
+
+export interface RestaurantOpeningHours {
+  [key: string]: {
+    open: string;
+    close: string;
+    closed: boolean;
+  }
 }
 
 
@@ -159,27 +122,6 @@ export interface MenuCategory {
   items: MenuItem[];
 }
 
-// export interface Review {
-//   id: string;
-//   author: string;
-//   authorAvatar?: string;
-//   rating: number;
-//   comment: string;
-//   date: string;
-//   likes?: number;
-// }
-
-// export interface Review {
-//   id: string;                // = reviewId в Firestore
-//   authorId: string;          // uid автора из Firebase Auth
-//   authorName: string;        // денормализованное имя (чтобы не делать join)
-//   authorAvatarUrl?: string;  // ссылка на Storage, если есть
-//   rating: number;            // 1–5
-//   comment: string;
-//   createdAt: Timestamp;      // serverTimestamp()
-//   updatedAt: Timestamp;      // serverTimestamp()
-//   likesCount: number;        // счётчик лайков
-// }
 
 
 export interface Review {
@@ -224,3 +166,25 @@ export interface RestaurantProposal {
   reviewerId?: string;
 }
 
+
+// Для работы с модерацией
+export interface ModerationAction {
+  id: string;
+  restaurantId: string;
+  moderatorId: string;
+  action: 'approved' | 'rejected';
+  reason?: string;           // причина для отклонения
+  createdAt: Timestamp;
+}
+
+// Для уведомлений пользователя
+export interface Notification {
+  id: string;
+  userId: string;
+  title: string;
+  message: string;
+  type: 'restaurant_approved' | 'restaurant_rejected' | 'other';
+  relatedEntityId?: string;  // ID связанной сущности (например, ресторана)
+  isRead: boolean;
+  createdAt: Timestamp;
+}
