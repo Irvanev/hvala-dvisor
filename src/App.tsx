@@ -46,6 +46,7 @@ const App: React.FC = () => {
               {/* Здесь можно добавить другие защищенные маршруты */}
             </Route>
 
+
             {/* Маршруты для модераторов */}
             <Route element={<ModeratorRoute />}>
               <Route path="/moderator" element={<ModeratorPage />} />

@@ -239,3 +239,21 @@
     line-height: 1; /* чтобы кнопка не «раздувалась» по высоте */
   }
 }
+
+/* Стили для навбара с ролями */
+.adminHeader {
+  background: #5c2d91 !important; /* Фиолетовый для админа */
+}
+
+.moderatorHeader {
+  background: #107c10 !important; /* Зелёный для модератора */
+}
+
+.roleIndicator {
+  background: rgba(255,255,255,0.2);
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  color: white;
+  margin-right: 15px;
+}

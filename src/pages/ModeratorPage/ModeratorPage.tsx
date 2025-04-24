@@ -108,14 +108,14 @@ const ModeratorPage: React.FC = () => {
 
             setIsSubmitting(true);
 
-            const result = await moderateRestaurant(
+            await moderateRestaurant(
                 selectedRestaurant.id,
                 status,
                 moderationComment
             );
 
             // Обновляем список ресторанов
-            await fetchRestaurants();
+            fetchRestaurants();
 
             // Закрываем детали ресторана
             setSelectedRestaurant(null);
@@ -123,7 +123,6 @@ const ModeratorPage: React.FC = () => {
             // Показываем сообщение об успешной модерации
             alert(`Ресторан ${status === 'approved' ? 'одобрен' : 'отклонен'}`);
         } catch (error) {
-            console.error('Ошибка при модерации ресторана:', error);
             setError('Не удалось изменить статус ресторана. Пожалуйста, попробуйте позже.');
         } finally {
             setIsSubmitting(false);
