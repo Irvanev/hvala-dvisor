@@ -3,6 +3,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
+import { NotificationProvider } from './contexts/NotificationContext';
 
 // Pages
 import ProfilePage from './pages/ProfilePage/ProfilePage';
@@ -22,34 +23,36 @@ const App: React.FC = () => {
   return (
     <Router>
       <AuthProvider>
-        <Routes>
-          {/* Публичные маршруты */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegistrationPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/" element={<HomePage />} />
-          <Route path="/restaurant/:id" element={<RestaurantPage />} />
-          <Route path="/add-restaurant" element={<AddRestaurantPage />} />
-          <Route path="/best" element={<BestRestaurantsPage />} />
-          <Route path="/s" element={<SearchResultsPage />} />
+        <NotificationProvider>
+          <Routes>
+            {/* Публичные маршруты */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegistrationPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/restaurant/:id" element={<RestaurantPage />} />
+            <Route path="/add-restaurant" element={<AddRestaurantPage />} />
+            <Route path="/best" element={<BestRestaurantsPage />} />
+            <Route path="/s" element={<SearchResultsPage />} />
 
-          {/* Защищенные маршруты (требуют аутентификации) */}
-          <Route element={<PrivateRoute />}>
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/edit-profile" element={<EditProfilePage />} />
-            {/* Здесь можно добавить другие защищенные маршруты */}
-          </Route>
+            {/* Защищенные маршруты (требуют аутентификации) */}
+            <Route element={<PrivateRoute />}>
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/edit-profile" element={<EditProfilePage />} />
+              {/* Здесь можно добавить другие защищенные маршруты */}
+            </Route>
 
-          {/* Защищенные маршруты только для администраторов */}
-          <Route element={<PrivateRoute adminOnly={true} />}>
-            <Route path="/admin" element={<div>Админ панель</div>} />
-            {/* Здесь можно добавить другие маршруты для администраторов */}
-          </Route>
-          
-          {/* Маршрут для обработки несуществующих страниц */}
-          {/* <Route path="*" element={<NotFoundPage />} /> */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+            {/* Защищенные маршруты только для администраторов */}
+            <Route element={<PrivateRoute adminOnly={true} />}>
+              <Route path="/admin" element={<div>Админ панель</div>} />
+              {/* Здесь можно добавить другие маршруты для администраторов */}
+            </Route>
+
+            {/* Маршрут для обработки несуществующих страниц */}
+            {/* <Route path="*" element={<NotFoundPage />} /> */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </NotificationProvider>
       </AuthProvider>
     </Router>
   );

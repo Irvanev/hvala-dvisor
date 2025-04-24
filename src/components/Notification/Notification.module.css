@@ -1,0 +1,93 @@
+/* src/components/Notification/Notification.module.css */
+.notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    min-width: 250px;
+    max-width: 350px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: slideIn 0.3s ease-out forwards;
+    z-index: 1000;
+    pointer-events: auto;
+  }
+  
+  .content {
+    display: flex;
+    align-items: center;
+    flex: 1;
+  }
+  
+  .icon {
+    margin-right: 12px;
+    font-size: 16px;
+  }
+  
+  .message {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  
+  .closeButton {
+    background: none;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.7;
+    padding: 0;
+    margin-left: 16px;
+    transition: opacity 0.2s;
+  }
+  
+  .closeButton:hover {
+    opacity: 1;
+  }
+  
+  .success {
+    background-color: #e6f7ee;
+    color: #18794e;
+    border-left: 4px solid #18794e;
+  }
+  
+  .error {
+    background-color: #fee;
+    color: #d32f2f;
+    border-left: 4px solid #d32f2f;
+  }
+  
+  .info {
+    background-color: #e3f2fd;
+    color: #0d6efd;
+    border-left: 4px solid #0d6efd;
+  }
+  
+  @keyframes slideIn {
+    0% {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideOut {
+    0% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+  
+  .notification.exit {
+    animation: slideOut 0.3s ease-in forwards;
+  }

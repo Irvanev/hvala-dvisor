@@ -1,3 +1,4 @@
+// src/pages/RestaurantPage/RestaurantPage.tsx
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import NavBar from '../../components/NavBar';
@@ -9,10 +10,13 @@ import RestaurantMenu from '../../components/RestaurantMenu/RestaurantMenu';
 import RestaurantReviews from '../../components/RestaurantReviews/RestaurantReviews';
 import RestaurantPhotos from '../../components/RestaurantPhotos/RestaurantPhotos';
 import styles from './RestaurantPage.module.css';
-import { Restaurant } from '../../models/types';
+import { Restaurant, User } from '../../models/types';
 import { doc, getDoc } from 'firebase/firestore';
-import { firestore } from '../../firebase/config';
+import { db } from '../../firebase/config';
 import { adaptRestaurantFromFirestore, adaptRestaurantForDetailsPage } from '../../utils/adapters/restaurantAdapter';
+import { favoriteService } from '../../services/FavoriteService';
+import { useAuth } from '../../contexts/AuthContext';
+import { useNotification } from '../../contexts/NotificationContext';
 
 // Интерфейс для страницы ресторана с дополнительными полями
 interface RestaurantDetails {
@@ -69,6 +73,8 @@ const RestaurantPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, isAuthenticated } = useAuth(); // Добавляем получение данных о пользователе
+  const typedUser = user as User | null;
 
   const [restaurant, setRestaurant] = useState<RestaurantDetails | null>(null);
   const [loading, setLoading] = useState(true);
@@ -77,9 +83,12 @@ const RestaurantPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [showPhotoModal, setShowPhotoModal] = useState(false);
+  const [favoritesLoading, setFavoritesLoading] = useState(false); // Состояние загрузки избранного
+  const { showNotification } = useNotification();
 
   // Функция загрузки данных из fallback-мок-массива (на случай, если state не передан)
   const loadMockRestaurant = (restaurantId: string): RestaurantDetails | null => {
+    // ... остаток функции без изменений
     const mockRestaurants: RestaurantDetails[] = [
       {
         id: 'rest1',
@@ -156,6 +165,18 @@ const RestaurantPage: React.FC = () => {
     return mockRestaurants.find(r => r.id === restaurantId) || null;
   };
 
+  // Функция для проверки, является ли ресторан избранным
+  const checkIfFavorite = async () => {
+    if (!isAuthenticated || !typedUser || !id) return;
+    
+    try {
+      const isFavorite = await favoriteService.isRestaurantFavorite(typedUser.id, id);
+      setUserFavorite(isFavorite);
+    } catch (error) {
+      console.error('Ошибка при проверке избранного:', error);
+    }
+  };
+
   useEffect(() => {
     const fetchRestaurantDetails = async () => {
       setLoading(true);
@@ -168,7 +189,7 @@ const RestaurantPage: React.FC = () => {
         } else {
           // Пытаемся загрузить данные из Firestore
           if (id) {
-            const docRef = doc(firestore, 'restaurants', id);
+            const docRef = doc(db, 'restaurants', id);
             const docSnap = await getDoc(docRef);
             
             if (docSnap.exists()) {
@@ -195,6 +216,9 @@ const RestaurantPage: React.FC = () => {
         // Имитация задержки для лучшего UX
         await new Promise(resolve => setTimeout(resolve, 500));
         setLoading(false);
+        
+        // После загрузки ресторана проверяем, находится ли он в избранном
+        await checkIfFavorite();
       } catch (e) {
         console.error('Ошибка при загрузке данных:', e);
         setError(e instanceof Error ? e.message : 'Произошла ошибка при загрузке данных');
@@ -203,7 +227,7 @@ const RestaurantPage: React.FC = () => {
     };
 
     fetchRestaurantDetails();
-  }, [id, location.state]);
+  }, [id, location.state, isAuthenticated, typedUser]);
 
   const handleNavBarSearch = (query: string) => {
     console.log(`Поиск в NavBar: ${query}`);
@@ -217,9 +241,41 @@ const RestaurantPage: React.FC = () => {
     navigate('/login');
   };
 
-  const handleFavoriteToggle = () => {
-    setUserFavorite(prev => !prev);
-    // Реальная логика обновления избранного тут
+  // Обновленная функция для добавления/удаления из избранного
+  const handleFavoriteToggle = async () => {
+    if (!isAuthenticated || !typedUser) {
+      // Если пользователь не авторизован, перенаправляем на страницу входа
+      showNotification('Чтобы добавить ресторан в избранное, необходимо войти в систему', 'info');
+      navigate('/login', { state: { from: location.pathname } });
+      return;
+    }
+    
+    if (!id) return;
+    
+    setFavoritesLoading(true);
+    
+    try {
+      if (userFavorite) {
+        // Удаляем из избранного
+        await favoriteService.removeFromFavorites(typedUser.id, id);
+        showNotification('Ресторан удален из избранного', 'success');
+      } else {
+        // Добавляем в избранное
+        await favoriteService.addToFavorites(typedUser.id, id);
+        showNotification('Ресторан добавлен в избранное', 'success');
+      }
+      
+      // Обновляем счетчик избранного у пользователя
+      await favoriteService.updateUserFavoritesCount(typedUser.id);
+      
+      // Обновляем состояние в компоненте
+      setUserFavorite(!userFavorite);
+    } catch (error) {
+      console.error('Ошибка при изменении избранного:', error);
+      showNotification('Произошла ошибка при изменении избранного', 'error');
+    } finally {
+      setFavoritesLoading(false);
+    }
   };
 
   const handleTabChange = (tab: string) => {
@@ -310,6 +366,7 @@ const RestaurantPage: React.FC = () => {
           isFavorite={userFavorite}
           onFavoriteToggle={handleFavoriteToggle}
           onViewAllPhotos={() => setActiveTab('photos')}
+          // Убрано свойство favoritesLoading, так как его нет в пропсах компонента
         />
 
         <RestaurantTabs
@@ -317,7 +374,6 @@ const RestaurantPage: React.FC = () => {
           activeTab={activeTab}
           onTabChange={handleTabChange}
         />
-
 
         <div className={styles.mainContent}>
           {activeTab === 'overview' && (

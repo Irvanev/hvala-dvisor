@@ -4,12 +4,13 @@ import styles from './UserInfoCard.module.css';
 interface UserInfoCardProps {
   user: {
     name: string;
+    firstName: string;
+    lastName: string;
     username: string;
     city: string;
     avatar: string;
-    reviews?: any[]; // Опционально: массив отзывов пользователя
-    favorites?: number; // Опционально: количество избранных ресторанов
-    registrationDate?: string; // Опционально: дата регистрации
+    reviewsCount: number;
+    likesCount: number;
   };
   onEditClick: () => void;
 }
@@ -22,7 +23,12 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({ user, onEditClick }) => {
       </div>
       
       <div className={styles.userInfo}>
-        <h1 className={styles.userName}>{user.name}</h1>
+        {/* Основное имя и фамилия вместо ника */}
+        <h1 className={styles.userName}>
+          {user.firstName && user.lastName 
+            ? `${user.firstName} ${user.lastName}`
+            : user.name}
+        </h1>
         <p className={styles.userLogin}>@{user.username}</p>
         
         {/* Информация о городе */}
@@ -35,26 +41,15 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({ user, onEditClick }) => {
         
         {/* Статистика пользователя */}
         <div className={styles.userStats}>
-          {user.reviews && (
-            <div className={styles.statItem}>
-              <div className={styles.statValue}>{user.reviews.length}</div>
-              <div className={styles.statLabel}>Отзывов</div>
-            </div>
-          )}
+          <div className={styles.statItem}>
+            <div className={styles.statValue}>{user.reviewsCount}</div>
+            <div className={styles.statLabel}>Отзывов</div>
+          </div>
           
-          {user.favorites !== undefined && (
-            <div className={styles.statItem}>
-              <div className={styles.statValue}>{user.favorites}</div>
-              <div className={styles.statLabel}>В избранном</div>
-            </div>
-          )}
-          
-          {user.registrationDate && (
-            <div className={styles.statItem}>
-              <div className={styles.statValue}>{user.registrationDate}</div>
-              <div className={styles.statLabel}>С нами с</div>
-            </div>
-          )}
+          <div className={styles.statItem}>
+            <div className={styles.statValue}>{user.likesCount}</div>
+            <div className={styles.statLabel}>В избранном</div>
+          </div>
         </div>
         
         <button onClick={onEditClick} className={styles.editButton}>
@@ -62,9 +57,7 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({ user, onEditClick }) => {
           Редактировать профиль
         </button>
       </div>
-      
-      </div>
-
+    </div>
   );
 };
 

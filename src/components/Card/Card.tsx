@@ -1,7 +1,13 @@
-// components/Card/Card.tsx
-import React, { useState } from 'react';
+// src/components/Card/Card.tsx
+import React, { useState, useEffect } from 'react';
 import styles from './Card.module.css';
-import cx from 'classnames'; // Библиотека для объединения классов (например, classnames)
+import cx from 'classnames';
+import { favoriteService } from '../../services/FavoriteService';
+import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { User } from '../../models/types';
+import { useNotification } from '../../contexts/NotificationContext';
+
 
 const tagIcons: Record<string, string> = {
   'Французская': '🍽️',
@@ -14,12 +20,6 @@ const tagIcons: Record<string, string> = {
   'Терраса': '🪟',
   'Винная карта': '🍷',
   'Дровяная печь': '🔥',
-};
-
-const priceRangeIcons: Record<string, string> = {
-  '€': '💰',
-  '€€': '💵',
-  '€€€': '💳',
 };
 
 interface CardProps {
@@ -41,7 +41,7 @@ interface CardProps {
   savedStatus?: boolean;
   onClick?: () => void;
   onSaveToggle?: (saved: boolean, event?: React.MouseEvent) => void;
-  variant?: 'default' | 'square'; // Новый проп для выбора стиля
+  variant?: 'default' | 'square';
 }
 
 const Card: React.FC<CardProps> = ({
@@ -54,27 +54,56 @@ const Card: React.FC<CardProps> = ({
   cuisineTags = [],
   featureTags = [],
   priceRange,
-  savedStatus = false,
+  savedStatus,
   onClick,
   onSaveToggle,
-  variant = 'default', // По умолчанию используем стандартный стиль
+  variant = 'default',
 }) => {
   const allImages = images.length > 0 ? images : image ? [image] : [];
-  const [isSaved, setIsSaved] = useState(savedStatus);
+  const [isSaved, setIsSaved] = useState(savedStatus || false);
+  const [isLoading, setIsLoading] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const { user, isAuthenticated } = useAuth();
+  const typedUser = user as User | null;
+  const navigate = useNavigate();
+  const locationHook = useLocation();
+  const { showNotification } = useNotification();
+
+  // Проверяем статус избранного при монтировании
+  useEffect(() => {
+    const checkFavoriteStatus = async () => {
+      if (isAuthenticated && typedUser) {
+        try {
+          const isFavorite = await favoriteService.isRestaurantFavorite(typedUser.id, id);
+          setIsSaved(isFavorite);
+        } catch (error) {
+          console.error('Ошибка при проверке избранного:', error);
+        }
+      }
+    };
+
+    checkFavoriteStatus();
+  }, [id, isAuthenticated, typedUser]);
+
+  // Обновление статуса при изменении savedStatus
+  useEffect(() => {
+    if (savedStatus !== undefined) {
+      setIsSaved(savedStatus);
+    }
+  }, [savedStatus]);
 
   // Форматируем местоположение для отображения
   const formattedLocation = () => {
     if (!location) return '';
-    
+
     if (typeof location === 'string') {
       return location;
     }
-    
+
     // Если location - объект, форматируем его в строку
     if (typeof location === 'object') {
       const locationObj = location as any;
-      
+
       if (locationObj.city && locationObj.country) {
         return `${locationObj.city}, ${locationObj.country}`;
       } else if (locationObj.address) {
@@ -88,7 +117,7 @@ const Card: React.FC<CardProps> = ({
           .join(', ');
       }
     }
-    
+
     return '';
   };
 
@@ -125,13 +154,47 @@ const Card: React.FC<CardProps> = ({
     );
   };
 
-  const handleSaveClick = (e: React.MouseEvent) => {
+  const handleSaveClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    const newSavedState = !isSaved;
-    setIsSaved(newSavedState);
-    if (onSaveToggle) {
-      onSaveToggle(newSavedState, e);
+
+    if (!isAuthenticated || !typedUser) {
+      // Если пользователь не авторизован, перенаправляем на страницу входа
+      showNotification('Чтобы добавить ресторан в избранное, необходимо войти в систему', 'info');
+      navigate('/login', { state: { from: locationHook.pathname } });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const newSavedState = !isSaved;
+
+      if (newSavedState) {
+        // Добавляем в избранное
+        await favoriteService.addToFavorites(typedUser.id, id);
+        showNotification('Ресторан добавлен в избранное', 'success');
+      } else {
+        // Удаляем из избранного
+        await favoriteService.removeFromFavorites(typedUser.id, id);
+        showNotification('Ресторан удален из избранного', 'success');
+      }
+
+      // Обновляем счетчик избранного у пользователя
+      await favoriteService.updateUserFavoritesCount(typedUser.id);
+
+      // Обновляем состояние
+      setIsSaved(newSavedState);
+
+      // Вызываем коллбэк, если он предоставлен
+      if (onSaveToggle) {
+        onSaveToggle(newSavedState, e);
+      }
+    } catch (error) {
+      console.error('Ошибка при изменении избранного:', error);
+      showNotification('Произошла ошибка при изменении избранного', 'error');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -195,13 +258,18 @@ const Card: React.FC<CardProps> = ({
           <div className={styles.cardImagePlaceholder}>Нет изображения</div>
         )}
         <button
-          className={styles.favoriteButton}
+          className={cx(styles.favoriteButton, { [styles.favoriteLoading]: isLoading })}
           onClick={handleSaveClick}
           aria-label={isSaved ? 'Удалить из избранного' : 'Добавить в избранное'}
+          disabled={isLoading}
         >
-          <svg viewBox="0 0 24 24" fill={isSaved ? '#fff' : 'none'} stroke="#fff" strokeWidth="2" width="24" height="24">
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-          </svg>
+          {isLoading ? (
+            <div className={styles.loadingSpinner}></div>
+          ) : (
+            <svg viewBox="0 0 24 24" fill={isSaved ? '#fff' : 'none'} stroke="#fff" strokeWidth="2" width="24" height="24">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+            </svg>
+          )}
         </button>
         {rating && (
           <div className={styles.ratingBadge}>
@@ -214,9 +282,8 @@ const Card: React.FC<CardProps> = ({
           <h3 className={styles.cardTitle}>{title}</h3>
           {priceRange && (
             <div
-              className={`${styles.priceTag} ${
-                priceRange === '€€€' ? styles.expensivePrice : priceRange === '€€' ? styles.moderatePrice : styles.affordablePrice
-              }`}
+              className={`${styles.priceTag} ${priceRange === '€€€' ? styles.expensivePrice : priceRange === '€€' ? styles.moderatePrice : styles.affordablePrice
+                }`}
             >
               {priceRange}
             </div>
