@@ -19,16 +19,21 @@ import {
   Timestamp
 } from 'firebase/firestore';
 
-// Импортируем типы из файла с моделями
-import { Review as ReviewModel, Restaurant, Like, User as UserModel } from '../../models/types';
+import { Review as ReviewModel, User as UserModel } from '../../models/types';
 
-// Расширенный интерфейс для отзывов с дополнительными полями для UI
-interface ExtendedReview extends Omit<ReviewModel, 'reply'> {
-  restaurantName: string; // Добавлено для отображения 
-  date: string; // Форматированная дата для отображения
+/* ---------- ДОПОЛНЯЕМ ТИП ---------- */
+interface UserExtended extends UserModel {
+  /** Поля, которые есть в Firestore, но отсутствуют в старом интерфейсе */
+  name?: string;
+  username?: string;
 }
 
-// Интерфейс для избранных ресторанов
+/* ---------- UI-типы ---------- */
+interface ExtendedReview extends Omit<ReviewModel, 'reply'> {
+  restaurantName: string;
+  date: string;
+}
+
 interface ExtendedRestaurant {
   id: string;
   title: string;
@@ -36,18 +41,16 @@ interface ExtendedRestaurant {
   mainImageUrl?: string;
 }
 
-// Интерфейс для элемента лайков в UI
 interface RestaurantLikeUI {
   restaurantId: string;
   restaurantName: string;
   createdAt: Timestamp;
 }
 
-// Тип для UserInfoCard
 interface UserProfile {
   name: string;
-  firstName: string;  // Добавлено имя
-  lastName: string;   // Добавлена фамилия
+  firstName: string;
+  lastName: string;
   username: string;
   city: string;
   avatar: string;
@@ -55,87 +58,91 @@ interface UserProfile {
   likesCount: number;
 }
 
+/* ---------- КОМПОНЕНТ ---------- */
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, isLoading } = useAuth();
-  // Используем приведение типа, а не null assertion
-  const typedUser = user as UserModel | null;
 
-  const [reviews, setReviews] = useState<ExtendedReview[]>([]);
-  const [favorites, setFavorites] = useState<ExtendedRestaurant[]>([]);
-  // Для хранения ID ресторанов в избранном (лайкнутых)
+  const {
+    user,            // профиль из Firestore
+    currentUser,     // объект Firebase Auth
+    isAuthenticated,
+    isLoading
+  } = useAuth();
+
+  // теперь в typedUser доступны name и username
+  const typedUser = user as UserExtended | null;
+
+  /* --- состояния --- */
+  const [reviews, setReviews]         = useState<ExtendedReview[]>([]);
+  const [favorites, setFavorites]     = useState<ExtendedRestaurant[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
-  const [likes, setLikes] = useState<RestaurantLikeUI[]>([]);
-  const [isLoadingReviews, setIsLoadingReviews] = useState<boolean>(true);
-  const [isLoadingFavorites, setIsLoadingFavorites] = useState<boolean>(true);
-  const [isLoadingLikes, setIsLoadingLikes] = useState<boolean>(true);
+  const [likes, setLikes]             = useState<RestaurantLikeUI[]>([]);
+
+  const [isLoadingReviews,   setIsLoadingReviews]   = useState(true);
+  const [isLoadingFavorites, setIsLoadingFavorites] = useState(true);
+  const [isLoadingLikes,     setIsLoadingLikes]     = useState(true);
+
   const [activeTab, setActiveTab] = useState<'reviews' | 'favorites'>('reviews');
 
-  // Функция для загрузки отзывов пользователя
+  /* ---------- ЗАГРУЗКА ОТЗЫВОВ ---------- */
   useEffect(() => {
     const fetchReviews = async () => {
       if (!isAuthenticated || !typedUser) return;
       setIsLoadingReviews(true);
 
       try {
-        // Проверяем существует ли typedUser.id
         if (!typedUser.id) {
           console.error('ID пользователя отсутствует');
           setIsLoadingReviews(false);
           return;
         }
 
-        // Запрос в Firebase - используем обновленную структуру
         const reviewsQuery = query(
           collection(db, 'reviews'),
           where('authorId', '==', typedUser.id),
           orderBy('createdAt', 'desc')
         );
 
-        const reviewsSnapshot = await getDocs(reviewsQuery);
+        const snap = await getDocs(reviewsQuery);
 
-        const reviewsPromises = reviewsSnapshot.docs.map(async (reviewDoc) => {
-          const reviewData = reviewDoc.data();
+        const mapped = await Promise.all(
+          snap.docs.map(async (d) => {
+            const data = d.data();
 
-          // Получаем название ресторана
-          let restaurantName = 'Ресторан';
-          try {
-            const restaurantDoc = await getDoc(doc(db, 'restaurants', reviewData.restaurantId));
-            if (restaurantDoc.exists()) {
-              restaurantName = restaurantDoc.data().title || restaurantName;
+            let restaurantName = 'Ресторан';
+            try {
+              const rest = await getDoc(doc(db, 'restaurants', data.restaurantId));
+              if (rest.exists()) restaurantName = rest.data().title || restaurantName;
+            } catch (e) {
+              console.error('Ошибка ресторана:', e);
             }
-          } catch (err) {
-            console.error('Ошибка при загрузке данных ресторана:', err);
-          }
 
-          // Приведение server timestamp к дате
-          const createdAt = reviewData.createdAt;
-          let dateString = 'Недавно';
-          if (createdAt) {
-            const date = createdAt.toDate ? createdAt.toDate() : new Date(createdAt);
-            dateString = date.toLocaleDateString('ru-RU');
-          }
+            const createdAt = data.createdAt;
+            const dateStr = createdAt
+              ? (createdAt.toDate ? createdAt.toDate() : new Date(createdAt)
+                ).toLocaleDateString('ru-RU')
+              : 'Недавно';
 
-          return {
-            id: reviewDoc.id,
-            restaurantId: reviewData.restaurantId,
-            authorId: reviewData.authorId,
-            authorName: reviewData.authorName || typedUser?.firstName || '',
-            authorAvatarUrl: reviewData.authorAvatarUrl,
-            rating: reviewData.rating ?? 0,
-            comment: reviewData.comment || '',
-            createdAt: reviewData.createdAt,
-            updatedAt: reviewData.updatedAt || reviewData.createdAt,
-            likesCount: reviewData.likesCount || 0,
-            restaurantName: restaurantName,
-            date: dateString
-          } as ExtendedReview;
-        });
+            return {
+              id: d.id,
+              restaurantId: data.restaurantId,
+              authorId: data.authorId,
+              authorName: data.authorName || typedUser.firstName || '',
+              authorAvatarUrl: data.authorAvatarUrl,
+              rating: data.rating ?? 0,
+              comment: data.comment || '',
+              createdAt: data.createdAt,
+              updatedAt: data.updatedAt || data.createdAt,
+              likesCount: data.likesCount || 0,
+              restaurantName,
+              date: dateStr
+            } as ExtendedReview;
+          })
+        );
 
-        const userReviews = await Promise.all(reviewsPromises);
-        setReviews(userReviews);
-      } catch (error) {
-        console.error('Ошибка при загрузке отзывов:', error);
+        setReviews(mapped);
+      } catch (e) {
+        console.error('Ошибка отзывов:', e);
       } finally {
         setIsLoadingReviews(false);
       }
@@ -144,8 +151,7 @@ const ProfilePage: React.FC = () => {
     fetchReviews();
   }, [typedUser, isAuthenticated]);
 
-  // Функция для загрузки избранных ресторанов
-  // Теперь мы будем искать лайки в подколлекции "likes"
+  /* ---------- ЗАГРУЗКА ИЗБРАННЫХ ---------- */
   useEffect(() => {
     const fetchFavorites = async () => {
       if (!isAuthenticated || !typedUser) {
@@ -155,51 +161,46 @@ const ProfilePage: React.FC = () => {
       setIsLoadingFavorites(true);
 
       try {
-        // Получаем лайки пользователя из коллекции "likes"
         const likesQuery = query(
           collection(db, 'likes'),
           where('userId', '==', typedUser.id)
         );
-        
-        const likesSnapshot = await getDocs(likesQuery);
-        
-        if (likesSnapshot.empty) {
+
+        const likeSnap = await getDocs(likesQuery);
+        if (likeSnap.empty) {
           setFavorites([]);
           setFavoriteIds([]);
           setIsLoadingFavorites(false);
           return;
         }
-        
-        // Получаем ID ресторанов, которые лайкнул пользователь
-        const restaurantIds = likesSnapshot.docs.map(doc => doc.data().restaurantId);
-        setFavoriteIds(restaurantIds);
-        
-        // Получаем данные ресторанов
-        const favoritePromises = restaurantIds.map(async (restaurantId) => {
-          try {
-            const restaurantDoc = await getDoc(doc(db, 'restaurants', restaurantId));
-            if (restaurantDoc.exists()) {
-              const data = restaurantDoc.data();
+
+        const restIds = likeSnap.docs.map((d) => d.data().restaurantId);
+        setFavoriteIds(restIds);
+
+        const favs = await Promise.all(
+          restIds.map(async (id) => {
+            try {
+              const rest = await getDoc(doc(db, 'restaurants', id));
+              if (!rest.exists()) return null;
+              const r = rest.data();
               return {
-                id: restaurantDoc.id,
-                title: data.title || 'Ресторан',
-                address: data.address ? 
-                  `${data.address.street}, ${data.address.city}, ${data.address.country}` : 
-                  'Адрес не указан',
-                mainImageUrl: data.mainImageUrl || (data.galleryUrls && data.galleryUrls[0]) || undefined
+                id: rest.id,
+                title: r.title || 'Ресторан',
+                address: r.address
+                  ? `${r.address.street}, ${r.address.city}, ${r.address.country}`
+                  : 'Адрес не указан',
+                mainImageUrl: r.mainImageUrl || (r.galleryUrls && r.galleryUrls[0])
               } as ExtendedRestaurant;
+            } catch (e) {
+              console.error(`Ошибка ресторана ${id}:`, e);
+              return null;
             }
-            return null;
-          } catch (err) {
-            console.error(`Ошибка при загрузке ресторана ${restaurantId}:`, err);
-            return null;
-          }
-        });
-        
-        const favoriteRestaurants = (await Promise.all(favoritePromises)).filter(Boolean) as ExtendedRestaurant[];
-        setFavorites(favoriteRestaurants);
-      } catch (error) {
-        console.error('Ошибка при загрузке избранных ресторанов:', error);
+          })
+        );
+
+        setFavorites(favs.filter(Boolean) as ExtendedRestaurant[]);
+      } catch (e) {
+        console.error('Ошибка избранных:', e);
       } finally {
         setIsLoadingFavorites(false);
       }
@@ -208,7 +209,7 @@ const ProfilePage: React.FC = () => {
     fetchFavorites();
   }, [typedUser, isAuthenticated]);
 
-  // Новая функция для загрузки лайков отзывов
+  /* ---------- ЗАГРУЗКА ЛАЙКОВ ОТЗЫВОВ ---------- */
   useEffect(() => {
     const fetchLikes = async () => {
       if (!isAuthenticated || !typedUser) {
@@ -218,51 +219,47 @@ const ProfilePage: React.FC = () => {
       setIsLoadingLikes(true);
 
       try {
-        // Получаем все рестораны, у которых пользователь лайкнул хотя бы один отзыв
         const restaurantLikes: RestaurantLikeUI[] = [];
-        
-        // Сначала получаем все рестораны
-        const restaurantsSnapshot = await getDocs(collection(db, 'restaurants'));
-        
-        // Для каждого ресторана проверяем, есть ли лайки пользователя
-        const likePromises = restaurantsSnapshot.docs.map(async (restaurantDoc) => {
-          const restaurantId = restaurantDoc.id;
-          const restaurantData = restaurantDoc.data();
-          
-          // Получаем все отзывы для этого ресторана
-          const reviewsSnapshot = await getDocs(collection(db, 'restaurants', restaurantId, 'reviews'));
-          
-          for (const reviewDoc of reviewsSnapshot.docs) {
-            const reviewId = reviewDoc.id;
-            
-            // Проверяем есть ли лайк от текущего пользователя
-            const likeDoc = await getDoc(doc(db, 'restaurants', restaurantId, 'reviews', reviewId, 'likes', typedUser.id));
-            
-            if (likeDoc.exists()) {
-              // Этот отзыв был лайкнут пользователем
-              restaurantLikes.push({
-                restaurantId: restaurantId,
-                restaurantName: restaurantData.title || 'Ресторан',
-                createdAt: likeDoc.data().createdAt
-              });
-              // Достаточно найти один лайк для этого ресторана
-              break;
+
+        const restSnap = await getDocs(collection(db, 'restaurants'));
+        await Promise.all(
+          restSnap.docs.map(async (restDoc) => {
+            const restId = restDoc.id;
+            const restData = restDoc.data();
+
+            const revSnap = await getDocs(
+              collection(db, 'restaurants', restId, 'reviews')
+            );
+
+            for (const rev of revSnap.docs) {
+              const likeDoc = await getDoc(
+                doc(db,
+                    'restaurants',
+                    restId,
+                    'reviews',
+                    rev.id,
+                    'likes',
+                    typedUser.id)
+              );
+              if (likeDoc.exists()) {
+                restaurantLikes.push({
+                  restaurantId: restId,
+                  restaurantName: restData.title || 'Ресторан',
+                  createdAt: likeDoc.data().createdAt
+                });
+                break;
+              }
             }
-          }
-        });
-        
-        await Promise.all(likePromises);
-        
-        // Сортируем по дате создания (новые вверху)
-        restaurantLikes.sort((a, b) => {
-          const dateA = a.createdAt ? a.createdAt.toMillis() : 0;
-          const dateB = b.createdAt ? b.createdAt.toMillis() : 0;
-          return dateB - dateA;
-        });
-        
+          })
+        );
+
+        restaurantLikes.sort(
+          (a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0)
+        );
+
         setLikes(restaurantLikes);
-      } catch (error) {
-        console.error('Ошибка при загрузке лайков:', error);
+      } catch (e) {
+        console.error('Ошибка лайков:', e);
       } finally {
         setIsLoadingLikes(false);
       }
@@ -271,15 +268,43 @@ const ProfilePage: React.FC = () => {
     fetchLikes();
   }, [typedUser, isAuthenticated]);
 
-  const handleEditProfile = () => {
-    navigate('/edit-profile');
+  /* ---------- ОБРАБОТЧИК ---------- */
+  const handleEditProfile = () => navigate('/edit-profile');
+
+  /* ---------- УСТОЙЧИВАЯ ЛОГИКА ИМЕНИ ---------- */
+  const authDisplayName = currentUser?.displayName?.trim() || '';
+  const firestoreName   = typedUser?.name?.trim()          || '';
+
+  const fullName =
+    firestoreName ||
+    authDisplayName ||
+    `${typedUser?.firstName || ''} ${typedUser?.lastName || ''}`.trim() ||
+    typedUser?.email?.split('@')[0] ||
+    'Пользователь';
+
+  const [fName = '', ...lNameParts] = fullName.split(' ');
+
+  const userProfile: UserProfile = {
+    name: fullName,
+    firstName: typedUser?.firstName || fName,
+    lastName:  typedUser?.lastName  || lNameParts.join(' '),
+    username:
+      typedUser?.username ||
+      typedUser?.nickname ||
+      typedUser?.email?.split('@')[0] ||
+      'user',
+    city:   typedUser?.city || 'Не указан',
+    avatar: typedUser?.avatarUrl || 'https://placehold.jp/300x300.png?text=User',
+    reviewsCount: typedUser?.reviewsCount ?? reviews.length,
+    likesCount:   typedUser?.likesCount   ?? likes.length
   };
 
+  /* ---------- РЕНДЕР ---------- */
   if (isLoading) {
     return (
       <div className={styles.loadingContainer}>
-        <div className={styles.loadingSpinner}></div>
-        <p>Загрузка...</p>
+        <div className={styles.loadingSpinner} />
+        <p>Загрузка…</p>
       </div>
     );
   }
@@ -288,18 +313,21 @@ const ProfilePage: React.FC = () => {
     return (
       <div className={styles.profilePage}>
         <NavBar
-          onSearch={(query) => console.log(`Поиск: ${query}`)}
-          onLanguageChange={(language) => console.log(`Язык: ${language}`)}
+          onSearch={(q) => console.log(`Поиск: ${q}`)}
+          onLanguageChange={(l) => console.log(`Язык: ${l}`)}
           currentLanguage="ru"
           logoText="HvalaDviser"
-          onWelcomeClick={() => console.log('Клик на Welcome')}
-          isStatic={true}
+          onWelcomeClick={() => console.log('Welcome')}
+          isStatic
         />
         <div className={styles.profileContainer}>
           <div className={styles.unauthorizedMessage}>
             <h2>Вы не авторизованы</h2>
-            <p>Для просмотра профиля необходимо войти в систему</p>
-            <button className={styles.loginButton} onClick={() => navigate('/login')}>
+            <p>Для просмотра профиля необходимо войти</p>
+            <button
+              className={styles.loginButton}
+              onClick={() => navigate('/login')}
+            >
               Войти
             </button>
           </div>
@@ -309,94 +337,89 @@ const ProfilePage: React.FC = () => {
     );
   }
 
-  // Отображение контента в зависимости от выбранной вкладки
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case 'reviews':
-        return (
-          <div className={styles.reviewsContainer}>
-            {isLoadingReviews ? (
-              <div className={styles.loadingIndicator}>Загрузка отзывов...</div>
-            ) : reviews.length > 0 ? (
-              <div className={styles.reviewsList}>
-                {reviews.map((review) => (
-                  <div key={review.id} className={styles.reviewItem} onClick={() => navigate(`/restaurant/${review.restaurantId}`)}>
-                    <div className={styles.reviewHeader}>
-                      <h3 className={styles.restaurantName}>{review.restaurantName}</h3>
-                      <div className={styles.reviewRating}>
-                        {Array(5).fill(0).map((_, i) => (
-                          <span key={i} className={i < review.rating ? styles.starFilled : styles.starEmpty}>★</span>
-                        ))}
-                      </div>
-                      <span className={styles.reviewDate}>{review.date}</span>
-                    </div>
-                    <p className={styles.reviewText}>{review.comment}</p>
+  const renderTabContent = () =>
+    activeTab === 'reviews' ? (
+      <div className={styles.reviewsContainer}>
+        {isLoadingReviews ? (
+          <div className={styles.loadingIndicator}>Загрузка отзывов…</div>
+        ) : reviews.length ? (
+          <div className={styles.reviewsList}>
+            {reviews.map((r) => (
+              <div
+                key={r.id}
+                className={styles.reviewItem}
+                onClick={() => navigate(`/restaurant/${r.restaurantId}`)}
+              >
+                <div className={styles.reviewHeader}>
+                  <h3 className={styles.restaurantName}>{r.restaurantName}</h3>
+                  <div className={styles.reviewRating}>
+                    {Array(5)
+                      .fill(0)
+                      .map((_, i) => (
+                        <span
+                          key={i}
+                          className={
+                            i < r.rating ? styles.starFilled : styles.starEmpty
+                          }
+                        >
+                          ★
+                        </span>
+                      ))}
                   </div>
-                ))}
+                  <span className={styles.reviewDate}>{r.date}</span>
+                </div>
+                <p className={styles.reviewText}>{r.comment}</p>
               </div>
-            ) : (
-              <p className={styles.noReviews}>У вас пока нет отзывов</p>
-            )}
+            ))}
           </div>
-        );
-      case 'favorites':
-        return (
-          <div className={styles.reviewsContainer}>
-            {isLoadingFavorites ? (
-              <div className={styles.loadingIndicator}>Загрузка избранных ресторанов...</div>
-            ) : favorites.length > 0 ? (
-              <div className={styles.favoritesList}>
-                {favorites.map((restaurant) => (
-                  <div
-                    key={restaurant.id}
-                    className={styles.favoriteRestaurant}
-                    onClick={() => navigate(`/restaurant/${restaurant.id}`)}
-                  >
-                    <div className={styles.favoriteImageContainer}>
-                      <img
-                        src={restaurant.mainImageUrl || 'https://placehold.jp/300x200.png?text=Ресторан'}
-                        alt={restaurant.title}
-                        className={styles.favoriteImage}
-                      />
-                    </div>
-                    <div className={styles.favoriteDetails}>
-                      <h3 className={styles.favoriteName}>{restaurant.title}</h3>
-                      <p className={styles.favoriteAddress}>{restaurant.address}</p>
-                    </div>
-                  </div>
-                ))}
+        ) : (
+          <p className={styles.noReviews}>У вас пока нет отзывов</p>
+        )}
+      </div>
+    ) : (
+      <div className={styles.reviewsContainer}>
+        {isLoadingFavorites ? (
+          <div className={styles.loadingIndicator}>Загрузка избранного…</div>
+        ) : favorites.length ? (
+          <div className={styles.favoritesList}>
+            {favorites.map((rest) => (
+              <div
+                key={rest.id}
+                className={styles.favoriteRestaurant}
+                onClick={() => navigate(`/restaurant/${rest.id}`)}
+              >
+                <div className={styles.favoriteImageContainer}>
+                  <img
+                    src={
+                      rest.mainImageUrl ||
+                      'https://placehold.jp/300x200.png?text=Ресторан'
+                    }
+                    alt={rest.title}
+                    className={styles.favoriteImage}
+                  />
+                </div>
+                <div className={styles.favoriteDetails}>
+                  <h3 className={styles.favoriteName}>{rest.title}</h3>
+                  <p className={styles.favoriteAddress}>{rest.address}</p>
+                </div>
               </div>
-            ) : (
-              <p className={styles.noReviews}>У вас пока нет избранных ресторанов</p>
-            )}
+            ))}
           </div>
-        );
-      default:
-        return null;
-    }
-  };
-
-  // Формируем объект профиля для компонента UserInfoCard
-  const userProfile: UserProfile = {
-    name: typedUser?.email?.split('@')[0] || 'Пользователь',
-    firstName: typedUser?.firstName || '',
-    lastName: typedUser?.lastName || '',
-    username: typedUser?.nickname || typedUser?.email?.split('@')[0] || 'user',
-    city: typedUser?.city || 'Не указан',
-    avatar: typedUser?.avatarUrl || 'https://placehold.jp/300x300.png?text=User',
-    reviewsCount: typedUser?.reviewsCount || reviews.length,
-    likesCount: typedUser?.likesCount || likes.length
-  };
+        ) : (
+          <p className={styles.noReviews}>У вас пока нет избранных ресторанов</p>
+        )}
+      </div>
+    );
 
   return (
     <div className={styles.profilePage}>
       <NavBar
-        onSearch={(query) => console.log(`Поиск: ${query}`)}
-        onLanguageChange={(language) => console.log(`Язык: ${language}`)}
+        onSearch={(q) => console.log(`Поиск: ${q}`)}
+        onLanguageChange={(l) => console.log(`Язык: ${l}`)}
         currentLanguage="ru"
         logoText="HvalaDviser"
-        onWelcomeClick={() => console.log('Клик на Welcome')}
-        isStatic={true}
+        onWelcomeClick={() => console.log('Welcome')}
+        isStatic
       />
 
       <div className={styles.profileContainer}>
@@ -404,12 +427,13 @@ const ProfilePage: React.FC = () => {
           <div className={styles.leftColumn}>
             <UserInfoCard user={userProfile} onEditClick={handleEditProfile} />
           </div>
+
           <div className={styles.rightColumn}>
             <TabsNavigation
               activeTab={activeTab}
               onTabChange={setActiveTab}
               tabs={[
-                { id: 'reviews', label: 'Отзывы', count: reviews.length },
+                { id: 'reviews',   label: 'Отзывы',     count: reviews.length },
                 { id: 'favorites', label: 'Избранное', count: favorites.length }
               ]}
             />
