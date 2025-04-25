@@ -20,6 +20,7 @@ import BestRestaurantsPage from './pages/BestRestaurantsPage/BestRestaurantsPage
 import SearchResultsPage from './pages/SearchResultsPage/SearchResultsPage';
 import ModeratorPage from './pages/ModeratorPage/ModeratorPage';
 import AdminUsersPage from './pages/AdminUsersPage/AdminUsersPage';
+import EditRestaurantPage from './pages/EditRestaurantPage/EditRestaurantPage';
 
 import './App.css';
 
@@ -50,6 +51,7 @@ const App: React.FC = () => {
             {/* Маршруты для модераторов */}
             <Route element={<ModeratorRoute />}>
               <Route path="/moderator" element={<ModeratorPage />} />
+              <Route path="/edit-restaurant/:restaurantId" element={<EditRestaurantPage />} />
             </Route>
 
             {/* Маршруты только для администраторов */}

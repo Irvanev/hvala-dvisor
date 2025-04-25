@@ -322,6 +322,12 @@ const ModeratorPage: React.FC = () => {
                                             </div>
                                             <div className={styles.moderationActions}>
                                                 <button
+                                                    className={styles.editButton}
+                                                    onClick={() => navigate(`/edit-restaurant/${selectedRestaurant.id}`)}
+                                                >
+                                                    Редактировать
+                                                </button>
+                                                <button
                                                     className={styles.approveButton}
                                                     onClick={() => handleModerate('approved')}
                                                     disabled={isSubmitting}

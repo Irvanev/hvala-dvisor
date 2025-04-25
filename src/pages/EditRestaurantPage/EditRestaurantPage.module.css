@@ -1,0 +1,289 @@
+/* Большую часть стилей мы можем повторить из AddRestaurantPage.module.css */
+.editRestaurantPage {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f7f9fc;
+    color: #333;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+  
+  .mainContent {
+    padding-top: 90px;
+    padding-bottom: 50px;
+  }
+  
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 0 16px;
+  }
+  
+  .pageTitle {
+    font-size: 28px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 16px;
+    text-align: center;
+  }
+  
+  .pageDescription {
+    text-align: center;
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 32px;
+    line-height: 1.5;
+  }
+  
+  .formContainer {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    padding: 30px;
+    margin-bottom: 30px;
+  }
+  
+  .formStep {
+    margin-bottom: 20px;
+  }
+  
+  .stepTitle {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .navigationButtons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 32px;
+  }
+  
+  .prevButton, 
+  .nextButton, 
+  .submitButton,
+  .cancelButton {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .prevButton {
+    background-color: #f2f2f2;
+    color: #555;
+    border: 1px solid #ddd;
+  }
+  
+  .prevButton:hover {
+    background-color: #e6e6e6;
+  }
+  
+  .nextButton, 
+  .submitButton {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    box-shadow: 0 4px 6px rgba(76, 175, 80, 0.2);
+  }
+  
+  .nextButton:hover, 
+  .submitButton:hover {
+    background-color: #43a047;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px rgba(76, 175, 80, 0.25);
+  }
+  
+  .cancelButton {
+    background-color: #f2f2f2;
+    color: #555;
+    border: 1px solid #ddd;
+  }
+  
+  .cancelButton:hover {
+    background-color: #e6e6e6;
+  }
+  
+  .finalButtons {
+    display: flex;
+    gap: 16px;
+  }
+  
+  .nextButton:disabled, 
+  .submitButton:disabled {
+    background-color: #a5d6a7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  
+  .generalError {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    text-align: center;
+  }
+  
+  .errorMessage {
+    font-size: 12px;
+    color: #f44336;
+    margin-top: 6px;
+  }
+  
+  .loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f7f9fc;
+  }
+  
+  .loadingSpinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(76, 175, 80, 0.1);
+    border-radius: 50%;
+    border-top-color: #4CAF50;
+    animation: spin 1s ease-in-out infinite;
+    margin-bottom: 16px;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .errorContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f7f9fc;
+    padding: 0 20px;
+    text-align: center;
+  }
+  
+  .backButton {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    margin-top: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  
+  .backButton:hover {
+    background-color: #43a047;
+  }
+  
+  /* Стили для существующих фотографий */
+  .existingPhotosSection {
+    margin-bottom: 32px;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+  }
+  
+  .subSectionTitle {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 16px;
+  }
+  
+  .photoGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  
+  .photoItem {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: white;
+  }
+  
+  .photoPreview {
+    height: 150px;
+    overflow: hidden;
+  }
+  
+  .photoPreview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .photoInfo {
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #f0f0f0;
+  }
+  
+  .photoName {
+    font-size: 12px;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+  }
+  
+  .removePhotoButton {
+    background: none;
+    border: none;
+    color: #f44336;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 0;
+  }
+  
+  .removePhotoButton:hover {
+    text-decoration: underline;
+  }
+  
+  /* Адаптивность для мобильных устройств */
+  @media (max-width: 768px) {
+    .pageTitle {
+      font-size: 24px;
+    }
+    
+    .formContainer {
+      padding: 20px;
+    }
+    
+    .navigationButtons {
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .prevButton, 
+    .nextButton, 
+    .submitButton,
+    .cancelButton {
+      width: 100%;
+    }
+    
+    .finalButtons {
+      width: 100%;
+      flex-direction: column;
+    }
+  }
