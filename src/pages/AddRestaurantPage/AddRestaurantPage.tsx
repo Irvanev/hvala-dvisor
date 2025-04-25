@@ -13,6 +13,7 @@ import { db, storage } from '../../firebase/config';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { GeoPoint, Timestamp } from 'firebase/firestore';
+import { useAuth } from '../../contexts/AuthContext';
 
 // Интерфейс данных формы
 interface RestaurantFormData {
@@ -100,6 +101,7 @@ interface FormErrors {
 
 const AddRestaurantPage: React.FC = () => {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [formData, setFormData] = useState<RestaurantFormData>(INITIAL_FORM_DATA);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -296,72 +298,79 @@ const AddRestaurantPage: React.FC = () => {
   };
 
   // Функция для преобразования данных формы в объект, соответствующий модели Restaurant
-// Функция для преобразования данных формы в объект, соответствующий модели Restaurant
-const transformFormDataToRestaurant = (data: RestaurantFormData): Partial<Restaurant> => {
-  // Создаем GeoPoint для локации
-  const geoPoint = data.position 
-    ? new GeoPoint(data.position.lat, data.position.lng) 
-    : new GeoPoint(0, 0); // значение по умолчанию, лучше использовать валидацию
+  // Функция для преобразования данных формы в объект, соответствующий модели Restaurant
+  const transformFormDataToRestaurant = (data: RestaurantFormData): Partial<Restaurant> => {
 
-  // Формируем адрес
-  const address = {
-    street: data.address.street,
-    city: data.address.city,
-    postalCode: data.address.postalCode,
-    country: data.address.country
-  };
+    // Создаем GeoPoint для локации
+    const geoPoint = data.position
+      ? new GeoPoint(data.position.lat, data.position.lng)
+      : new GeoPoint(0, 0); // значение по умолчанию, лучше использовать валидацию
 
-  // Преобразуем меню
-  const menu: MenuItem[] = [];
-  data.menuItems.forEach((category, catIndex) => {
-    category.items.forEach((item, itemIndex) => {
-      if (item.name.trim()) { // Добавляем только заполненные позиции
-        menu.push({
-          id: `${catIndex}-${itemIndex}`,
-          name: item.name,
-          description: item.description,
-          price: item.price,
-          category: category.category
-        });
-      }
+    // Формируем адрес
+    const address = {
+      street: data.address.street,
+      city: data.address.city,
+      postalCode: data.address.postalCode,
+      country: data.address.country
+    };
+
+    // Преобразуем меню
+    const menu: MenuItem[] = [];
+    data.menuItems.forEach((category, catIndex) => {
+      category.items.forEach((item, itemIndex) => {
+        if (item.name.trim()) { // Добавляем только заполненные позиции
+          menu.push({
+            id: `${catIndex}-${itemIndex}`,
+            name: item.name,
+            description: item.description,
+            price: item.price,
+            category: category.category
+          });
+        }
+      });
     });
-  });
 
-  // Составляем объект контакта
-  const contact = {
-    phone: data.phoneNumber,
-    website: data.website,
-    social: {} // Добавляем пустой объект social, который требуется по типу
+    // Составляем объект контакта
+    const contact = {
+      phone: data.phoneNumber,
+      website: data.website,
+      social: {} // Добавляем пустой объект social, который требуется по типу
+    };
+
+    // Приводим priceRange к правильному формату
+    let formattedPriceRange: '$' | '$$' | '$$$' | undefined;
+    if (data.priceRange === '€') formattedPriceRange = '$';
+    else if (data.priceRange === '€€') formattedPriceRange = '$$';
+    else if (data.priceRange === '€€€') formattedPriceRange = '$$$';
+
+    // Собираем итоговый объект для отправки
+    return {
+      title: data.name,
+      description: data.description,
+      address: address,
+      location: geoPoint,
+      contact: contact,
+      cuisineTags: data.cuisine ? [data.cuisine] : [],
+      featureTags: data.features,
+      priceRange: formattedPriceRange,
+      menu: menu,
+      rating: 0,
+      reviewsCount: 0,
+      likesCount: 0,
+      galleryUrls: [], // Будет заполнено после загрузки фото
+      // Добавляем moderation объект с контактной информацией
+      moderation: {
+        status: 'pending',
+        contactPerson: {
+          name: data.contactPerson.name,
+          email: data.contactPerson.email,
+          phone: data.contactPerson.phone,
+          isOwner: data.contactPerson.isOwner
+        }
+      },
+      // Timestamp будет добавлен при сохранении
+    };
   };
-
-  // Приводим priceRange к правильному формату
-  let formattedPriceRange: '$' | '$$' | '$$$' | undefined;
-  if (data.priceRange === '€') formattedPriceRange = '$';
-  else if (data.priceRange === '€€') formattedPriceRange = '$$';
-  else if (data.priceRange === '€€€') formattedPriceRange = '$$$';
-
-  // Собираем итоговый объект для отправки
-  return {
-    title: data.name,
-    description: data.description,
-    address: address,
-    location: geoPoint,
-    contact: contact,
-    cuisineTags: data.cuisine ? [data.cuisine] : [],
-    featureTags: data.features,
-    priceRange: formattedPriceRange,
-    menu: menu,
-    rating: 0,
-    reviewsCount: 0,
-    likesCount: 0,
-    galleryUrls: [], // Будет заполнено после загрузки фото
-    // Добавляем moderation объект
-    moderation: {
-      status: 'pending'
-    },
-    // Timestamp будет добавлен при сохранении
-  };
-};
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -378,38 +387,32 @@ const transformFormDataToRestaurant = (data: RestaurantFormData): Partial<Restau
           const photoRef = ref(storage, `restaurants/${Date.now()}-${file.name}`);
           const snapshot = await uploadBytes(photoRef, file);
           const url = await getDownloadURL(snapshot.ref);
-          
-          // Первое фото используем как главное
-          if (i === 0) {
-            mainImageUrl = url;
-          }
-          
+  
+          if (i === 0) mainImageUrl = url;
           galleryUrls.push(url);
         }
   
-        // 2. Преобразуем данные формы в модель Restaurant
+        // 2. Преобразуем данные формы
         const restaurantData = transformFormDataToRestaurant(formData);
   
-        // 3. Добавляем поля для сохранения в Firebase
+        // 3. Добавляем ID пользователя
         const restaurantToSave = {
           ...restaurantData,
-          galleryUrls: galleryUrls,
-          mainImageUrl: mainImageUrl,
-          createdAt: serverTimestamp(), // Используем Firebase serverTimestamp
+          galleryUrls,
+          mainImageUrl,
+          createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
-          // Добавляем ID пользователя, если он авторизован
-          ownerId: "guest", // Заменить на auth.currentUser?.uid || "guest"
+          ownerId: currentUser?.uid || "guest" // <-- Используем currentUser здесь
         };
   
         // 4. Сохраняем в Firestore
         await addDoc(collection(db, 'restaurants'), restaurantToSave);
-        
-        // 5. Показываем сообщение об успехе
+  
         setShowSuccessModal(true);
       } catch (error) {
-        console.error('Ошибка при сохранении ресторана:', error);
+        console.error('Ошибка:', error);
         setErrors({
-          general: 'Произошла ошибка при отправке данных. Пожалуйста, попробуйте позже.'
+          general: `Ошибка при сохранении: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`
         });
       } finally {
         setSubmitting(false);

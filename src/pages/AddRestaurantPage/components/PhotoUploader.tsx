@@ -20,7 +20,7 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
     if (e.target.files && e.target.files.length > 0) {
       const newFiles = Array.from(e.target.files);
       onPhotoUpload(newFiles);
-      
+
       // Сбрасываем input чтобы можно было выбрать те же файлы повторно
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -36,7 +36,7 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const droppedFiles = Array.from(e.dataTransfer.files);
       onPhotoUpload(droppedFiles);
@@ -53,12 +53,12 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
     <div className={styles.photoUploaderSection}>
       <h3 className={styles.sectionTitle}>Фотографии ресторана</h3>
       <p className={styles.sectionDescription}>
-        Загрузите фотографии ресторана, которые помогут посетителям получить представление о заведении. 
+        Загрузите фотографии ресторана, которые помогут посетителям получить представление о заведении.
         Рекомендуем загрузить фото интерьера, экстерьера, фирменных блюд и атмосферы.
       </p>
-      
+
       {error && <div className={`${styles.errorMessage} error-message`}>{error}</div>}
-      
+
       <div
         className={styles.dropZone}
         onDragOver={handleDragOver}
@@ -68,7 +68,7 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
         <div className={styles.dropZoneContent}>
           <div className={styles.uploadIcon}>
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 7v11H5V7h3l1-2h6l1 2h3zm-8 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" fill="currentColor"/>
+              <path d="M19 7v11H5V7h3l1-2h6l1 2h3zm-8 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" fill="currentColor" />
             </svg>
           </div>
           <p className={styles.dropZoneText}>
@@ -78,7 +78,7 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
             Поддерживаются JPG, PNG, WEBP. Максимальный размер файла: 10 МБ
           </span>
         </div>
-        
+
         <input
           type="file"
           ref={fileInputRef}
@@ -88,11 +88,11 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
           className={styles.fileInput}
         />
       </div>
-      
+
       {photos.length > 0 && (
         <div className={styles.photoPreviewContainer}>
           <h4 className={styles.previewTitle}>Загруженные фотографии ({photos.length})</h4>
-          
+
           <div className={styles.photoGrid}>
             {photos.map((photo, index) => (
               <div key={`${photo.name}-${index}`} className={styles.photoItem}>
