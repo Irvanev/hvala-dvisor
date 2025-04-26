@@ -1,4 +1,5 @@
 // src/utils/adapters/restaurantAdapter.ts
+
 import { Timestamp, GeoPoint } from 'firebase/firestore';
 import { Restaurant } from '../../models/types';
 
@@ -45,6 +46,8 @@ export function adaptRestaurantFromFirestore(docId: string, data: any): Restaura
     rating: data.rating || 0,
     reviewsCount: data.reviewsCount || 0,
     likesCount: data.likesCount || 0,
+    // Меню ресторана
+    menu: data.menu || [],
     // Модерация
     moderation: data.moderation || {
       status: data.moderationStatus || 'pending'
@@ -71,7 +74,6 @@ export function adaptRestaurantForDisplay(restaurant: Restaurant): any {
       : '',
     description: restaurant.description,
     rating: restaurant.rating,
-    // Обеспечиваем обратную совместимость для обоих форматов изображений
     images: restaurant.galleryUrls || [],
     image: restaurant.mainImageUrl || (restaurant.galleryUrls && restaurant.galleryUrls.length > 0 
       ? restaurant.galleryUrls[0] 
@@ -81,7 +83,6 @@ export function adaptRestaurantForDisplay(restaurant: Restaurant): any {
     priceRange: restaurant.priceRange || '',
     likesCount: restaurant.likesCount,
     reviewsCount: restaurant.reviewsCount,
-    // Дополнительные поля для страницы ресторана (RestaurantPage)
     coordinates: restaurant.location instanceof GeoPoint 
       ? { lat: restaurant.location.latitude, lng: restaurant.location.longitude } 
       : { lat: 0, lng: 0 },
@@ -101,6 +102,28 @@ export function adaptRestaurantForDisplay(restaurant: Restaurant): any {
 }
 
 /**
+ * Группировка элементов меню по категориям
+ * @param menuItems Массив блюд
+ * @returns Группированный массив по категориям
+ */
+function groupMenuItems(menuItems: any[]): Array<{ category: string; items: any[] }> {
+  const grouped: { [category: string]: any[] } = {};
+
+  menuItems.forEach(item => {
+    const category = (item.category || 'Без категории').trim();
+    if (!grouped[category]) {
+      grouped[category] = [];
+    }
+    grouped[category].push(item);
+  });
+
+  return Object.entries(grouped).map(([category, items]) => ({
+    category,
+    items
+  }));
+}
+
+/**
  * Адаптер для преобразования Restaurant в формат для страницы деталей ресторана
  * @param restaurant Объект Restaurant
  * @returns Объект совместимый с RestaurantPage
@@ -110,7 +133,6 @@ export function adaptRestaurantForDetailsPage(restaurant: Restaurant): any {
   
   return {
     ...displayRestaurant,
-    // Добавляем поля, специфичные для страницы ресторана
     openingHours: {
       'Понедельник': '10:00 - 22:00',
       'Вторник': '10:00 - 22:00',
@@ -121,12 +143,13 @@ export function adaptRestaurantForDetailsPage(restaurant: Restaurant): any {
       'Воскресенье': '10:00 - 22:00'
     },
     photos: restaurant.galleryUrls || [],
-    reviews: [], // Здесь можно добавить загрузку отзывов
+    reviews: [],
     cuisine: restaurant.cuisineTags && restaurant.cuisineTags.length > 0 
       ? restaurant.cuisineTags[0] 
       : '',
     phoneNumber: restaurant.contact?.phone || '',
     website: restaurant.contact?.website || '',
-    features: restaurant.featureTags || []
+    features: restaurant.featureTags || [],
+    groupedMenu: restaurant.menu ? groupMenuItems(restaurant.menu) : []
   };
 }

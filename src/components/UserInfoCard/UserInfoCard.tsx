@@ -29,7 +29,7 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({ user, onEditClick }) => {
             ? `${user.firstName} ${user.lastName}`
             : user.name}
         </h1>
-        <p className={styles.userLogin}>@{user.username}</p>
+        <p className={styles.userLogin}>{user.username}</p>
         
         {/* Информация о городе */}
         <div className={styles.userLocation}>
