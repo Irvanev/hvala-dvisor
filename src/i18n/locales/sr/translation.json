@@ -1,0 +1,85 @@
+{
+    "common": {
+      "home": "Početna",
+      "login": "Prijava",
+      "register": "Registracija",
+      "profile": "Profil",
+      "logout": "Odjava",
+      "search": "Pretraga",
+      "loading": "Učitavanje...",
+      "error": "Došlo je do greške"
+    },
+    "navbar": {
+      "welcome": "Dobrodošli",
+      "location": "Lokacija",
+      "restaurant": "Restoran",
+      "viewAllResults": "Pogledaj sve rezultate",
+      "avatar": "Korisnički avatar",
+      "moderation": "Moderacija restorana",
+      "userManagement": "Upravljanje korisnicima"
+    },
+    "homepage": {
+      "title": "Otkrijte najbolje balkanske restorane",
+      "subtitle": "Pronađite autentičnu kuhinju sa Balkana",
+      "featured": "Istaknuti restorani",
+      "popular": "Popularna jela",
+      "explore": "Istražite po zemljama"
+    },
+    "auth": {
+      "email": "Email",
+      "password": "Lozinka",
+      "confirmPassword": "Potvrdi lozinku",
+      "forgotPassword": "Zaboravili ste lozinku?",
+      "signIn": "Prijavite se",
+      "signUp": "Registrujte se",
+      "resetPassword": "Resetuj lozinku",
+      "noAccount": "Nemate nalog?",
+      "alreadyAccount": "Već imate nalog?"
+    },
+    "restaurant": {
+      "name": "Naziv",
+      "country": "Zemlja",
+      "city": "Grad",
+      "address": "Adresa",
+      "cuisine": "Vrsta kuhinje",
+      "phone": "Broj telefona",
+      "website": "Veb sajt",
+      "rating": "Ocena",
+      "openingHours": "Radno vreme",
+      "reviews": "Recenzije",
+      "addReview": "Dodaj recenziju",
+      "menu": "Meni",
+      "addToFavorites": "Dodaj u favorite",
+      "removeFromFavorites": "Ukloni iz favorita",
+      "noName": "Restoran bez naziva"
+    },
+    "profile": {
+      "personalInfo": "Lični podaci",
+      "favoriteRestaurants": "Omiljeni restorani",
+      "reviews": "Moje recenzije",
+      "editProfile": "Izmeni profil",
+      "changePassword": "Promeni lozinku",
+      "deleteAccount": "Obriši nalog"
+    },
+    "countries": {
+      "serbia": "Srbija",
+      "croatia": "Hrvatska",
+      "bosnia": "Bosna i Hercegovina",
+      "montenegro": "Crna Gora",
+      "macedonia": "Severna Makedonija",
+      "slovenia": "Slovenija",
+      "bulgaria": "Bugarska",
+      "romania": "Rumunija",
+      "albania": "Albanija"
+    },
+    "buttons": {
+      "submit": "Potvrdi",
+      "cancel": "Otkaži",
+      "save": "Sačuvaj",
+      "delete": "Obriši",
+      "edit": "Izmeni",
+      "view": "Pogledaj",
+      "more": "Prikaži više",
+      "back": "Nazad"
+    }
+  }

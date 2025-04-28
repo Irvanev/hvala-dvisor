@@ -1,0 +1,85 @@
+{
+    "common": {
+      "home": "Home",
+      "login": "Login",
+      "register": "Register",
+      "profile": "Profile",
+      "logout": "Logout",
+      "search": "Search",
+      "loading": "Loading...",
+      "error": "Error occurred"
+    },
+    "navbar": {
+      "welcome": "Welcome",
+      "location": "Location",
+      "restaurant": "Restaurant",
+      "viewAllResults": "View all results",
+      "avatar": "User avatar",
+      "moderation": "Restaurant moderation",
+      "userManagement": "User management"
+    },
+    "homepage": {
+      "title": "Discover the Best Balkan Restaurants",
+      "subtitle": "Find authentic cuisine from the Balkan region",
+      "featured": "Featured Restaurants",
+      "popular": "Popular Dishes",
+      "explore": "Explore by Country"
+    },
+    "auth": {
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "forgotPassword": "Forgot Password?",
+      "signIn": "Sign In",
+      "signUp": "Sign Up",
+      "resetPassword": "Reset Password",
+      "noAccount": "Don't have an account?",
+      "alreadyAccount": "Already have an account?"
+    },
+    "restaurant": {
+      "name": "Name",
+      "country": "Country",
+      "city": "City",
+      "address": "Address",
+      "cuisine": "Cuisine Type",
+      "phone": "Phone Number",
+      "website": "Website",
+      "rating": "Rating",
+      "openingHours": "Opening Hours",
+      "reviews": "Reviews",
+      "addReview": "Add Review",
+      "menu": "Menu",
+      "addToFavorites": "Add to Favorites",
+      "removeFromFavorites": "Remove from Favorites",
+      "noName": "Restaurant without name"
+    },
+    "profile": {
+      "personalInfo": "Personal Information",
+      "favoriteRestaurants": "Favorite Restaurants",
+      "reviews": "My Reviews",
+      "editProfile": "Edit Profile",
+      "changePassword": "Change Password",
+      "deleteAccount": "Delete Account"
+    },
+    "countries": {
+      "serbia": "Serbia",
+      "croatia": "Croatia",
+      "bosnia": "Bosnia and Herzegovina",
+      "montenegro": "Montenegro",
+      "macedonia": "North Macedonia",
+      "slovenia": "Slovenia",
+      "bulgaria": "Bulgaria",
+      "romania": "Romania",
+      "albania": "Albania"
+    },
+    "buttons": {
+      "submit": "Submit",
+      "cancel": "Cancel",
+      "save": "Save",
+      "delete": "Delete",
+      "edit": "Edit",
+      "view": "View",
+      "more": "Show More",
+      "back": "Back"
+    }
+  }
