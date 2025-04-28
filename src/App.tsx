@@ -23,6 +23,7 @@ import ModeratorPage from './pages/ModeratorPage/ModeratorPage';
 import AdminUsersPage from './pages/AdminUsersPage/AdminUsersPage';
 import EditRestaurantPage from './pages/EditRestaurantPage/EditRestaurantPage';
 
+import './i18n'
 import './App.css';
 
 const App: React.FC = () => {

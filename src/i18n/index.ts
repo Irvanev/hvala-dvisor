@@ -1,71 +1,47 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
 
 // Импортируем файлы переводов
 import translationEN from './locales/en/translation.json';
 import translationSR from './locales/sr/translation.json';
+import translationRU from './locales/ru/translation.json';
 
-// Ключ для хранения в localStorage
-const LANGUAGE_KEY = 'hvala_dvisor_lang';
-
-// Определяем язык браузера, чтобы выбрать подходящий по умолчанию
-const detectBrowserLanguage = (): string => {
-  if (typeof window === 'undefined') return 'en';
+// Получаем сохраненный язык из localStorage или используем язык браузера
+const getUserLanguage = () => {
+  const savedLanguage = localStorage.getItem('hvala_dvisor_lang');
+  if (savedLanguage) return savedLanguage;
   
+  // Определяем язык браузера
   const browserLang = navigator.language.toLowerCase();
   
-  // Проверяем, является ли язык браузера сербским или относится к сербскоговорящим регионам
+  if (browserLang.startsWith('ru')) return 'ru';
   if (browserLang.startsWith('sr') || 
       browserLang.startsWith('hr') || 
-      browserLang.startsWith('bs') || 
-      browserLang.startsWith('me')) {
-    return 'sr';
-  }
+      browserLang.startsWith('bs')) return 'sr';
   
-  return 'en'; // По умолчанию английский
+  return 'en'; // Язык по умолчанию - английский
 };
 
-// Получаем сохраненный язык или определяем язык браузера
-const getSavedLanguage = (): string => {
-  const savedLang = localStorage.getItem(LANGUAGE_KEY);
-  return savedLang || detectBrowserLanguage();
-};
-
-// Ресурсы с переводами
-const resources = {
-  en: {
-    translation: translationEN
-  },
-  sr: {
-    translation: translationSR
-  }
-};
-
-// Инициализируем i18next
+// Инициализируем i18next с нашими переводами
 i18n
-  // Используем детектор языка
-  .use(LanguageDetector)
-  // Передаем i18n в react-i18next
   .use(initReactI18next)
-  // Инициализируем
   .init({
-    resources,
-    lng: getSavedLanguage(),
-    fallbackLng: 'en',
-    detection: {
-      order: ['localStorage', 'navigator'],
-      lookupLocalStorage: LANGUAGE_KEY,
-      caches: ['localStorage']
+    resources: {
+      en: {
+        translation: translationEN
+      },
+      sr: {
+        translation: translationSR
+      },
+      ru: {
+        translation: translationRU
+      }
     },
+    lng: getUserLanguage(),
+    fallbackLng: 'en',
     interpolation: {
-      escapeValue: false // не нужно экранировать для React
+      escapeValue: false // не экранируем строки для React
     }
   });
-
-// Сохраняем язык при его изменении
-i18n.on('languageChanged', (lng: string) => {
-  localStorage.setItem(LANGUAGE_KEY, lng);
-});
 
 export default i18n;

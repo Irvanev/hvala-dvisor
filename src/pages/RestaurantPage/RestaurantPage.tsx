@@ -340,8 +340,8 @@ const RestaurantPage: React.FC = () => {
     <div className={styles.restaurantPage}>
       <NavBar
         onSearch={handleNavBarSearch}
-        onLanguageChange={handleLanguageChange}
-        currentLanguage="ru"
+        // onLanguageChange={handleLanguageChange}
+        // currentLanguage="ru"
         logoText="HvalaDviser"
         onWelcomeClick={handleWelcomeClick}
         isStatic={true}

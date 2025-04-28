@@ -2,7 +2,6 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '../Card/Card';
 import styles from './RestaurantGrid.module.css';
-// Импортируем тип Restaurant из единого файла
 import { Restaurant } from '../../models/types';
 
 interface RestaurantGridProps {
@@ -28,19 +27,20 @@ const RestaurantGrid: React.FC<RestaurantGridProps> = ({
         <div key={restaurant.id} className={styles.gridItem}>
           <Card
             id={restaurant.id}
-            images={restaurant.images || [restaurant.image].filter(Boolean) as string[]} // Используем массив изображений или создаем его из одного изображения
+            images={restaurant.galleryUrls.length > 0 ? restaurant.galleryUrls : restaurant.mainImageUrl ? [restaurant.mainImageUrl] : []}
             title={restaurant.title}
-            location={restaurant.location}
+            location={`${restaurant.address.city}, ${restaurant.address.country}`}
             rating={restaurant.rating}
             cuisineTags={restaurant.cuisineTags}
             featureTags={restaurant.featureTags}
             priceRange={restaurant.priceRange}
             savedStatus={userFavorites.includes(restaurant.id)}
             onClick={() => handleCardClick(restaurant.id)}
-            onSaveToggle={(saved, event) => 
+            onSaveToggle={(saved, event) =>
               onSaveToggle(restaurant.id, saved, event)
             }
           />
+
         </div>
       ))}
     </div>

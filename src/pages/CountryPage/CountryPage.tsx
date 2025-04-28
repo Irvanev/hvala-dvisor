@@ -159,7 +159,10 @@ const CountryPage: React.FC = () => {
     fetchCountryData();
   }, [countryId]);
 
-  const handleSaveToggle = async (id: string, isSaved: boolean) => {
+  const handleSaveToggle = (isSaved: boolean, event?: React.MouseEvent) => {
+    const id = (event?.currentTarget as HTMLElement).dataset.id;
+    if (!id) return;
+
     try {
       if (isSaved) {
         setUserFavorites(prev => [...prev, id]);
@@ -213,8 +216,8 @@ const CountryPage: React.FC = () => {
     <div className={styles.countryPage}>
       <NavBar
         onSearch={(query) => console.log(`Поиск: ${query}`)}
-        onLanguageChange={(language) => console.log(`Язык изменен на: ${language}`)}
-        currentLanguage="ru"
+        // onLanguageChange={(language) => console.log(`Язык изменен на: ${language}`)}
+        // currentLanguage="ru"
         logoText="HvalaDviser"
         isStatic={true}
       />
@@ -300,10 +303,10 @@ const CountryPage: React.FC = () => {
           
           <div className={styles.restaurantsGrid}>
             {filterRestaurants().map(restaurant => (
-              <div key={restaurant.id} className={styles.restaurantCardWrapper}>
+                <div key={restaurant.id} className={styles.restaurantCardWrapper}>
                 <Card
                   id={restaurant.id}
-                  image={restaurant.image}
+                  images={[restaurant.image]} // Updated to pass an array of images
                   title={restaurant.title}
                   location={restaurant.location}
                   rating={restaurant.rating}
@@ -315,7 +318,7 @@ const CountryPage: React.FC = () => {
                   <span className={styles.cuisineTag}>{restaurant.cuisine}</span>
                   <span className={styles.priceTag}>{restaurant.priceLevel}</span>
                 </div>
-              </div>
+                </div>
             ))}
           </div>
           

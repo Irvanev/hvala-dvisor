@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { useAppTranslation } from '../../hooks/useAppTranslation';
+import { useTranslation } from 'react-i18next';
+import { firestore } from '../../firebase/config';
+import { collection, getDocs, query as firestoreQuery, limit } from 'firebase/firestore';
 import styles from './NavBar.module.css';
+import LanguageDropdown from '../LanguageDropdown/LanguageDropdown';
 
 // Иконки
 const SearchIcon = () => (
@@ -19,6 +22,48 @@ const UserIcon = () => (
   </svg>
 );
 
+// Список стран Балкан для определения, является ли результат местом
+const BALKAN_COUNTRIES = [
+  "Albania",
+  "Bosnia and Herzegovina",
+  "Bulgaria",
+  "Croatia",
+  "Greece",
+  "Kosovo",
+  "Montenegro",
+  "North Macedonia",
+  "Romania",
+  "Serbia",
+  "Slovenia",
+  "Turkey"
+];
+
+// Список основных городов Балкан
+const BALKAN_CITIES = [
+  "Tirana", "Durrës", // Albania
+  "Sarajevo", "Mostar", "Banja Luka", // Bosnia and Herzegovina
+  "Sofia", "Plovdiv", "Varna", // Bulgaria
+  "Zagreb", "Split", "Dubrovnik", "Rijeka", // Croatia
+  "Athens", "Thessaloniki", "Patras", // Greece
+  "Pristina", "Prizren", // Kosovo
+  "Podgorica", "Budva", "Kotor", "Herceg Novi", // Montenegro
+  "Skopje", "Ohrid", // North Macedonia
+  "Bucharest", "Cluj-Napoca", "Timișoara", // Romania
+  "Belgrade", "Novi Sad", "Niš", // Serbia
+  "Ljubljana", "Maribor", // Slovenia
+  "Istanbul", "Ankara", "Antalya" // Turkey
+];
+
+// Объединенный список всех мест
+const ALL_LOCATIONS = [...BALKAN_COUNTRIES, ...BALKAN_CITIES];
+
+// Типы результатов поиска
+interface SearchResult {
+  id: string;
+  title: string;
+  type: 'restaurant' | 'location';
+}
+
 interface NavBarProps {
   onSearch?: (query: string) => void;
   logoText?: string;
@@ -33,13 +78,20 @@ const NavBar: React.FC<NavBarProps> = ({
   isStatic = false,
 }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user, isAuthenticated, logout, isAdmin, isModerator } = useAuth();
   const [scrolled, setScrolled] = useState(isStatic);
   const [searchQuery, setSearchQuery] = useState('');
   const [showUserMenu, setShowUserMenu] = useState(false);
-  
-  // Используем наш хук для переводов
-  const { t, toggleLanguage, currentLanguage } = useAppTranslation();
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Реф для выпадающего списка поиска
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  // Таймер для debounce поиска
+  const searchTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Эффект для установки события прокрутки
   useEffect(() => {
@@ -54,6 +106,29 @@ const NavBar: React.FC<NavBarProps> = ({
 
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isStatic]);
+
+  // Эффект для закрытия выпадающего списка при клике вне его
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowSearchResults(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Очистка таймера при размонтировании компонента
+  useEffect(() => {
+    return () => {
+      if (searchTimerRef.current) {
+        clearTimeout(searchTimerRef.current);
+      }
+    };
+  }, []);
 
   // Обработчик клика на кнопку профиля или входа
   const handleButtonClick = () => {
@@ -81,18 +156,119 @@ const NavBar: React.FC<NavBarProps> = ({
     navigate('/');
   };
 
+  // Функция поиска ресторанов и локаций
+  const fetchSearchResults = async (searchTerm: string) => {
+    if (!searchTerm.trim() || searchTerm.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const results: SearchResult[] = [];
+      const searchTermLower = searchTerm.toLowerCase();
+
+      // Сначала ищем совпадения в локациях
+      const matchingLocations = ALL_LOCATIONS.filter(
+        location => location.toLowerCase().includes(searchTermLower)
+      );
+
+      // Добавляем локации в результаты
+      results.push(
+        ...matchingLocations.slice(0, 3).map(location => ({
+          id: `location-${location}`,
+          title: location,
+          type: 'location' as const
+        }))
+      );
+
+      // Затем ищем рестораны в Firebase
+      const restaurantsRef = collection(firestore, 'restaurants');
+      const querySnapshot = await getDocs(firestoreQuery(restaurantsRef, limit(5)));
+
+      querySnapshot.forEach((doc) => {
+        // Используем безопасное приведение типов для данных Firestore
+        const data = doc.data() as Record<string, any>;
+
+        // Проверяем статус модерации
+        const moderationStatus = data.moderation?.status || data.moderationStatus || 'pending';
+        if (moderationStatus !== 'approved' && moderationStatus !== undefined) {
+          return; // Пропускаем неодобренные рестораны
+        }
+
+        // Проверяем совпадение с запросом
+        const title = (data.title || '').toLowerCase();
+        const description = (data.description || '').toLowerCase();
+        const cuisineTags = Array.isArray(data.cuisineTags) ? data.cuisineTags : [];
+        const featureTags = Array.isArray(data.featureTags) ? data.featureTags : [];
+
+        if (
+          title.includes(searchTermLower) ||
+          description.includes(searchTermLower) ||
+          cuisineTags.some((tag: string) => tag.toLowerCase().includes(searchTermLower)) ||
+          featureTags.some((tag: string) => tag.toLowerCase().includes(searchTermLower))
+        ) {
+          results.push({
+            id: doc.id,
+            title: data.title || t('restaurant.noName'),
+            type: 'restaurant'
+          });
+        }
+      });
+
+      setSearchResults(results);
+    } catch (error) {
+      console.error("Ошибка при поиске:", error);
+      setSearchResults([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Обработчик ввода поискового запроса
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
+
+    // Очистка предыдущего таймера
+    if (searchTimerRef.current) {
+      clearTimeout(searchTimerRef.current);
+    }
+
+    // Вызываем колбэк onSearch, если он есть
     if (onSearch) {
       onSearch(value);
+    }
+
+    if (value.length >= 2) {
+      // Устанавливаем новый таймер для debounce
+      searchTimerRef.current = setTimeout(() => {
+        fetchSearchResults(value);
+        setShowSearchResults(true);
+      }, 300);
+    } else {
+      setSearchResults([]);
+      setShowSearchResults(false);
+    }
+  };
+
+  // Обработчик выбора результата поиска
+  const handleResultClick = (result: SearchResult) => {
+    setShowSearchResults(false);
+
+    if (result.type === 'location') {
+      // Переходим на страницу с результатами поиска по локации
+      navigate(`/s?location=${encodeURIComponent(result.title)}`);
+    } else {
+      // Переходим на страницу ресторана
+      navigate(`/restaurant/${result.id}`);
     }
   };
 
   // Обработчик нажатия Enter в поисковой строке
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && searchQuery.trim()) {
+      setShowSearchResults(false);
       navigate(`/s?query=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
@@ -102,15 +278,53 @@ const NavBar: React.FC<NavBarProps> = ({
     ${isAdmin ? styles.adminHeader : ''} ${isModerator ? styles.moderatorHeader : ''}`}>
       <Link to="/" className={styles.logo}>{logoText}</Link>
       <div className={styles.controls}>
-        <div className={styles.search}>
+        <div className={styles.search} ref={searchRef}>
           <input
             type="text"
             placeholder={t('common.search')}
             value={searchQuery}
             onChange={handleSearchInput}
             onKeyDown={handleSearchKeyDown}
+            onFocus={() => searchQuery.length >= 2 && setShowSearchResults(true)}
           />
           <SearchIcon />
+
+          {/* Выпадающий список результатов поиска */}
+          {showSearchResults && searchResults.length > 0 && (
+            <div className={styles.searchResults}>
+              {isLoading ? (
+                <div className={styles.searchLoading}>{t('common.loading')}</div>
+              ) : (
+                <>
+                  {searchResults.map((result, index) => (
+                    <div
+                      key={index}
+                      className={styles.searchResultItem}
+                      onClick={() => handleResultClick(result)}
+                    >
+                      <div className={styles.resultTitle}>{result.title}</div>
+                      <div className={styles.resultType}>
+                        {result.type === 'location' ? 
+                          t('navbar.location') : 
+                          t('navbar.restaurant')}
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Ссылка на полную страницу результатов */}
+                  <div
+                    className={styles.searchViewAll}
+                    onClick={() => {
+                      setShowSearchResults(false);
+                      navigate(`/s?query=${encodeURIComponent(searchQuery.trim())}`);
+                    }}
+                  >
+                    {t('navbar.viewAllResults')}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </div>
         <div className={styles.navButtons}>
           {isAuthenticated ? (
@@ -164,12 +378,9 @@ const NavBar: React.FC<NavBarProps> = ({
               <span>{t('navbar.welcome')} 👋</span>
             </button>
           )}
-          <button
-            className={styles.language}
-            onClick={toggleLanguage}
-          >
-            {currentLanguage.toUpperCase()}
-          </button>
+          
+          {/* Заменяем простую кнопку языка на выпадающее меню */}
+          <LanguageDropdown />
         </div>
       </div>
     </header>

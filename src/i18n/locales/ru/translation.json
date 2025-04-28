@@ -1,0 +1,99 @@
+{
+    "common": {
+      "home": "Главная",
+      "login": "Войти",
+      "register": "Регистрация",
+      "profile": "Профиль",
+      "logout": "Выйти",
+      "search": "Поиск",
+      "loading": "Загрузка...",
+      "error": "Произошла ошибка"
+    },
+    "navbar": {
+      "welcome": "Добро пожаловать",
+      "location": "Местоположение",
+      "restaurant": "Ресторан",
+      "viewAllResults": "Посмотреть все результаты",
+      "avatar": "Аватар пользователя",
+      "moderation": "Модерация ресторанов",
+      "userManagement": "Управление пользователями"
+    },
+    "homepage": {
+      "title": "Откройте для себя лучшие рестораны Балкан",
+      "subtitle": "Найдите аутентичную кухню балканского региона",
+      "featured": "Рекомендуемые рестораны",
+      "popular": "Популярные блюда",
+      "explore": "Исследуйте по странам"
+    },
+    "auth": {
+      "email": "Электронная почта",
+      "password": "Пароль",
+      "confirmPassword": "Подтвердите пароль",
+      "forgotPassword": "Забыли пароль?",
+      "signIn": "Войти",
+      "signUp": "Зарегистрироваться",
+      "resetPassword": "Сбросить пароль",
+      "noAccount": "Нет аккаунта?",
+      "alreadyAccount": "Уже есть аккаунт?"
+    },
+    "restaurant": {
+      "name": "Название",
+      "country": "Страна",
+      "city": "Город",
+      "address": "Адрес",
+      "cuisine": "Тип кухни",
+      "phone": "Номер телефона",
+      "website": "Веб-сайт",
+      "rating": "Рейтинг",
+      "openingHours": "Часы работы",
+      "reviews": "Отзывы",
+      "addReview": "Добавить отзыв",
+      "menu": "Меню",
+      "addToFavorites": "Добавить в избранное",
+      "removeFromFavorites": "Удалить из избранного",
+      "noName": "Ресторан без названия"
+    },
+    "profile": {
+      "personalInfo": "Личная информация",
+      "favoriteRestaurants": "Избранные рестораны",
+      "reviews": "Мои отзывы",
+      "editProfile": "Редактировать профиль",
+      "changePassword": "Изменить пароль",
+      "deleteAccount": "Удалить аккаунт",
+      "notAuthorized": "Вы не авторизованы",
+      "loginRequired": "Для просмотра профиля необходимо войти",
+      "defaultUser": "Пользователь",
+      "notSpecified": "Не указано",
+      "addressNotSpecified": "Адрес не указан",
+      "loadingReviews": "Загрузка отзывов...",
+      "loadingFavorites": "Загрузка избранного...",
+      "noReviews": "У вас пока нет отзывов",
+      "noFavorites": "У вас пока нет избранных ресторанов",
+      "reviewsTab": "Отзывы",
+      "favoritesTab": "Избранное",
+      "recentDate": "Недавно",
+      "avatar": "Аватар пользователя",
+      "favorites": "Избранное"
+    },
+    "countries": {
+      "serbia": "Сербия",
+      "croatia": "Хорватия",
+      "bosnia": "Босния и Герцеговина",
+      "montenegro": "Черногория",
+      "macedonia": "Северная Македония",
+      "slovenia": "Словения",
+      "bulgaria": "Болгария",
+      "romania": "Румыния",
+      "albania": "Албания"
+    },
+    "buttons": {
+      "submit": "Отправить",
+      "cancel": "Отмена",
+      "save": "Сохранить",
+      "delete": "Удалить",
+      "edit": "Редактировать",
+      "view": "Просмотр",
+      "more": "Показать больше",
+      "back": "Назад"
+    }
+  }

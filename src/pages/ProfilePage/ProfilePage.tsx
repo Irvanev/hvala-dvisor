@@ -20,6 +20,8 @@ import {
 } from 'firebase/firestore';
 
 import { Review as ReviewModel, User as UserModel } from '../../models/types';
+// Импортируем хук для переводов
+import { useAppTranslation } from '../../hooks/useAppTranslation';
 
 /* ---------- ДОПОЛНЯЕМ ТИП ---------- */
 interface UserExtended extends UserModel {
@@ -61,6 +63,8 @@ interface UserProfile {
 /* ---------- КОМПОНЕНТ ---------- */
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
+  // Используем хук для переводов
+  const { t, currentLanguage } = useAppTranslation();
 
   const {
     user,            // профиль из Firestore
@@ -109,7 +113,7 @@ const ProfilePage: React.FC = () => {
           snap.docs.map(async (d) => {
             const data = d.data();
 
-            let restaurantName = 'Ресторан';
+            let restaurantName = t('restaurant.noName');
             try {
               const rest = await getDoc(doc(db, 'restaurants', data.restaurantId));
               if (rest.exists()) restaurantName = rest.data().title || restaurantName;
@@ -118,10 +122,12 @@ const ProfilePage: React.FC = () => {
             }
 
             const createdAt = data.createdAt;
+            // Используем локализованный формат даты в зависимости от языка
+            const dateFormat = currentLanguage === 'sr' ? 'sr-RS' : 'en-US';
             const dateStr = createdAt
               ? (createdAt.toDate ? createdAt.toDate() : new Date(createdAt)
-                ).toLocaleDateString('ru-RU')
-              : 'Недавно';
+                ).toLocaleDateString(dateFormat)
+              : t('profile.recentDate');
 
             return {
               id: d.id,
@@ -149,7 +155,7 @@ const ProfilePage: React.FC = () => {
     };
 
     fetchReviews();
-  }, [typedUser, isAuthenticated]);
+  }, [typedUser, isAuthenticated, t, currentLanguage]);
 
   /* ---------- ЗАГРУЗКА ИЗБРАННЫХ ---------- */
   useEffect(() => {
@@ -185,10 +191,10 @@ const ProfilePage: React.FC = () => {
               const r = rest.data();
               return {
                 id: rest.id,
-                title: r.title || 'Ресторан',
+                title: r.title || t('restaurant.noName'),
                 address: r.address
                   ? `${r.address.street}, ${r.address.city}, ${r.address.country}`
-                  : 'Адрес не указан',
+                  : t('profile.addressNotSpecified'),
                 mainImageUrl: r.mainImageUrl || (r.galleryUrls && r.galleryUrls[0])
               } as ExtendedRestaurant;
             } catch (e) {
@@ -207,7 +213,7 @@ const ProfilePage: React.FC = () => {
     };
 
     fetchFavorites();
-  }, [typedUser, isAuthenticated]);
+  }, [typedUser, isAuthenticated, t]);
 
   /* ---------- ЗАГРУЗКА ЛАЙКОВ ОТЗЫВОВ ---------- */
   useEffect(() => {
@@ -244,7 +250,7 @@ const ProfilePage: React.FC = () => {
               if (likeDoc.exists()) {
                 restaurantLikes.push({
                   restaurantId: restId,
-                  restaurantName: restData.title || 'Ресторан',
+                  restaurantName: restData.title || t('restaurant.noName'),
                   createdAt: likeDoc.data().createdAt
                 });
                 break;
@@ -266,7 +272,7 @@ const ProfilePage: React.FC = () => {
     };
 
     fetchLikes();
-  }, [typedUser, isAuthenticated]);
+  }, [typedUser, isAuthenticated, t]);
 
   /* ---------- ОБРАБОТЧИК ---------- */
   const handleEditProfile = () => navigate('/edit-profile');
@@ -280,7 +286,7 @@ const ProfilePage: React.FC = () => {
     authDisplayName ||
     `${typedUser?.firstName || ''} ${typedUser?.lastName || ''}`.trim() ||
     typedUser?.email?.split('@')[0] ||
-    'Пользователь';
+    t('profile.defaultUser');
 
   const [fName = '', ...lNameParts] = fullName.split(' ');
 
@@ -293,7 +299,7 @@ const ProfilePage: React.FC = () => {
       typedUser?.nickname ||
       typedUser?.email?.split('@')[0] ||
       'user',
-    city:   typedUser?.city || 'Не указан',
+    city:   typedUser?.city || t('profile.notSpecified'),
     avatar: typedUser?.avatarUrl || 'https://placehold.jp/300x300.png?text=User',
     reviewsCount: typedUser?.reviewsCount ?? reviews.length,
     likesCount:   typedUser?.likesCount   ?? likes.length
@@ -304,7 +310,7 @@ const ProfilePage: React.FC = () => {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.loadingSpinner} />
-        <p>Загрузка…</p>
+        <p>{t('common.loading')}</p>
       </div>
     );
   }
@@ -314,21 +320,19 @@ const ProfilePage: React.FC = () => {
       <div className={styles.profilePage}>
         <NavBar
           onSearch={(q) => console.log(`Поиск: ${q}`)}
-          onLanguageChange={(l) => console.log(`Язык: ${l}`)}
-          currentLanguage="ru"
           logoText="HvalaDviser"
           onWelcomeClick={() => console.log('Welcome')}
           isStatic
         />
         <div className={styles.profileContainer}>
           <div className={styles.unauthorizedMessage}>
-            <h2>Вы не авторизованы</h2>
-            <p>Для просмотра профиля необходимо войти</p>
+            <h2>{t('profile.notAuthorized')}</h2>
+            <p>{t('profile.loginRequired')}</p>
             <button
               className={styles.loginButton}
               onClick={() => navigate('/login')}
             >
-              Войти
+              {t('common.login')}
             </button>
           </div>
         </div>
@@ -341,7 +345,7 @@ const ProfilePage: React.FC = () => {
     activeTab === 'reviews' ? (
       <div className={styles.reviewsContainer}>
         {isLoadingReviews ? (
-          <div className={styles.loadingIndicator}>Загрузка отзывов…</div>
+          <div className={styles.loadingIndicator}>{t('profile.loadingReviews')}</div>
         ) : reviews.length ? (
           <div className={styles.reviewsList}>
             {reviews.map((r) => (
@@ -373,13 +377,13 @@ const ProfilePage: React.FC = () => {
             ))}
           </div>
         ) : (
-          <p className={styles.noReviews}>У вас пока нет отзывов</p>
+          <p className={styles.noReviews}>{t('profile.noReviews')}</p>
         )}
       </div>
     ) : (
       <div className={styles.reviewsContainer}>
         {isLoadingFavorites ? (
-          <div className={styles.loadingIndicator}>Загрузка избранного…</div>
+          <div className={styles.loadingIndicator}>{t('profile.loadingFavorites')}</div>
         ) : favorites.length ? (
           <div className={styles.favoritesList}>
             {favorites.map((rest) => (
@@ -392,7 +396,7 @@ const ProfilePage: React.FC = () => {
                   <img
                     src={
                       rest.mainImageUrl ||
-                      'https://placehold.jp/300x200.png?text=Ресторан'
+                      'https://placehold.jp/300x200.png?text=Restaurant'
                     }
                     alt={rest.title}
                     className={styles.favoriteImage}
@@ -406,7 +410,7 @@ const ProfilePage: React.FC = () => {
             ))}
           </div>
         ) : (
-          <p className={styles.noReviews}>У вас пока нет избранных ресторанов</p>
+          <p className={styles.noReviews}>{t('profile.noFavorites')}</p>
         )}
       </div>
     );
@@ -415,8 +419,6 @@ const ProfilePage: React.FC = () => {
     <div className={styles.profilePage}>
       <NavBar
         onSearch={(q) => console.log(`Поиск: ${q}`)}
-        onLanguageChange={(l) => console.log(`Язык: ${l}`)}
-        currentLanguage="ru"
         logoText="HvalaDviser"
         onWelcomeClick={() => console.log('Welcome')}
         isStatic
@@ -433,8 +435,8 @@ const ProfilePage: React.FC = () => {
               activeTab={activeTab}
               onTabChange={setActiveTab}
               tabs={[
-                { id: 'reviews',   label: 'Отзывы',     count: reviews.length },
-                { id: 'favorites', label: 'Избранное', count: favorites.length }
+                { id: 'reviews',   label: t('profile.reviewsTab'),   count: reviews.length },
+                { id: 'favorites', label: t('profile.favoritesTab'), count: favorites.length }
               ]}
             />
             {renderTabContent()}

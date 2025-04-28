@@ -247,8 +247,8 @@ const BestRestaurantsPage: React.FC = () => {
     <div className={styles.bestRestaurantsPage}>
       <NavBar
         onSearch={handleNavBarSearch}
-        onLanguageChange={handleLanguageChange}
-        currentLanguage="ru"
+        // onLanguageChange={handleLanguageChange}
+        // currentLanguage="ru"
         logoText={CONSTANTS.APP_NAME}
         onWelcomeClick={handleWelcomeClick}
       />

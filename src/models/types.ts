@@ -105,13 +105,14 @@ export interface RestaurantOpeningHours {
 }
 
 
-interface MenuItem {
+export interface MenuItem {
   id: string;
   name: string;
-  description: string; // Здесь description обязательный и не может быть undefined
+  description: string;
   price: string;
   isPopular?: boolean;
   image?: string;
+  category?: string; // <-- Добавляем сюда категорию
 }
 
 

@@ -252,8 +252,8 @@ const HomePage: React.FC = () => {
     <div className={styles.homePage}>
       <NavBar
         onSearch={handleNavBarSearch}
-        onLanguageChange={handleLanguageChange}
-        currentLanguage="ru"
+        // onLanguageChange={handleLanguageChange}
+        // currentLanguage="ru"
         logoText={CONSTANTS.APP_NAME}
         onWelcomeClick={handleWelcomeClick}
       />

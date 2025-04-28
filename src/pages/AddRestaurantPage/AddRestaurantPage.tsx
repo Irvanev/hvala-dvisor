@@ -429,8 +429,8 @@ const AddRestaurantPage: React.FC = () => {
     <div className={styles.addRestaurantPage}>
       <NavBar
         onSearch={(query) => console.log(`Поиск: ${query}`)}
-        onLanguageChange={(language) => console.log(`Язык: ${language}`)}
-        currentLanguage="ru"
+        // onLanguageChange={(language) => console.log(`Язык: ${language}`)}
+        // currentLanguage="ru"
         logoText="HvalaDviser"
         onWelcomeClick={() => console.log('Клик на Welcome')}
         isStatic={true}

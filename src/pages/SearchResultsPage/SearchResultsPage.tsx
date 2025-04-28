@@ -252,8 +252,8 @@ const SearchResultsPage: React.FC = () => {
     <div className={styles.searchResultsPage}>
       <NavBar
         onSearch={handleNavBarSearch}
-        onLanguageChange={handleLanguageChange}
-        currentLanguage="ru"
+        // onLanguageChange={handleLanguageChange}
+        // currentLanguage="ru"
         logoText="HvalaDviser"
         onWelcomeClick={handleWelcomeClick}
         isStatic={true}

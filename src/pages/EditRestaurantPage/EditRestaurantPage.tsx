@@ -452,7 +452,7 @@ const EditRestaurantPage: React.FC = () => {
                         name: item.name,
                         description: item.description,
                         price: item.price,
-                        category: category.category
+                        // category: category.category
                     });
                 }
             });
@@ -626,8 +626,8 @@ const EditRestaurantPage: React.FC = () => {
         <div className={styles.editRestaurantPage}>
             <NavBar
                 onSearch={(query) => console.log(`Поиск: ${query}`)}
-                onLanguageChange={(language) => console.log(`Язык: ${language}`)}
-                currentLanguage="ru"
+                // onLanguageChange={(language) => console.log(`Язык: ${language}`)}
+                // currentLanguage="ru"
                 logoText="HvalaDviser"
                 onWelcomeClick={() => console.log('Клик на Welcome')}
                 isStatic={true}

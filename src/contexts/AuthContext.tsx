@@ -12,6 +12,7 @@ import {
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { auth, firestore } from '../firebase/config';
+import { sendPasswordResetEmail } from 'firebase/auth';
 
 // Расширяем типы ролей пользователей
 export type UserRole = 'guest' | 'registered' | 'owner' | 'moderator' | 'admin';
@@ -56,6 +57,7 @@ interface AuthContextType {
   registerWithGoogle: () => Promise<boolean>;
   updateUser: (data: Partial<UserProfile>) => Promise<boolean>;
   checkAdminRights: () => boolean; // Новый метод
+  resetPassword: (email: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -220,6 +222,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const resetPassword = async (email: string) => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+      return true;
+    } catch (e) {
+      console.error('Ошибка при сбросе пароля:', e);
+      return false;
+    }
+  };
+
   // Регистрация нового пользователя
   const register = async (data: RegisterData) => {
     try {
@@ -343,8 +355,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     register,
     registerWithGoogle,
     updateUser,
-    checkAdminRights
+    checkAdminRights,
+    resetPassword
   };
+
+
 
   return (
     <AuthContext.Provider value={value}>

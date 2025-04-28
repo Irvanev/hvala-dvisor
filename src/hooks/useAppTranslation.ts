@@ -10,7 +10,7 @@ export const useAppTranslation = () => {
   const { t, i18n } = useTranslation();
   
   // Получаем дополнительные функции из контекста языка
-  const { isSerbian, isEnglish, toggleLanguage, currentLanguage } = useLanguage();
+  const { isSerbian, isEnglish, toggleLanguage, currentLanguage, changeLanguage } = useLanguage();
   
   /**
    * Возвращает значение в зависимости от текущего языка
@@ -27,6 +27,7 @@ export const useAppTranslation = () => {
     isSerbian,
     isEnglish,
     toggleLanguage,
+    changeLanguage,
     langSwitch,
     currentLanguage
   };

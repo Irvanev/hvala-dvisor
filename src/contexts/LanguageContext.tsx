@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 import { getStoredLanguage, storeLanguage } from '../utils/languageUtils';
 
 // Интерфейс контекста языка
@@ -23,32 +24,30 @@ const LanguageContext = createContext<LanguageContextType>({
 // Поставщик контекста
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { i18n } = useTranslation();
-  const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
+  const [currentLanguage, setCurrentLanguage] = useState(i18n.language || 'en');
 
-  // При изменении языка обновляем состояние
-  useEffect(() => {
-    const handleLanguageChanged = (lng: string) => {
-      setCurrentLanguage(lng);
-      storeLanguage(lng);
-    };
-
-    i18n.on('languageChanged', handleLanguageChanged);
-
-    // Инициализация из сохраненных настроек
-    const savedLanguage = getStoredLanguage();
-    if (savedLanguage && savedLanguage !== i18n.language) {
-      i18n.changeLanguage(savedLanguage);
-    }
-
-    return () => {
-      i18n.off('languageChanged', handleLanguageChanged);
-    };
-  }, [i18n]);
-
-  // Изменяет язык приложения
+  // Изменяет язык приложения и сохраняет изменение
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
+    setCurrentLanguage(lng);
+    storeLanguage(lng);
   };
+
+  // При монтировании компонента инициализируем язык из localStorage
+  useEffect(() => {
+    const savedLanguage = getStoredLanguage();
+    if (savedLanguage && savedLanguage !== currentLanguage) {
+      changeLanguage(savedLanguage);
+    }
+  }, []);
+
+  // Если язык меняется извне (например, через прямой вызов i18n.changeLanguage),
+  // мы хотим обновить наше состояние
+  useEffect(() => {
+    if (i18n.language && i18n.language !== currentLanguage) {
+      setCurrentLanguage(i18n.language);
+    }
+  }, [i18n.language]);
 
   // Проверяет, является ли текущий язык сербским
   const isSerbian = () => currentLanguage === 'sr';
