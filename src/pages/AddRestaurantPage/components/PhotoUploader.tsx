@@ -1,19 +1,25 @@
 import React, { useRef } from 'react';
-import styles from '../AddRestaurantPage.module.css';
+import addStyles from '../AddRestaurantPage.module.css';
+import editStyles from '../../EditRestaurantPage/EditRestaurantPage.module.css';
 
 interface PhotoUploaderProps {
   photos: File[];
   onPhotoUpload: (files: File[]) => void;
   onPhotoRemove: (index: number) => void;
   error?: string;
+  isEdit?: boolean; // Новый параметр для выбора стилей
 }
 
 const PhotoUploader: React.FC<PhotoUploaderProps> = ({
   photos,
   onPhotoUpload,
   onPhotoRemove,
-  error
+  error,
+  isEdit = false // По умолчанию - режим добавления
 }) => {
+  // Выбираем нужный стиль в зависимости от контекста
+  const styles = isEdit ? editStyles : addStyles;
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {

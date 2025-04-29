@@ -1,5 +1,6 @@
 import React from 'react';
-import styles from '../../pages/AddRestaurantPage/AddRestaurantPage.module.css';
+import addStyles from '../../pages/AddRestaurantPage/AddRestaurantPage.module.css';
+import editStyles from '../../pages/EditRestaurantPage/EditRestaurantPage.module.css';
 
 interface RestaurantFormProps {
   formData: {
@@ -19,14 +20,19 @@ interface RestaurantFormProps {
   };
   onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   onCheckboxChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isEdit?: boolean; // Новый параметр для выбора стилей
 }
 
 const RestaurantForm: React.FC<RestaurantFormProps> = ({
   formData,
   errors,
   onInputChange,
-  onCheckboxChange
+  onCheckboxChange,
+  isEdit = false // По умолчанию - режим добавления
 }) => {
+  // Выбираем нужный стиль в зависимости от контекста
+  const styles = isEdit ? editStyles : addStyles;
+  
   const cuisineOptions = [
     'Балканская',
     'Хорватская',

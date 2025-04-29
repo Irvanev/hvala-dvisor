@@ -659,11 +659,13 @@ const EditRestaurantPage: React.FC = () => {
                                         errors={errors}
                                         onInputChange={handleInputChange}
                                         onCheckboxChange={handleCheckboxChange}
+                                        isEdit={true}
                                     />
                                     <LocationPicker
                                         onLocationSelect={handleLocationSelect}
                                         initialPosition={formData.position}
                                         error={errors['position']}
+                                        isEdit={true}
                                     />
                                 </div>
                             )}
@@ -682,6 +684,7 @@ const EditRestaurantPage: React.FC = () => {
                                         onPhotoUpload={handlePhotoUpload}
                                         onPhotoRemove={handlePhotoRemove}
                                         error={errors['photos']}
+                                        isEdit={true}
                                     />
 
                                     <div className={styles.featuresSection}>

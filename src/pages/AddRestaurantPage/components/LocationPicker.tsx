@@ -1,17 +1,23 @@
 import React from 'react';
-import styles from '../AddRestaurantPage.module.css';
+import addStyles from '../AddRestaurantPage.module.css';
+import editStyles from '../../EditRestaurantPage/EditRestaurantPage.module.css';
 
 interface LocationPickerProps {
   onLocationSelect: (position: { lat: number; lng: number }) => void;
   initialPosition: { lat: number; lng: number } | null;
   error?: string;
+  isEdit?: boolean; // Новый параметр для выбора стилей
 }
 
 const LocationPicker: React.FC<LocationPickerProps> = ({
   onLocationSelect,
   initialPosition,
-  error
+  error,
+  isEdit = false // По умолчанию - режим добавления
 }) => {
+  // Выбираем нужный стиль в зависимости от контекста
+  const styles = isEdit ? editStyles : addStyles;
+
   // В реальном приложении здесь будет интеграция с Google Maps или другим сервисом карт
   // Для демонстрации используем заглушку
 

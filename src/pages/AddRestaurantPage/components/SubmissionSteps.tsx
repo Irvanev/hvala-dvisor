@@ -1,12 +1,21 @@
 import React from 'react';
-import styles from '../AddRestaurantPage.module.css';
+import addStyles from '../AddRestaurantPage.module.css';
+import editStyles from '../../EditRestaurantPage/EditRestaurantPage.module.css';
 
 interface SubmissionStepsProps {
   currentStep: number;
   totalSteps: number;
+  isEdit?: boolean; // Новый параметр для выбора стилей
 }
 
-const SubmissionSteps: React.FC<SubmissionStepsProps> = ({ currentStep, totalSteps }) => {
+const SubmissionSteps: React.FC<SubmissionStepsProps> = ({ 
+  currentStep, 
+  totalSteps,
+  isEdit = false // По умолчанию - режим добавления
+}) => {
+  // Выбираем нужный стиль в зависимости от контекста
+  const styles = isEdit ? editStyles : addStyles;
+  
   const steps = [
     {
       number: 1,
