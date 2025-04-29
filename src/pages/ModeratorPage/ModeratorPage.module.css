@@ -114,6 +114,7 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
 }
 
 .restaurantCard:hover {
@@ -121,9 +122,37 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
 }
 
+/* Для архивированных ресторанов */
+.archivedCard {
+  opacity: 0.7;
+  background-color: #f5f5f5;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.archivedBadge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #f44336;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 1;
+}
+
+.archivedTag {
+  color: #f44336;
+  font-size: 16px;
+  font-weight: normal;
+  margin-left: 8px;
+}
+
 .restaurantImageWrapper {
   height: 180px;
   overflow: hidden;
+  position: relative;
 }
 
 .restaurantImage {
@@ -192,6 +221,10 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
+.deleteModal {
+  max-width: 600px;
+}
+
 .modalHeader {
   display: flex;
   justify-content: space-between;
@@ -202,6 +235,10 @@
   top: 0;
   background-color: white;
   z-index: 1;
+}
+
+.deleteTitle {
+  color: #f44336;
 }
 
 .modalTitle {
@@ -378,11 +415,19 @@
 
 .moderationActions {
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
+  margin-top: 16px;
 }
 
 .approveButton,
-.rejectButton {
+.rejectButton,
+.editButton,
+.archiveButton,
+.restoreButton,
+.deleteButton,
+.cancelButton,
+.confirmedDeleteButton {
   flex: 1;
   padding: 12px 24px;
   border-radius: 8px;
@@ -391,6 +436,17 @@
   cursor: pointer;
   transition: all 0.3s ease;
   border: none;
+  min-width: 120px;
+  text-align: center;
+}
+
+.editButton {
+  background-color: #2196F3;
+  color: white;
+}
+
+.editButton:hover {
+  background-color: #1976D2;
 }
 
 .approveButton {
@@ -411,10 +467,98 @@
   background-color: #e53935;
 }
 
+.archiveButton {
+  background-color: #FF9800;
+  color: white;
+}
+
+.archiveButton:hover {
+  background-color: #F57C00;
+}
+
+.restoreButton {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.restoreButton:hover {
+  background-color: #43a047;
+}
+
+.deleteButton {
+  background-color: #f44336;
+  color: white;
+}
+
+.deleteButton:hover {
+  background-color: #e53935;
+}
+
+.cancelButton {
+  background-color: #9E9E9E;
+  color: white;
+}
+
+.cancelButton:hover {
+  background-color: #757575;
+}
+
+.confirmedDeleteButton {
+  background-color: #f44336;
+  color: white;
+}
+
+.confirmedDeleteButton:hover {
+  background-color: #d32f2f;
+}
+
 .approveButton:disabled,
-.rejectButton:disabled {
+.rejectButton:disabled,
+.archiveButton:disabled,
+.restoreButton:disabled,
+.deleteButton:disabled,
+.confirmedDeleteButton:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+/* Модальное окно удаления */
+.deleteWarning {
+  background-color: #ffebee;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.deleteWarning p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.confirmField {
+  margin-bottom: 16px;
+}
+
+.confirmField label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.confirmInput {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.deleteActions {
+  display: flex;
+  gap: 16px;
 }
 
 /* Адаптивность для мобильных устройств */
@@ -464,7 +608,6 @@
 
   .modal {
     width: 95%;
-    padding: 16px;
   }
 
   .modalHeader {
@@ -478,26 +621,8 @@
   .modalBody {
     padding: 16px;
   }
-}
-
-
-.editButton {
-  background-color: #2196F3;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 24px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.editButton:hover {
-  background-color: #1976D2;
-}
-
-.moderationActions {
-  display: flex;
-  gap: 16px;
-  margin-top: 16px;
+  
+  .deleteActions {
+    flex-direction: column;
+  }
 }

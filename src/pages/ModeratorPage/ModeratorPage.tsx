@@ -14,10 +14,14 @@ import {
     Timestamp
 } from 'firebase/firestore';
 import { firestore } from '../../firebase/config';
-import { getFunctions, httpsCallable } from 'firebase/functions';
 import styles from './ModeratorPage.module.css';
 import { Restaurant } from '../../models/types';
-import { moderateRestaurant } from '../../firebase/functions';
+import {
+    moderateRestaurant,
+    toggleRestaurantArchive,
+    deleteRestaurant,
+    updateRestaurantFields
+} from '../../firebase/functions';
 
 const ModeratorPage: React.FC = () => {
     const navigate = useNavigate();
@@ -25,11 +29,12 @@ const ModeratorPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
-    const [activeTab, setActiveTab] = useState<'pending' | 'approved' | 'rejected'>('pending');
+    const [activeTab, setActiveTab] = useState<'pending' | 'approved' | 'rejected' | 'archived'>('pending');
     const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
     const [moderationComment, setModerationComment] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const functions = getFunctions();
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [confirmDeleteText, setConfirmDeleteText] = useState('');
 
     // Проверяем, имеет ли пользователь доступ к странице модератора
     useEffect(() => {
@@ -38,26 +43,48 @@ const ModeratorPage: React.FC = () => {
         }
     }, [isModerator, navigate]);
 
-    // Загружаем список ресторанов для модерации
+    // Загружаем список ресторанов в зависимости от активной вкладки
+    // Модифицируйте функцию fetchRestaurants, добавив дополнительное логирование:
+    // Упрощенный запрос для отладки
     const fetchRestaurants = async () => {
         try {
             setLoading(true);
+            console.log("Загрузка ресторанов - отладочный режим");
 
-            // Формируем запрос к Firestore
-            const q = query(
-                collection(firestore, 'restaurants'),
-                where('moderation.status', '==', activeTab)
-            );
+            // Получаем ВСЕ рестораны без фильтрации для отладки
+            const q = query(collection(firestore, 'restaurants'));
 
             const querySnapshot = await getDocs(q);
+            console.log("Всего ресторанов в коллекции:", querySnapshot.size);
+
             const restaurantsData: Restaurant[] = [];
+            let withModerationStatus = 0;
+            let withoutModerationStatus = 0;
 
             querySnapshot.forEach((doc) => {
-                restaurantsData.push({
-                    id: doc.id,
-                    ...doc.data()
-                } as Restaurant);
+                const data = doc.data();
+                // Проверяем наличие полей moderation и status
+                if (data.moderation && data.moderation.status) {
+                    withModerationStatus++;
+                    console.log(`Ресторан ${doc.id} имеет статус: ${data.moderation.status}`);
+
+                    // Добавляем только если статус соответствует фильтру или если просматриваем архив
+                    if (data.moderation.status === activeTab ||
+                        (activeTab === 'archived' && data.isArchived === true)) {
+                        restaurantsData.push({
+                            id: doc.id,
+                            ...data
+                        } as Restaurant);
+                    }
+                } else {
+                    withoutModerationStatus++;
+                    console.log(`Ресторан ${doc.id} НЕ имеет поля moderation.status`);
+                }
             });
+
+            console.log("Статистика: с moderation.status:", withModerationStatus,
+                "без moderation.status:", withoutModerationStatus);
+            console.log("Отфильтровано ресторанов:", restaurantsData.length);
 
             setRestaurants(restaurantsData);
             setError(null);
@@ -75,22 +102,32 @@ const ModeratorPage: React.FC = () => {
     }, [activeTab]);
 
     // Обработчик выбора ресторана для просмотра деталей
+    // При загрузке одного ресторана проверим всю структуру документа
     const handleRestaurantSelect = async (restaurant: Restaurant) => {
         try {
             setLoading(true);
+            console.log("Загрузка ресторана с ID:", restaurant.id);
 
-            // Получаем актуальные данные ресторана
+            // Получаем полные данные ресторана
             const restaurantDoc = await getDoc(doc(firestore, 'restaurants', restaurant.id));
 
             if (restaurantDoc.exists()) {
+                const data = restaurantDoc.data();
+                console.log("Полная структура ресторана:", JSON.stringify(data, null, 2));
+
+                // Проверяем наличие поля moderation
+                if (!data.moderation) {
+                    console.warn("У ресторана отсутствует поле moderation!");
+                }
+
                 setSelectedRestaurant({
                     id: restaurantDoc.id,
-                    ...restaurantDoc.data()
+                    ...data
                 } as Restaurant);
 
-                // Сбрасываем комментарий модерации
                 setModerationComment('');
             } else {
+                console.error("Ресторан не найден в Firestore");
                 setError('Ресторан не найден');
             }
         } catch (err) {
@@ -124,6 +161,60 @@ const ModeratorPage: React.FC = () => {
             alert(`Ресторан ${status === 'approved' ? 'одобрен' : 'отклонен'}`);
         } catch (error) {
             setError('Не удалось изменить статус ресторана. Пожалуйста, попробуйте позже.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    // Обработчик архивирования/разархивирования ресторана
+    const handleToggleArchive = async (isArchived: boolean) => {
+        try {
+            if (!selectedRestaurant) return;
+
+            setIsSubmitting(true);
+
+            await toggleRestaurantArchive(selectedRestaurant.id, isArchived);
+
+            // Обновляем список ресторанов
+            fetchRestaurants();
+
+            // Закрываем детали ресторана
+            setSelectedRestaurant(null);
+
+            alert(isArchived ? 'Ресторан скрыт (перемещен в архив)' : 'Ресторан восстановлен из архива');
+        } catch (error) {
+            setError('Не удалось изменить статус архивации ресторана. Пожалуйста, попробуйте позже.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    // Обработчик удаления ресторана
+    const handleDeleteRestaurant = async () => {
+        try {
+            if (!selectedRestaurant) return;
+
+            // Проверяем корректность ввода подтверждения
+            if (confirmDeleteText !== selectedRestaurant.title) {
+                alert('Текст подтверждения не соответствует названию ресторана');
+                return;
+            }
+
+            setIsSubmitting(true);
+
+            await deleteRestaurant(selectedRestaurant.id);
+
+            // Обновляем список ресторанов
+            fetchRestaurants();
+
+            // Закрываем модальное окно и детали ресторана
+            setIsDeleteModalOpen(false);
+            setSelectedRestaurant(null);
+            setConfirmDeleteText('');
+
+            alert(`Ресторан "${selectedRestaurant.title}" был удален`);
+        } catch (error) {
+            setError('Не удалось удалить ресторан. Пожалуйста, попробуйте позже.');
         } finally {
             setIsSubmitting(false);
         }
@@ -182,6 +273,12 @@ const ModeratorPage: React.FC = () => {
                         >
                             Отклоненные
                         </button>
+                        <button
+                            className={`${styles.tabButton} ${activeTab === 'archived' ? styles.activeTab : ''}`}
+                            onClick={() => setActiveTab('archived')}
+                        >
+                            Архив
+                        </button>
                     </div>
 
                     {/* Список ресторанов */}
@@ -195,7 +292,7 @@ const ModeratorPage: React.FC = () => {
                                 {restaurants.map((restaurant) => (
                                     <div
                                         key={restaurant.id}
-                                        className={styles.restaurantCard}
+                                        className={`${styles.restaurantCard} ${restaurant.isArchived ? styles.archivedCard : ''}`}
                                         onClick={() => handleRestaurantSelect(restaurant)}
                                     >
                                         <div className={styles.restaurantImageWrapper}>
@@ -204,6 +301,9 @@ const ModeratorPage: React.FC = () => {
                                                 alt={restaurant.title}
                                                 className={styles.restaurantImage}
                                             />
+                                            {restaurant.isArchived && (
+                                                <div className={styles.archivedBadge}>Архив</div>
+                                            )}
                                         </div>
                                         <div className={styles.restaurantInfo}>
                                             <h3 className={styles.restaurantTitle}>{restaurant.title}</h3>
@@ -225,7 +325,10 @@ const ModeratorPage: React.FC = () => {
                         <div className={styles.modalOverlay}>
                             <div className={styles.modal}>
                                 <div className={styles.modalHeader}>
-                                    <h2 className={styles.modalTitle}>{selectedRestaurant.title}</h2>
+                                    <h2 className={styles.modalTitle}>
+                                        {selectedRestaurant.title}
+                                        {selectedRestaurant.isArchived && <span className={styles.archivedTag}> (В архиве)</span>}
+                                    </h2>
                                     <button
                                         className={styles.closeButton}
                                         onClick={() => setSelectedRestaurant(null)}
@@ -305,21 +408,25 @@ const ModeratorPage: React.FC = () => {
                                         </div>
                                     </div>
 
-                                    {/* Секция для модерации */}
-                                    {activeTab === 'pending' && (
-                                        <div className={styles.moderationSection}>
-                                            <h3>Решение модератора</h3>
-                                            <div className={styles.commentField}>
-                                                <label htmlFor="moderation-comment">Комментарий (опционально):</label>
-                                                <textarea
-                                                    id="moderation-comment"
-                                                    value={moderationComment}
-                                                    onChange={(e) => setModerationComment(e.target.value)}
-                                                    placeholder="Укажите причину отклонения или другие комментарии"
-                                                    rows={4}
-                                                    className={styles.commentTextarea}
-                                                />
-                                            </div>
+                                    {/* Действия модератора */}
+                                    <div className={styles.moderationSection}>
+                                        <h3>Действия модератора</h3>
+
+                                        {/* Комментарий для модерации (опционально) */}
+                                        <div className={styles.commentField}>
+                                            <label htmlFor="moderation-comment">Комментарий (опционально):</label>
+                                            <textarea
+                                                id="moderation-comment"
+                                                value={moderationComment}
+                                                onChange={(e) => setModerationComment(e.target.value)}
+                                                placeholder="Укажите причину отклонения или другие комментарии"
+                                                rows={4}
+                                                className={styles.commentTextarea}
+                                            />
+                                        </div>
+
+                                        {/* Действия для ресторанов на рассмотрении */}
+                                        {activeTab === 'pending' && (
                                             <div className={styles.moderationActions}>
                                                 <button
                                                     className={styles.editButton}
@@ -342,8 +449,128 @@ const ModeratorPage: React.FC = () => {
                                                     {isSubmitting ? 'Обработка...' : 'Отклонить'}
                                                 </button>
                                             </div>
-                                        </div>
-                                    )}
+                                        )}
+
+                                        {/* Действия для одобренных ресторанов */}
+                                        {(activeTab === 'approved' || activeTab === 'rejected') && (
+                                            <div className={styles.moderationActions}>
+                                                <button
+                                                    className={styles.editButton}
+                                                    onClick={() => navigate(`/edit-restaurant/${selectedRestaurant.id}`)}
+                                                >
+                                                    Редактировать
+                                                </button>
+                                                {selectedRestaurant.isArchived ? (
+                                                    <button
+                                                        className={styles.restoreButton}
+                                                        onClick={() => handleToggleArchive(false)}
+                                                        disabled={isSubmitting}
+                                                    >
+                                                        {isSubmitting ? 'Обработка...' : 'Восстановить из архива'}
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        className={styles.archiveButton}
+                                                        onClick={() => handleToggleArchive(true)}
+                                                        disabled={isSubmitting}
+                                                    >
+                                                        {isSubmitting ? 'Обработка...' : 'Скрыть (в архив)'}
+                                                    </button>
+                                                )}
+                                                <button
+                                                    className={styles.deleteButton}
+                                                    onClick={() => setIsDeleteModalOpen(true)}
+                                                    disabled={isSubmitting}
+                                                >
+                                                    {isSubmitting ? 'Обработка...' : 'Удалить'}
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {/* Действия для архивированных ресторанов */}
+                                        {activeTab === 'archived' && (
+                                            <div className={styles.moderationActions}>
+                                                <button
+                                                    className={styles.editButton}
+                                                    onClick={() => navigate(`/edit-restaurant/${selectedRestaurant.id}`)}
+                                                >
+                                                    Редактировать
+                                                </button>
+                                                <button
+                                                    className={styles.restoreButton}
+                                                    onClick={() => handleToggleArchive(false)}
+                                                    disabled={isSubmitting}
+                                                >
+                                                    {isSubmitting ? 'Обработка...' : 'Восстановить из архива'}
+                                                </button>
+                                                <button
+                                                    className={styles.deleteButton}
+                                                    onClick={() => setIsDeleteModalOpen(true)}
+                                                    disabled={isSubmitting}
+                                                >
+                                                    {isSubmitting ? 'Обработка...' : 'Удалить'}
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Модальное окно подтверждения удаления */}
+                    {isDeleteModalOpen && selectedRestaurant && (
+                        <div className={styles.modalOverlay}>
+                            <div className={`${styles.modal} ${styles.deleteModal}`}>
+                                <div className={styles.modalHeader}>
+                                    <h2 className={`${styles.modalTitle} ${styles.deleteTitle}`}>Удаление ресторана</h2>
+                                    <button
+                                        className={styles.closeButton}
+                                        onClick={() => {
+                                            setIsDeleteModalOpen(false);
+                                            setConfirmDeleteText('');
+                                        }}
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                                <div className={styles.modalBody}>
+                                    <div className={styles.deleteWarning}>
+                                        <p>Вы собираетесь <strong>полностью удалить</strong> ресторан "{selectedRestaurant.title}".</p>
+                                        <p>Это действие <strong>невозможно отменить</strong>. Все данные ресторана будут безвозвратно удалены.</p>
+                                        <p>Если вы хотите только временно скрыть ресторан, используйте функцию "Скрыть (в архив)".</p>
+                                    </div>
+
+                                    <div className={styles.confirmField}>
+                                        <label htmlFor="confirm-delete">Для подтверждения введите название ресторана:</label>
+                                        <input
+                                            id="confirm-delete"
+                                            type="text"
+                                            className={styles.confirmInput}
+                                            value={confirmDeleteText}
+                                            onChange={(e) => setConfirmDeleteText(e.target.value)}
+                                            placeholder={selectedRestaurant.title}
+                                        />
+                                    </div>
+
+                                    <div className={styles.deleteActions}>
+                                        <button
+                                            className={styles.cancelButton}
+                                            onClick={() => {
+                                                setIsDeleteModalOpen(false);
+                                                setConfirmDeleteText('');
+                                            }}
+                                        >
+                                            Отмена
+                                        </button>
+                                        <button
+                                            className={styles.confirmedDeleteButton}
+                                            onClick={handleDeleteRestaurant}
+                                            disabled={confirmDeleteText !== selectedRestaurant.title || isSubmitting}
+                                        >
+                                            {isSubmitting ? 'Удаление...' : 'Подтвердить удаление'}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

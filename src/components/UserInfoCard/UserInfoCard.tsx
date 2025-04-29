@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './UserInfoCard.module.css';
+import { useAppTranslation } from '../../hooks/useAppTranslation';
 
 interface UserInfoCardProps {
   user: {
@@ -16,10 +17,17 @@ interface UserInfoCardProps {
 }
 
 const UserInfoCard: React.FC<UserInfoCardProps> = ({ user, onEditClick }) => {
+  // Используем хук для переводов
+  const { t } = useAppTranslation();
+  
   return (
     <div className={styles.userInfoCard}>
       <div className={styles.avatarContainer}>
-        <img src={user.avatar} alt={`Аватар ${user.name}`} className={styles.avatar} />
+        <img 
+          src={user.avatar} 
+          alt={t('profile.avatarAlt', { name: user.name })}
+          className={styles.avatar} 
+        />
       </div>
       
       <div className={styles.userInfo}>
@@ -43,18 +51,18 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({ user, onEditClick }) => {
         <div className={styles.userStats}>
           <div className={styles.statItem}>
             <div className={styles.statValue}>{user.reviewsCount}</div>
-            <div className={styles.statLabel}>Отзывов</div>
+            <div className={styles.statLabel}>{t('profile.reviewsCount')}</div>
           </div>
           
           <div className={styles.statItem}>
             <div className={styles.statValue}>{user.likesCount}</div>
-            <div className={styles.statLabel}>В избранном</div>
+            <div className={styles.statLabel}>{t('profile.favoritesCount')}</div>
           </div>
         </div>
         
         <button onClick={onEditClick} className={styles.editButton}>
           <span className={styles.editIcon}>✏️</span>
-          Редактировать профиль
+          {t('profile.editProfile')}
         </button>
       </div>
     </div>
