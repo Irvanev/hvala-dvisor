@@ -6,6 +6,8 @@ import { auth } from '../../firebase/config';
 import NavBar from '../../components/NavBar';
 import Footer from '../../components/Footer/Footer';
 import styles from './EditProfilePage.module.css';
+// Импортируем хук для переводов
+import { useAppTranslation } from '../../hooks/useAppTranslation';
 
 interface EditProfileFormData {
   name: string;
@@ -21,6 +23,8 @@ interface EditProfileFormData {
 const EditProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const { user, updateUser } = useAuth();
+  // Используем хук для переводов
+  const { t } = useAppTranslation();
   
   const [avatarPreview, setAvatarPreview] = useState<string>('');
   const [formData, setFormData] = useState<EditProfileFormData>({
@@ -101,31 +105,31 @@ const EditProfilePage: React.FC = () => {
     const newErrors: {[key: string]: string} = {};
     
     if (!formData.name) {
-      newErrors.name = 'Имя обязательно';
+      newErrors.name = t('editProfile.errors.nameRequired');
     }
     
     if (!formData.username) {
-      newErrors.username = 'Имя пользователя обязательно';
+      newErrors.username = t('editProfile.errors.usernameRequired');
     }
     
     if (!formData.email) {
-      newErrors.email = 'Электронная почта обязательна';
+      newErrors.email = t('editProfile.errors.emailRequired');
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Неверный формат электронной почты';
+      newErrors.email = t('editProfile.errors.invalidEmail');
     }
     
     // Валидация пароля только если пользователь пытается его изменить
     if (formData.newPassword) {
       if (!formData.currentPassword) {
-        newErrors.currentPassword = 'Введите текущий пароль';
+        newErrors.currentPassword = t('editProfile.errors.currentPasswordRequired');
       }
       
       if (formData.newPassword.length < 8) {
-        newErrors.newPassword = 'Пароль должен содержать не менее 8 символов';
+        newErrors.newPassword = t('editProfile.errors.passwordTooShort');
       }
       
       if (formData.newPassword !== formData.confirmPassword) {
-        newErrors.confirmPassword = 'Пароли не совпадают';
+        newErrors.confirmPassword = t('editProfile.errors.passwordsDoNotMatch');
       }
     }
     
@@ -166,17 +170,17 @@ const EditProfilePage: React.FC = () => {
           console.error('Ошибка при обновлении пароля:', passwordError);
           setErrors({
             ...errors,
-            currentPassword: 'Не удалось обновить пароль. Возможно, нужно перелогиниться.'
+            currentPassword: t('editProfile.errors.passwordUpdateFailed')
           });
           // Несмотря на ошибку с паролем, профиль считаем обновленным
-          setSuccessMessage('Профиль обновлен, но пароль не был изменен');
+          setSuccessMessage(t('editProfile.success.profileUpdatedPasswordFailed'));
           setIsSubmitting(false);
           return;
         }
       }
       
       if (success) {
-        setSuccessMessage('Профиль успешно обновлен!');
+        setSuccessMessage(t('editProfile.success.profileUpdated'));
         
         // Если пользователь изменил пароль, очищаем поля пароля
         if (formData.newPassword) {
@@ -190,14 +194,14 @@ const EditProfilePage: React.FC = () => {
       } else {
         setErrors({
           ...errors,
-          general: 'Не удалось обновить профиль'
+          general: t('editProfile.errors.updateFailed')
         });
       }
     } catch (error) {
       console.error('Ошибка при обновлении профиля:', error);
       setErrors({
         ...errors,
-        general: 'Произошла ошибка при обновлении профиля'
+        general: t('editProfile.errors.generalError')
       });
     } finally {
       setIsSubmitting(false);
@@ -212,8 +216,6 @@ const EditProfilePage: React.FC = () => {
     <div className={styles.editProfilePage}>
       <NavBar
         onSearch={(query) => console.log(`Поиск: ${query}`)}
-        // onLanguageChange={(language) => console.log(`Язык: ${language}`)}
-        // currentLanguage="ru"
         logoText="HvalaDviser"
         onWelcomeClick={() => console.log('Клик на Welcome')}
         isStatic={true}
@@ -221,7 +223,7 @@ const EditProfilePage: React.FC = () => {
       
       <div className={styles.editProfileContainer}>
         <div className={styles.formWrapper}>
-          <h1 className={styles.pageTitle}>Редактирование профиля</h1>
+          <h1 className={styles.pageTitle}>{t('editProfile.title')}</h1>
           
           {errors.general && (
             <div className={styles.errorMessage}>{errors.general}</div>
@@ -236,7 +238,7 @@ const EditProfilePage: React.FC = () => {
               <div className={styles.avatarPreview}>
                 <img 
                   src={avatarPreview || 'https://placehold.jp/300x300.png'} 
-                  alt="Аватар" 
+                  alt={t('editProfile.avatarAlt')} 
                   className={styles.previewImage} 
                 />
               </div>
@@ -244,7 +246,7 @@ const EditProfilePage: React.FC = () => {
                 <svg viewBox="0 0 24 24" width="18" height="18" className={styles.uploadIcon}>
                   <path fill="currentColor" d="M19 7v11H5V7h3l1-2h6l1 2h3zm-8 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
                 </svg>
-                Изменить фото
+                {t('editProfile.changePhoto')}
               </label>
               <input
                 type="file"
@@ -258,7 +260,7 @@ const EditProfilePage: React.FC = () => {
             
             <div className={styles.formColumns}>
               <div className={styles.formColumn}>
-                <h2 className={styles.sectionTitle}>Основная информация</h2>
+                <h2 className={styles.sectionTitle}>{t('editProfile.basicInfo')}</h2>
                 
                 <div className={styles.formGroup}>
                   <div className={styles.inputWrapper}>
@@ -274,7 +276,7 @@ const EditProfilePage: React.FC = () => {
                       className={`${styles.input} ${errors.name ? styles.inputError : ''}`}
                       value={formData.name}
                       onChange={handleInputChange}
-                      placeholder="Имя и Фамилия"
+                      placeholder={t('editProfile.namePlaceholder')}
                       autoComplete="name"
                     />
                   </div>
@@ -295,7 +297,7 @@ const EditProfilePage: React.FC = () => {
                       className={`${styles.input} ${errors.username ? styles.inputError : ''}`}
                       value={formData.username}
                       onChange={handleInputChange}
-                      placeholder="Имя пользователя"
+                      placeholder={t('editProfile.usernamePlaceholder')}
                       autoComplete="username"
                     />
                   </div>
@@ -316,7 +318,7 @@ const EditProfilePage: React.FC = () => {
                       className={`${styles.input} ${errors.email ? styles.inputError : ''}`}
                       value={formData.email}
                       onChange={handleInputChange}
-                      placeholder="Электронная почта"
+                      placeholder={t('editProfile.emailPlaceholder')}
                       autoComplete="email"
                     />
                   </div>
@@ -337,7 +339,7 @@ const EditProfilePage: React.FC = () => {
                       className={`${styles.input} ${errors.city ? styles.inputError : ''}`}
                       value={formData.city}
                       onChange={handleInputChange}
-                      placeholder="Город"
+                      placeholder={t('editProfile.cityPlaceholder')}
                       autoComplete="address-level2"
                     />
                   </div>
@@ -346,8 +348,8 @@ const EditProfilePage: React.FC = () => {
               </div>
               
               <div className={styles.formColumn}>
-                <h2 className={styles.sectionTitle}>Изменение пароля</h2>
-                <p className={styles.sectionDescription}>Оставьте поля пустыми, если не хотите менять пароль</p>
+                <h2 className={styles.sectionTitle}>{t('editProfile.changePassword')}</h2>
+                <p className={styles.sectionDescription}>{t('editProfile.passwordHint')}</p>
                 
                 <div className={styles.formGroup}>
                   <div className={styles.inputWrapper}>
@@ -363,7 +365,7 @@ const EditProfilePage: React.FC = () => {
                       className={`${styles.input} ${errors.currentPassword ? styles.inputError : ''}`}
                       value={formData.currentPassword}
                       onChange={handleInputChange}
-                      placeholder="Текущий пароль"
+                      placeholder={t('editProfile.currentPasswordPlaceholder')}
                       autoComplete="current-password"
                     />
                   </div>
@@ -384,7 +386,7 @@ const EditProfilePage: React.FC = () => {
                       className={`${styles.input} ${errors.newPassword ? styles.inputError : ''}`}
                       value={formData.newPassword}
                       onChange={handleInputChange}
-                      placeholder="Новый пароль"
+                      placeholder={t('editProfile.newPasswordPlaceholder')}
                       autoComplete="new-password"
                     />
                   </div>
@@ -405,7 +407,7 @@ const EditProfilePage: React.FC = () => {
                       className={`${styles.input} ${errors.confirmPassword ? styles.inputError : ''}`}
                       value={formData.confirmPassword}
                       onChange={handleInputChange}
-                      placeholder="Подтвердите новый пароль"
+                      placeholder={t('editProfile.confirmPasswordPlaceholder')}
                       autoComplete="new-password"
                     />
                   </div>
@@ -420,7 +422,7 @@ const EditProfilePage: React.FC = () => {
                 className={styles.cancelButton}
                 onClick={handleCancel}
               >
-                ОТМЕНА
+                {t('buttons.cancel')}
               </button>
               
               <button
@@ -428,7 +430,7 @@ const EditProfilePage: React.FC = () => {
                 className={styles.saveButton}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'СОХРАНЕНИЕ...' : 'СОХРАНИТЬ ИЗМЕНЕНИЯ'}
+                {isSubmitting ? t('editProfile.saving') : t('editProfile.saveChanges')}
               </button>
             </div>
           </form>
