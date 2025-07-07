@@ -1,5 +1,5 @@
 /* EditRestaurantPage.module.css */
-/* Скопированы стили из AddRestaurantPage.module.css с необходимыми адаптациями */
+/* Улучшенная версия с красивой контактной информацией */
 
 .editRestaurantPage {
   display: flex;
@@ -139,6 +139,13 @@
   font-size: 12px;
   color: #f44336;
   margin-top: 6px;
+  display: flex;
+  align-items: center;
+}
+
+.errorMessage::before {
+  content: "⚠️";
+  margin-right: 4px;
 }
 
 .loadingContainer {
@@ -361,6 +368,7 @@
   border-radius: 8px;
   font-size: 14px;
   color: #333;
+  box-sizing: border-box;
 }
 
 .textarea {
@@ -592,6 +600,7 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 14px;
+  box-sizing: border-box;
 }
 
 .menuItemPriceInput {
@@ -605,6 +614,7 @@
   border-radius: 8px;
   font-size: 14px;
   resize: vertical;
+  box-sizing: border-box;
 }
 
 .removeButton {
@@ -747,117 +757,222 @@
   cursor: pointer;
 }
 
-/* Контактная информация */
+/* УЛУЧШЕННЫЕ СТИЛИ ДЛЯ КОНТАКТНОЙ ИНФОРМАЦИИ */
+/* Основные контейнеры секций */
 .contactSection,
 .contactPersonSection {
-  margin-bottom: 30px;
+  margin-bottom: 32px;
+  background: linear-gradient(135deg, #f8fffe 0%, #f0f9f8 100%);
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.08);
+  border: 1px solid #e8f5e9;
+  position: relative;
 }
 
-.contactPersonForm {
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  padding: 20px;
+.contactSection {
+  border-left: 4px solid #4CAF50;
 }
 
-.checkboxGroup {
+.contactPersonSection {
+  background: linear-gradient(135deg, #fafffe 0%, #f5f9f8 100%);
+  border-left: 4px solid #2196F3;
+}
+
+/* Иконки для секций */
+.contactSection::before {
+  content: "📞";
+  font-size: 24px;
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  opacity: 0.7;
+}
+
+.contactPersonSection::before {
+  content: "👤";
+  font-size: 24px;
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  opacity: 0.7;
+}
+
+/* Заголовки секций */
+.contactSection .sectionTitle,
+.contactPersonSection .sectionTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2c5e2e;
+  margin: 0 0 12px 0;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e8f5e9;
   display: flex;
   align-items: center;
-  margin-top: 16px;
 }
 
-.checkboxGroup input {
-  margin-right: 8px;
+.contactPersonSection .sectionTitle {
+  color: #1976D2;
+  border-bottom-color: #e3f2fd;
 }
 
-/* Адаптивность для мобильных устройств */
-@media (max-width: 768px) {
-  .pageTitle {
-    font-size: 24px;
-  }
-
-  .formContainer {
-    padding: 20px;
-  }
-
-  .navigationButtons {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .prevButton,
-  .nextButton,
-  .submitButton,
-  .cancelButton {
-    width: 100%;
-  }
-
-  .finalButtons {
-    width: 100%;
-    flex-direction: column;
-  }
-
-  .formRow {
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .stepsList {
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .stepItem {
-    width: 48%;
-    margin-bottom: 10px;
-  }
-
-  .menuItemRow {
-    flex-direction: column;
-  }
-
-  .menuItemPriceInput {
-    width: 100%;
-  }
-
-  .photoGrid,
-  .featuresGrid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  }
-
-  .selectedLocation {
-    left: 10px;
-    right: 10px;
-    bottom: 10px;
-    font-size: 12px;
-  }
-
-  .mapInstructions {
-    width: 90%;
-  }
-
-  .dayRow {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .dayName {
-    width: 100%;
-    margin-bottom: 8px;
-  }
-
-  .dayHours {
-    width: 100%;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .timeInputs {
-    width: 100%;
-    margin-top: 8px;
-  }
+/* Описание секций */
+.contactSection .sectionDescription,
+.contactPersonSection .sectionDescription {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 24px;
+  line-height: 1.6;
+  padding: 12px 16px;
+  background-color: rgba(76, 175, 80, 0.05);
+  border-radius: 8px;
+  border-left: 3px solid #4CAF50;
 }
 
-/* Добавьте эти стили в ваш файл EditRestaurantPage.module.css */
+.contactPersonSection .sectionDescription {
+  background-color: rgba(33, 150, 243, 0.05);
+  border-left-color: #2196F3;
+}
+
+/* Форма контактного лица */
+.contactPersonForm {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e8f4fd;
+  position: relative;
+}
+
+.contactPersonForm::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #2196F3 0%, #4CAF50 100%);
+  border-radius: 12px 12px 0 0;
+}
+
+/* Группы полей ввода */
+.inputGroup {
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.inputGroup:last-child {
+  margin-bottom: 0;
+}
+
+/* Лейблы */
+.inputGroup label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c5e2e;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+/* Убираем дублирование звездочек - они уже есть в HTML */
+.contactPersonForm .inputGroup label::after,
+.contactSection .inputGroup label::after {
+  content: "";
+}
+
+/* Поля ввода */
+.inputGroup input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #e8f5e9;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #333;
+  background-color: #fff;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.contactPersonForm .inputGroup input {
+  border-color: #e3f2fd;
+}
+
+.inputGroup input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.1);
+  background-color: #fafffe;
+}
+
+.contactPersonForm .inputGroup input:focus {
+  border-color: #2196F3;
+  box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.1);
+}
+
+.inputGroup input::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+/* Поля с ошибками */
+.inputGroup input.inputError {
+  border-color: #f44336;
+  box-shadow: 0 0 0 4px rgba(244, 67, 54, 0.1);
+  background-color: #fffbfb;
+}
+
+/* Группа чекбокса */
+.checkboxGroup {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 24px;
+  padding: 20px;
+  background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+  border-radius: 12px;
+  border: 2px solid #c8e6c9;
+  position: relative;
+}
+
+.checkboxGroup::before {
+  content: "✓";
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  color: #4CAF50;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.checkboxGroup input[type="checkbox"] {
+  margin-right: 12px;
+  margin-top: 2px;
+  width: 18px;
+  height: 18px;
+  accent-color: #4CAF50;
+  transform: scale(1.2);
+}
+
+.checkboxGroup label {
+  font-size: 14px;
+  margin-bottom: 0;
+  cursor: pointer;
+  line-height: 1.5;
+  color: #2c5e2e;
+  font-weight: 500;
+}
+
+/* Адаптация для ряда полей */
+.formRow {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.formRow .inputGroup {
+  flex: 1;
+  margin-bottom: 0;
+}
 
 /* Стили для компонента обработки изображений меню и часов работы */
 .menuImageProcessor {
@@ -886,10 +1001,6 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-}
-
-.fileInput {
-  display: none;
 }
 
 .uploadButton {
@@ -984,7 +1095,6 @@
   from {
     opacity: 0;
   }
-
   to {
     opacity: 1;
   }
@@ -1047,6 +1157,95 @@
 
 /* Адаптивность для мобильных устройств */
 @media (max-width: 768px) {
+  .pageTitle {
+    font-size: 24px;
+  }
+
+  .formContainer {
+    padding: 20px;
+  }
+
+  .navigationButtons {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .prevButton,
+  .nextButton,
+  .submitButton,
+  .cancelButton {
+    width: 100%;
+  }
+
+  .finalButtons {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .formRow {
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .formRow .inputGroup {
+    margin-bottom: 20px;
+  }
+
+  .stepsList {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .stepItem {
+    width: 48%;
+    margin-bottom: 10px;
+  }
+
+  .menuItemRow {
+    flex-direction: column;
+  }
+
+  .menuItemPriceInput {
+    width: 100%;
+  }
+
+  .photoGrid,
+  .featuresGrid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+
+  .selectedLocation {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    font-size: 12px;
+  }
+
+  .mapInstructions {
+    width: 90%;
+  }
+
+  .dayRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dayName {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  .dayHours {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .timeInputs {
+    width: 100%;
+    margin-top: 8px;
+  }
+
   .imageProcessorContainer {
     flex-direction: column;
   }
@@ -1055,4 +1254,183 @@
     flex-direction: column;
     width: 100%;
   }
+
+  /* Мобильная адаптивность для контактной информации */
+  .contactSection,
+  .contactPersonSection {
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  
+  .contactPersonForm {
+    padding: 20px;
+  }
+
+  .contactSection::before,
+  .contactPersonSection::before {
+    top: 16px;
+    right: 16px;
+    font-size: 20px;
+  }
+
+  .checkboxGroup {
+    padding: 16px;
+  }
+
+  .checkboxGroup::before {
+    top: 12px;
+    right: 12px;
+    font-size: 16px;
+  }
+}
+
+.infoNote {
+  display: flex;
+  align-items: flex-start;
+  padding: 12px 16px;
+  background-color: #e3f2fd;
+  border: 1px solid #2196F3;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #1976D2;
+}
+
+.infoNote span {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.infoNote p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.autoFilled {
+  font-size: 12px;
+  color: #4CAF50;
+  font-weight: normal;
+  font-style: italic;
+}
+
+.autoFilledInput {
+  transition: all 0.3s ease;
+}
+
+.helpText {
+  display: flex;
+  align-items: center;
+  margin-top: 6px;
+  padding: 8px 12px;
+  background-color: #fff8e1;
+  border-radius: 6px;
+  border-left: 3px solid #ffc107;
+}
+
+.helpText span {
+  margin-right: 6px;
+  font-size: 14px;
+}
+
+.helpText small {
+  color: #e65100;
+  font-size: 12px;
+}
+
+.checkboxNote {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background-color: #e8f5e9;
+  border-radius: 6px;
+  border-left: 3px solid #4CAF50;
+}
+
+.checkboxNote span {
+  margin-right: 6px;
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.checkboxNote small {
+  color: #2e7d32;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+/* CSS стили для логики контактов */
+.infoNote {
+  display: flex;
+  align-items: flex-start;
+  padding: 12px 16px;
+  background-color: #e3f2fd;
+  border: 1px solid #2196F3;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #1976D2;
+}
+
+.infoNote span {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.infoNote p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.autoFilled {
+  font-size: 12px;
+  color: #4CAF50;
+  font-weight: normal;
+  font-style: italic;
+}
+
+.autoFilledInput {
+  transition: all 0.3s ease;
+}
+
+.helpText {
+  display: flex;
+  align-items: center;
+  margin-top: 6px;
+  padding: 8px 12px;
+  background-color: #fff8e1;
+  border-radius: 6px;
+  border-left: 3px solid #ffc107;
+}
+
+.helpText span {
+  margin-right: 6px;
+  font-size: 14px;
+}
+
+.helpText small {
+  color: #e65100;
+  font-size: 12px;
+}
+
+.checkboxNote {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background-color: #e8f5e9;
+  border-radius: 6px;
+  border-left: 3px solid #4CAF50;
+}
+
+.checkboxNote span {
+  margin-right: 6px;
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.checkboxNote small {
+  color: #2e7d32;
+  font-size: 12px;
+  line-height: 1.3;
 }

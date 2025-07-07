@@ -111,11 +111,53 @@ const AddRestaurantPage: React.FC = () => {
 
   const totalSteps = 4;
 
+  // Дополнительная функция для обработки изменений контактного лица
+  const handleContactPersonChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    const [parent, child] = name.split('.');
+    
+    const updatedContactPerson = {
+      ...formData.contactPerson,
+      [child]: value
+    };
+    
+    // Если контактное лицо является владельцем и меняется телефон, 
+    // автоматически обновляем телефон ресторана
+    if (child === 'phone' && formData.contactPerson.isOwner) {
+      setFormData({
+        ...formData,
+        phoneNumber: value,
+        contactPerson: updatedContactPerson
+      });
+    } else {
+      setFormData({
+        ...formData,
+        contactPerson: updatedContactPerson
+      });
+    }
+    
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: ''
+      });
+    }
+  };
+
   // Функция для обработки ввода (поддержка вложенных полей через точку)
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+    
+    // Используем специальный обработчик для полей контактного лица
+    if (name.startsWith('contactPerson.')) {
+      handleContactPersonChange(e);
+      return;
+    }
+    
     if (name.includes('.')) {
       const [parent, child] = name.split('.');
       setFormData({
@@ -126,10 +168,30 @@ const AddRestaurantPage: React.FC = () => {
         }
       });
     } else {
-      setFormData({
-        ...formData,
-        [name]: value
-      });
+      // Логика для контактных данных ресторана
+      if (name === 'phoneNumber' || name === 'website') {
+        // Если заполняются контакты ресторана, снимаем флаг "является владельцем"
+        if (value.trim() && formData.contactPerson.isOwner) {
+          setFormData(prev => ({
+            ...prev,
+            [name]: value,
+            contactPerson: {
+              ...prev.contactPerson,
+              isOwner: false
+            }
+          }));
+        } else {
+          setFormData({
+            ...formData,
+            [name]: value
+          });
+        }
+      } else {
+        setFormData({
+          ...formData,
+          [name]: value
+        });
+      }
     }
 
     if (errors[name]) {
@@ -143,6 +205,7 @@ const AddRestaurantPage: React.FC = () => {
   // Обработка checkbox-элементов
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked, value } = e.target;
+    
     if (name === 'features') {
       const updatedFeatures = [...formData.features];
       if (checked) {
@@ -162,6 +225,29 @@ const AddRestaurantPage: React.FC = () => {
           [day]: { ...formData.openingHours[day], [field]: checked }
         }
       });
+    } else if (name === 'contactPerson.isOwner') {
+      // Специальная логика для чекбокса "является владельцем"
+      if (checked) {
+        // Если отмечается "является владельцем", копируем контакты из контактного лица в ресторан
+        setFormData({
+          ...formData,
+          phoneNumber: formData.contactPerson.phone,
+          website: formData.website, // оставляем как есть, если не хотим перезаписывать
+          contactPerson: {
+            ...formData.contactPerson,
+            isOwner: true
+          }
+        });
+      } else {
+        // Если снимается "является владельцем", просто обновляем флаг
+        setFormData({
+          ...formData,
+          contactPerson: {
+            ...formData.contactPerson,
+            isOwner: false
+          }
+        });
+      }
     } else {
       // Для других чекбоксов
       setFormData({ ...formData, [name]: checked });
@@ -298,7 +384,6 @@ const AddRestaurantPage: React.FC = () => {
   };
 
   // Функция для преобразования данных формы в объект, соответствующий модели Restaurant
-  // Функция для преобразования данных формы в объект, соответствующий модели Restaurant
   const transformFormDataToRestaurant = (data: RestaurantFormData): Partial<Restaurant> => {
 
     // Создаем GeoPoint для локации
@@ -429,8 +514,6 @@ const AddRestaurantPage: React.FC = () => {
     <div className={styles.addRestaurantPage}>
       <NavBar
         onSearch={(query) => console.log(`Поиск: ${query}`)}
-        // onLanguageChange={(language) => console.log(`Язык: ${language}`)}
-        // currentLanguage="ru"
         logoText="HvalaDviser"
         onWelcomeClick={() => console.log('Клик на Welcome')}
         isStatic={true}
@@ -647,8 +730,17 @@ const AddRestaurantPage: React.FC = () => {
                   <h2 className={styles.stepTitle}>Контактная информация</h2>
                   <div className={styles.contactSection}>
                     <h3 className={styles.sectionTitle}>Контактные данные ресторана</h3>
+                    {formData.contactPerson.isOwner && (
+                      <div className={styles.infoNote}>
+                        <span>ℹ️</span>
+                        <p>Контакты автоматически заполняются из данных контактного лица, так как выбрано "Является владельцем"</p>
+                      </div>
+                    )}
                     <div className={styles.inputGroup}>
-                      <label htmlFor="phoneNumber">Телефон ресторана</label>
+                      <label htmlFor="phoneNumber">
+                        Телефон ресторана
+                        {formData.contactPerson.isOwner && <span className={styles.autoFilled}> (автозаполнение)</span>}
+                      </label>
                       <input
                         type="tel"
                         id="phoneNumber"
@@ -656,7 +748,18 @@ const AddRestaurantPage: React.FC = () => {
                         value={formData.phoneNumber}
                         onChange={handleInputChange}
                         placeholder="+7 (___) ___-__-__"
+                        className={formData.contactPerson.isOwner ? styles.autoFilledInput : ''}
+                        style={{
+                          backgroundColor: formData.contactPerson.isOwner ? '#f0f9f0' : 'white',
+                          borderColor: formData.contactPerson.isOwner ? '#4CAF50' : '#e4e9f2'
+                        }}
                       />
+                      {!formData.contactPerson.isOwner && formData.phoneNumber && (
+                        <div className={styles.helpText}>
+                          <span>💡</span>
+                          <small>Заполнение этого поля снимает отметку "Является владельцем"</small>
+                        </div>
+                      )}
                     </div>
                     <div className={styles.inputGroup}>
                       <label htmlFor="website">Веб-сайт ресторана (если есть)</label>
