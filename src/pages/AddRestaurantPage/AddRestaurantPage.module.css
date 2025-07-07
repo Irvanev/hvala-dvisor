@@ -1,900 +1,1106 @@
 .addRestaurantPage {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    background-color: #f7f9fc;
-    color: #333;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f7f9fc;
+  color: #333;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.mainContent {
+  padding-top: 90px;
+  /* Учитываем высоту navbar */
+  padding-bottom: 50px;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 16px;
+}
+
+.pageTitle {
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 16px;
+  text-align: center;
+}
+
+.pageDescription {
+  text-align: center;
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 32px;
+  line-height: 1.5;
+}
+
+.formContainer {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+  margin-bottom: 30px;
+}
+
+/* Стилизация шагов */
+.stepsContainer {
+  margin-bottom: 30px;
+}
+
+.stepsProgressBar {
+  height: 4px;
+  background-color: #e0e0e0;
+  border-radius: 2px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: #4CAF50;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.stepsList {
+  display: flex;
+  justify-content: space-between;
+}
+
+.stepItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 25%;
+  position: relative;
+}
+
+.stepNumber {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #fff;
+  border: 2px solid #e0e0e0;
+  color: #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+}
+
+.stepTitle {
+  font-size: 12px;
+  text-align: center;
+  color: #999;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.stepItem.active .stepNumber {
+  background-color: #4CAF50;
+  border-color: #4CAF50;
+  color: white;
+}
+
+.stepItem.active .stepTitle {
+  color: #333;
+  font-weight: 600;
+}
+
+.stepItem.completed .stepNumber {
+  background-color: #4CAF50;
+  border-color: #4CAF50;
+  color: white;
+}
+
+.stepItem.completed .stepTitle {
+  color: #4CAF50;
+}
+
+/* Стили для формы */
+.formStep {
+  margin-bottom: 20px;
+}
+
+.stepTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.subSectionTitle,
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 24px 0 16px;
+}
+
+.sectionDescription {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.formGroup label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #e4e9f2;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #333;
+  transition: all 0.3s ease;
+  background-color: #fff;
+}
+
+.formGroup input:focus,
+.formGroup select:focus,
+.formGroup textarea:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
+}
+
+.formGroup input::placeholder,
+.formGroup textarea::placeholder {
+  color: #aaa;
+}
+
+.formGroup textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.inputError {
+  border-color: #f44336 !important;
+}
+
+.inputError:focus {
+  box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.15) !important;
+}
+
+.errorMessage {
+  font-size: 12px;
+  color: #f44336;
+  margin-top: 6px;
+}
+
+.generalError {
+  background-color: rgba(244, 67, 54, 0.1);
+  color: #f44336;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Навигационные кнопки */
+.navigationButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 32px;
+}
+
+.prevButton,
+.nextButton,
+.submitButton {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.prevButton {
+  background-color: #f2f2f2;
+  color: #555;
+  border: 1px solid #ddd;
+}
+
+.prevButton:hover {
+  background-color: #e6e6e6;
+}
+
+.nextButton,
+.submitButton {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  box-shadow: 0 4px 6px rgba(76, 175, 80, 0.2);
+}
+
+.nextButton:hover,
+.submitButton:hover {
+  background-color: #43a047;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(76, 175, 80, 0.25);
+}
+
+.nextButton:disabled,
+.submitButton:disabled {
+  background-color: #a5d6a7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Секция загрузки фотографий */
+.photoUploaderSection {
+  margin-bottom: 40px;
+}
+
+.dropZone {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 30px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.dropZone:hover {
+  border-color: #4CAF50;
+  background-color: rgba(76, 175, 80, 0.03);
+}
+
+.dropZoneContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.uploadIcon {
+  width: 48px;
+  height: 48px;
+  color: #999;
+  margin-bottom: 12px;
+}
+
+.dropZoneText {
+  font-size: 16px;
+  font-weight: 500;
+  color: #555;
+  margin: 0 0 8px;
+}
+
+.dropZoneHint {
+  font-size: 12px;
+  color: #999;
+}
+
+.fileInput {
+  display: none;
+}
+
+.photoPreviewContainer {
+  margin-top: 24px;
+}
+
+.previewTitle {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.photoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.photoItem {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: white;
+}
+
+.photoPreview {
+  height: 150px;
+  overflow: hidden;
+}
+
+.photoPreview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photoInfo {
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #f0f0f0;
+}
+
+.photoName {
+  font-size: 12px;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.removePhotoButton {
+  background: none;
+  border: none;
+  color: #f44336;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.removePhotoButton:hover {
+  text-decoration: underline;
+}
+
+/* Особенности ресторана */
+.featuresSection {
+  margin-top: 32px;
+}
+
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.featureCheckbox {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.featureCheckbox input {
+  margin-right: 8px;
+}
+
+.featureCheckbox label {
+  font-size: 14px;
+  color: #555;
+}
+
+/* Стили для карты */
+.locationPickerSection {
+  margin-top: 32px;
+}
+
+.mapContainer {
+  margin-top: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mapPlaceholder {
+  height: 300px;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.mapInstructions {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mapIcon {
+  color: #4CAF50;
+  margin-bottom: 8px;
+}
+
+.mapImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.selectedLocation {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background-color: white;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  font-size: 12px;
+}
+
+.locationNote {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #666;
+  background-color: #f9f9f9;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+/* Стили для меню */
+.menuSection {
+  margin-bottom: 40px;
+}
+
+.menuCategory {
+  background-color: #f9f9f9;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.categoryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.categoryInput {
+  flex: 1;
+  padding: 10px 16px;
+  border: 1px solid #e4e9f2;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.removeButton {
+  background-color: #f2f2f2;
+  color: #666;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 12px;
+  font-size: 12px;
+}
+
+.removeButton:hover {
+  background-color: #e6e6e6;
+}
+
+.menuItem {
+  background-color: white;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.menuItemRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.menuItemField {
+  flex: 1;
+  margin-right: 12px;
+}
+
+.menuItemInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e4e9f2;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.menuItemPriceInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e4e9f2;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.menuItemDescription {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e4e9f2;
+  border-radius: 6px;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.addButton {
+  background-color: white;
+  border: 1px dashed #ccc;
+  color: #4CAF50;
+  padding: 10px;
+  border-radius: 8px;
+  width: 100%;
+  text-align: center;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 12px;
+  transition: all 0.3s ease;
+}
+
+.addButton:hover {
+  background-color: #f0f0f0;
+  border-color: #4CAF50;
+}
+
+.addCategoryButton {
+  background-color: #f2f2f2;
+  color: #4CAF50;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  width: 100%;
+  text-align: center;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 16px;
+  transition: all 0.3s ease;
+}
+
+.addCategoryButton:hover {
+  background-color: #e6e6e6;
+}
+
+/* Часы работы */
+.hoursSection {
+  margin-bottom: 24px;
+}
+
+.openingHoursGrid {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.dayRow {
+  display: flex;
+  margin-bottom: 12px;
+  padding: 8px;
+  background-color: white;
+  border-radius: 6px;
+  align-items: center;
+}
+
+.dayName {
+  width: 120px;
+  font-weight: 500;
+  color: #555;
+}
+
+.dayHours {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.closedCheckbox {
+  display: flex;
+  align-items: center;
+  margin-right: 16px;
+}
+
+.closedCheckbox input {
+  margin-right: 6px;
+}
+
+.timeInputs {
+  display: flex;
+  align-items: center;
+}
+
+.timeInput {
+  width: 110px;
+  padding: 8px 12px;
+  border: 1px solid #e4e9f2;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.timeInputs span {
+  margin: 0 8px;
+  color: #666;
+}
+
+/* Контактная информация */
+.contactSection,
+.contactPersonSection {
+  margin-bottom: 32px;
+}
+
+.contactPersonForm {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.checkboxGroup {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.checkboxGroup input {
+  margin-right: 8px;
+}
+
+.termsAgreement {
+  background-color: #f9f9f9;
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #666;
+  margin-top: 24px;
+}
+
+.termsAgreement a {
+  color: #4CAF50;
+  text-decoration: none;
+}
+
+.termsAgreement a:hover {
+  text-decoration: underline;
+}
+
+/* Модальное окно успеха */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  
-  .mainContent {
-    padding-top: 90px; /* Учитываем высоту navbar */
-    padding-bottom: 50px;
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .container {
-    max-width: 800px;
-    margin: 0 auto;
-    width: 100%;
-    padding: 0 16px;
-  }
-  
-  .pageTitle {
-    font-size: 28px;
-    font-weight: 600;
-    color: #333;
-    margin: 0 0 16px;
-    text-align: center;
-  }
-  
-  .pageDescription {
-    text-align: center;
-    font-size: 16px;
-    color: #666;
-    margin-bottom: 32px;
-    line-height: 1.5;
-  }
-  
+}
+
+.modalContent {
+  padding: 32px;
+  text-align: center;
+}
+
+.successIcon {
+  margin: 0 auto 20px;
+  width: 64px;
+  height: 64px;
+}
+
+.modalTitle {
+  font-size: 22px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.modalDescription {
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.modalInfo {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 24px;
+  background-color: #f9f9f9;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.modalButton {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modalButton:hover {
+  background-color: #43a047;
+}
+
+/* Адаптив для мобильных устройств */
+@media (max-width: 768px) {
   .formContainer {
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    padding: 30px;
-    margin-bottom: 30px;
+    padding: 20px;
   }
-  
-  /* Стилизация шагов */
-  .stepsContainer {
-    margin-bottom: 30px;
-  }
-  
-  .stepsProgressBar {
-    height: 4px;
-    background-color: #e0e0e0;
-    border-radius: 2px;
-    margin-bottom: 20px;
-    position: relative;
-  }
-  
-  .progressFill {
-    height: 100%;
-    background-color: #4CAF50;
-    border-radius: 2px;
-    transition: width 0.3s ease;
-  }
-  
-  .stepsList {
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .stepItem {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 25%;
-    position: relative;
-  }
-  
-  .stepNumber {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background-color: #fff;
-    border: 2px solid #e0e0e0;
-    color: #999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 8px;
-    transition: all 0.3s ease;
-  }
-  
-  .stepTitle {
-    font-size: 12px;
-    text-align: center;
-    color: #999;
-    font-weight: 500;
-    transition: color 0.3s ease;
-  }
-  
-  .stepItem.active .stepNumber {
-    background-color: #4CAF50;
-    border-color: #4CAF50;
-    color: white;
-  }
-  
-  .stepItem.active .stepTitle {
-    color: #333;
-    font-weight: 600;
-  }
-  
-  .stepItem.completed .stepNumber {
-    background-color: #4CAF50;
-    border-color: #4CAF50;
-    color: white;
-  }
-  
-  .stepItem.completed .stepTitle {
-    color: #4CAF50;
-  }
-  
-  /* Стили для формы */
-  .formStep {
-    margin-bottom: 20px;
-  }
-  
-  .stepTitle {
-    font-size: 20px;
-    font-weight: 600;
-    color: #333;
-    margin: 0 0 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .subSectionTitle, .sectionTitle {
-    font-size: 18px;
-    font-weight: 600;
-    color: #333;
-    margin: 24px 0 16px;
-  }
-  
-  .sectionDescription {
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 20px;
-    line-height: 1.5;
-  }
-  
-  .formGroup {
-    margin-bottom: 20px;
-  }
-  
+
   .formRow {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    grid-template-columns: 1fr;
+    gap: 0;
   }
-  
-  .formGroup label {
-    display: block;
-    font-size: 14px;
-    font-weight: 500;
-    color: #555;
+
+  .stepsList {
+    overflow-x: auto;
+    padding-bottom: 10px;
+  }
+
+  .stepItem {
+    padding: 0 10px;
+  }
+
+  .stepTitle {
+    font-size: 10px;
+  }
+
+  .navigationButtons {
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+
+  .prevButton,
+  .nextButton,
+  .submitButton {
+    width: 100%;
+  }
+
+  .featuresGrid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+
+  .photoGrid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+
+  .dayRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dayName {
+    width: 100%;
     margin-bottom: 8px;
   }
-  
-  .formGroup input,
-  .formGroup select,
-  .formGroup textarea {
-    width: 100%;
-    padding: 12px 16px;
-    border: 1px solid #e4e9f2;
-    border-radius: 8px;
-    font-size: 14px;
-    color: #333;
-    transition: all 0.3s ease;
-    background-color: #fff;
-  }
-  
-  .formGroup input:focus,
-  .formGroup select:focus,
-  .formGroup textarea:focus {
-    outline: none;
-    border-color: #4CAF50;
-    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
-  }
-  
-  .formGroup input::placeholder,
-  .formGroup textarea::placeholder {
-    color: #aaa;
-  }
-  
-  .formGroup textarea {
-    resize: vertical;
-    min-height: 100px;
-  }
-  
-  .inputError {
-    border-color: #f44336 !important;
-  }
-  
-  .inputError:focus {
-    box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.15) !important;
-  }
-  
-  .errorMessage {
-    font-size: 12px;
-    color: #f44336;
-    margin-top: 6px;
-  }
-  
-  .generalError {
-    background-color: rgba(244, 67, 54, 0.1);
-    color: #f44336;
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    font-size: 14px;
-    text-align: center;
-  }
-  
-  /* Навигационные кнопки */
-  .navigationButtons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 32px;
-  }
-  
-  .prevButton, 
-  .nextButton, 
-  .submitButton {
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .prevButton {
-    background-color: #f2f2f2;
-    color: #555;
-    border: 1px solid #ddd;
-  }
-  
-  .prevButton:hover {
-    background-color: #e6e6e6;
-  }
-  
-  .nextButton, 
-  .submitButton {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    box-shadow: 0 4px 6px rgba(76, 175, 80, 0.2);
-  }
-  
-  .nextButton:hover, 
-  .submitButton:hover {
-    background-color: #43a047;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 10px rgba(76, 175, 80, 0.25);
-  }
-  
-  .nextButton:disabled, 
-  .submitButton:disabled {
-    background-color: #a5d6a7;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-  }
-  
-  /* Секция загрузки фотографий */
-  .photoUploaderSection {
-    margin-bottom: 40px;
-  }
-  
-  .dropZone {
-    border: 2px dashed #ccc;
-    border-radius: 8px;
-    padding: 30px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-bottom: 20px;
-    position: relative;
-  }
-  
-  .dropZone:hover {
-    border-color: #4CAF50;
-    background-color: rgba(76, 175, 80, 0.03);
-  }
-  
-  .dropZoneContent {
-    display: flex;
+
+  .dayHours {
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
   }
-  
-  .uploadIcon {
-    width: 48px;
-    height: 48px;
-    color: #999;
-    margin-bottom: 12px;
+
+  .closedCheckbox {
+    margin-bottom: 8px;
   }
-  
-  .dropZoneText {
-    font-size: 16px;
-    font-weight: 500;
-    color: #555;
-    margin: 0 0 8px;
+
+  .timeInputs {
+    width: 100%;
   }
-  
-  .dropZoneHint {
+
+  .categoryHeader {
+    flex-direction: column;
+  }
+
+  .removeButton {
+    margin-left: 0;
+    margin-top: 8px;
+    width: 100%;
+  }
+}
+
+/* Дополнительные стили для мобильных устройств */
+@media (max-width: 480px) {
+  .pageTitle {
+    font-size: 24px;
+  }
+
+  .stepNumber {
+    width: 24px;
+    height: 24px;
     font-size: 12px;
-    color: #999;
   }
-  
-  .fileInput {
+
+  .stepTitle {
     display: none;
   }
-  
-  .photoPreviewContainer {
-    margin-top: 24px;
-  }
-  
-  .previewTitle {
-    font-size: 16px;
-    font-weight: 500;
-    margin-bottom: 16px;
-    color: #333;
-  }
-  
-  .photoGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 16px;
-  }
-  
-  .photoItem {
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    background: white;
-  }
-  
-  .photoPreview {
-    height: 150px;
-    overflow: hidden;
-  }
-  
-  .photoPreview img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .photoInfo {
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid #f0f0f0;
-  }
-  
-  .photoName {
-    font-size: 12px;
-    color: #666;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 120px;
-  }
-  
-  .removePhotoButton {
-    background: none;
-    border: none;
-    color: #f44336;
-    font-size: 12px;
-    cursor: pointer;
-    padding: 0;
-  }
-  
-  .removePhotoButton:hover {
-    text-decoration: underline;
-  }
-  
-  /* Особенности ресторана */
-  .featuresSection {
-    margin-top: 32px;
-  }
-  
-  .featuresGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 12px;
-    margin-top: 16px;
-  }
-  
-  .featureCheckbox {
-    display: flex;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-  
-  .featureCheckbox input {
-    margin-right: 8px;
-  }
-  
-  .featureCheckbox label {
-    font-size: 14px;
-    color: #555;
-  }
-  
-  /* Стили для карты */
-  .locationPickerSection {
-    margin-top: 32px;
-  }
-  
-  .mapContainer {
-    margin-top: 16px;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .mapPlaceholder {
-    height: 300px;
-    background-color: #f0f0f0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    cursor: pointer;
-  }
-  
-  .mapInstructions {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 1;
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 16px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .mapIcon {
-    color: #4CAF50;
-    margin-bottom: 8px;
-  }
-  
-  .mapImage {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .selectedLocation {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    background-color: white;
-    padding: 12px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    z-index: 1;
-    font-size: 12px;
-  }
-  
-  .locationNote {
-    margin-top: 12px;
-    font-size: 12px;
-    color: #666;
-    background-color: #f9f9f9;
-    padding: 12px;
-    border-radius: 8px;
-  }
-  
-  /* Стили для меню */
-  .menuSection {
-    margin-bottom: 40px;
-  }
-  
-  .menuCategory {
-    background-color: #f9f9f9;
-    padding: 16px;
-    border-radius: 8px;
-    margin-bottom: 24px;
-  }
-  
-  .categoryHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-  }
-  
-  .categoryInput {
-    flex: 1;
-    padding: 10px 16px;
-    border: 1px solid #e4e9f2;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-  }
-  
-  .removeButton {
-    background-color: #f2f2f2;
-    color: #666;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-left: 12px;
-    font-size: 12px;
-  }
-  
-  .removeButton:hover {
-    background-color: #e6e6e6;
-  }
-  
-  .menuItem {
-    background-color: white;
-    border-radius: 8px;
-    padding: 12px;
-    margin-bottom: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  }
-  
+
   .menuItemRow {
-    display: flex;
-    align-items: center;
+    flex-direction: column;
+  }
+
+  .menuItemField {
+    width: 100%;
+    margin-right: 0;
     margin-bottom: 8px;
   }
-  
-  .menuItemField {
-    flex: 1;
-    margin-right: 12px;
-  }
-  
-  .menuItemInput {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #e4e9f2;
-    border-radius: 6px;
-    font-size: 14px;
-  }
-  
-  .menuItemPriceInput {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #e4e9f2;
-    border-radius: 6px;
-    font-size: 14px;
-  }
-  
-  .menuItemDescription {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #e4e9f2;
-    border-radius: 6px;
-    font-size: 14px;
-    resize: vertical;
-  }
-  
-  .addButton {
-    background-color: white;
-    border: 1px dashed #ccc;
-    color: #4CAF50;
-    padding: 10px;
-    border-radius: 8px;
-    width: 100%;
-    text-align: center;
-    cursor: pointer;
-    font-size: 14px;
-    margin-top: 12px;
-    transition: all 0.3s ease;
-  }
-  
-  .addButton:hover {
-    background-color: #f0f0f0;
-    border-color: #4CAF50;
-  }
-  
-  .addCategoryButton {
-    background-color: #f2f2f2;
-    color: #4CAF50;
-    border: none;
-    padding: 12px;
-    border-radius: 8px;
-    width: 100%;
-    text-align: center;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    margin-top: 16px;
-    transition: all 0.3s ease;
-  }
-  
-  .addCategoryButton:hover {
-    background-color: #e6e6e6;
-  }
-  
-  /* Часы работы */
-  .hoursSection {
-    margin-bottom: 24px;
-  }
-  
-  .openingHoursGrid {
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    padding: 16px;
-  }
-  
-  .dayRow {
-    display: flex;
-    margin-bottom: 12px;
-    padding: 8px;
-    background-color: white;
-    border-radius: 6px;
-    align-items: center;
-  }
-  
-  .dayName {
-    width: 120px;
-    font-weight: 500;
-    color: #555;
-  }
-  
-  .dayHours {
-    flex: 1;
-    display: flex;
-    align-items: center;
-  }
-  
-  .closedCheckbox {
-    display: flex;
-    align-items: center;
-    margin-right: 16px;
-  }
-  
-  .closedCheckbox input {
-    margin-right: 6px;
-  }
-  
-  .timeInputs {
-    display: flex;
-    align-items: center;
-  }
-  
-  .timeInput {
-    width: 110px;
-    padding: 8px 12px;
-    border: 1px solid #e4e9f2;
-    border-radius: 6px;
-    font-size: 14px;
-  }
-  
-  .timeInputs span {
-    margin: 0 8px;
-    color: #666;
-  }
-  
-  /* Контактная информация */
-  .contactSection, .contactPersonSection {
-    margin-bottom: 32px;
-  }
-  
-  .contactPersonForm {
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    padding: 16px;
-  }
-  
-  .checkboxGroup {
-    display: flex;
-    align-items: center;
-    margin-top: 16px;
-  }
-  
-  .checkboxGroup input {
-    margin-right: 8px;
-  }
-  
-  .termsAgreement {
-    background-color: #f9f9f9;
-    padding: 16px;
-    border-radius: 8px;
-    font-size: 14px;
-    color: #666;
-    margin-top: 24px;
-  }
-  
-  .termsAgreement a {
-    color: #4CAF50;
-    text-decoration: none;
-  }
-  
-  .termsAgreement a:hover {
-    text-decoration: underline;
-  }
-  
-  /* Модальное окно успеха */
-  .modalOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-  }
-  
-  .modal {
-    background-color: white;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    animation: modalFadeIn 0.3s ease;
-  }
-  
-  @keyframes modalFadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
+
   .modalContent {
-    padding: 32px;
-    text-align: center;
+    padding: 24px 16px;
   }
-  
-  .successIcon {
-    margin: 0 auto 20px;
-    width: 64px;
-    height: 64px;
-  }
-  
+
   .modalTitle {
-    font-size: 22px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 16px;
+    font-size: 18px;
   }
-  
-  .modalDescription {
-    font-size: 15px;
-    color: #555;
-    margin-bottom: 20px;
-    line-height: 1.5;
+}
+
+/* Добавьте эти стили в ваш файл AddRestaurantPage.module.css */
+
+/* Стили для компонента обработки изображений меню и часов работы */
+.menuImageProcessor {
+  margin-bottom: 30px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.imageProcessorContainer {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.processorSection {
+  flex: 1;
+  background-color: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.imageUploader {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fileInput {
+  display: none;
+}
+
+.uploadButton {
+  display: inline-block;
+  background-color: #f2f2f2;
+  color: #333;
+  padding: 10px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  text-align: center;
+  border: 1px solid #ddd;
+  transition: all 0.3s ease;
+}
+
+.uploadButton:hover {
+  background-color: #e6e6e6;
+}
+
+.selectedFile {
+  font-size: 14px;
+  color: #555;
+  padding: 8px 0;
+}
+
+.processButton {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.processButton:hover {
+  background-color: #43a047;
+}
+
+.processButton:disabled {
+  background-color: #a5d6a7;
+  cursor: not-allowed;
+}
+
+.tipBox {
+  margin-top: 16px;
+  padding: 12px;
+  background-color: #f2f2f2;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.tipBox h5 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: #333;
+}
+
+.tipBox ul {
+  margin: 0;
+  padding-left: 16px;
+}
+
+.tipBox li {
+  margin-bottom: 4px;
+  color: #555;
+}
+
+.note {
+  margin-top: 16px;
+  padding: 12px;
+  background-color: #fff8e1;
+  border-radius: 4px;
+  border-left: 4px solid #ffc107;
+  font-size: 14px;
+  color: #555;
+}
+
+.successMessage {
+  background-color: #e8f5e9;
+  color: #388e3c;
+  padding: 12px 16px;
+  border-radius: 4px;
+  margin: 16px 0;
+  font-size: 14px;
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
-  
-  .modalInfo {
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 24px;
-    background-color: #f9f9f9;
-    padding: 12px;
-    border-radius: 8px;
+
+  to {
+    opacity: 1;
   }
-  
-  .modalButton {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
+}
+
+/* Стили для необязательных полей */
+.instructionList {
+  margin: 10px 0;
+  padding-left: 20px;
+  list-style-type: disc;
+}
+
+.instructionList li {
+  margin-bottom: 6px;
+  color: #555;
+}
+
+.optionalNote {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  font-style: italic;
+  color: #666;
+}
+
+.optionalBadge {
+  display: inline-block;
+  background-color: #f2f2f2;
+  color: #666;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 8px;
+  font-style: normal;
+  font-weight: 500;
+}
+
+/* Стили для кнопки пропуска шага */
+.buttonGroup {
+  display: flex;
+  gap: 12px;
+}
+
+.skipButton {
+  background-color: transparent;
+  color: #666;
+  border: 1px solid #ddd;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.skipButton:hover {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  .imageProcessorContainer {
+    flex-direction: column;
   }
-  
-  .modalButton:hover {
-    background-color: #43a047;
+
+  .buttonGroup {
+    flex-direction: column;
+    width: 100%;
   }
-  
-  /* Адаптив для мобильных устройств */
-  @media (max-width: 768px) {
-    .formContainer {
-      padding: 20px;
-    }
-    
-    .formRow {
-      grid-template-columns: 1fr;
-      gap: 0;
-    }
-    
-    .stepsList {
-      overflow-x: auto;
-      padding-bottom: 10px;
-    }
-    
-    .stepItem {
-      padding: 0 10px;
-    }
-    
-    .stepTitle {
-      font-size: 10px;
-    }
-    
-    .navigationButtons {
-      flex-direction: column-reverse;
-      gap: 10px;
-    }
-    
-    .prevButton, .nextButton, .submitButton {
-      width: 100%;
-    }
-    
-    .featuresGrid {
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    }
-    
-    .photoGrid {
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    }
-    
-    .dayRow {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    
-    .dayName {
-      width: 100%;
-      margin-bottom: 8px;
-    }
-    
-    .dayHours {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    
-    .closedCheckbox {
-      margin-bottom: 8px;
-    }
-    
-    .timeInputs {
-      width: 100%;
-    }
-    
-    .categoryHeader {
-      flex-direction: column;
-    }
-    
-    .removeButton {
-      margin-left: 0;
-      margin-top: 8px;
-      width: 100%;
-    }
-  }
-  
-  /* Дополнительные стили для мобильных устройств */
-  @media (max-width: 480px) {
-    .pageTitle {
-      font-size: 24px;
-    }
-    
-    .stepNumber {
-      width: 24px;
-      height: 24px;
-      font-size: 12px;
-    }
-    
-    .stepTitle {
-      display: none;
-    }
-    
-    .menuItemRow {
-      flex-direction: column;
-    }
-    
-    .menuItemField {
-      width: 100%;
-      margin-right: 0;
-      margin-bottom: 8px;
-    }
-    
-    .modalContent {
-      padding: 24px 16px;
-    }
-    
-    .modalTitle {
-      font-size: 18px;
-    }
-  }
+}

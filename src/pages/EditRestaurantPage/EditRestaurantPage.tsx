@@ -8,6 +8,7 @@ import RestaurantForm from '../../components/Form/RestaurantForm';
 import PhotoUploader from '../../pages/AddRestaurantPage/components/PhotoUploader';
 import LocationPicker from '../../pages/AddRestaurantPage/components/LocationPicker';
 import SubmissionSteps from '../../pages/AddRestaurantPage/components/SubmissionSteps';
+// import MenuImageProcessor from '../AddRestaurantPage/components/MenuImageProcessor';
 import styles from './EditRestaurantPage.module.css';
 import { Restaurant, MenuItem } from '../../models/types';
 import { db, storage } from '../../firebase/config';
@@ -384,14 +385,19 @@ const EditRestaurantPage: React.FC = () => {
                 newErrors['photos'] = 'Должна быть хотя бы одна фотография';
             }
         } else if (currentStep === 3) {
-            let hasMenuItems = false;
-            for (const category of formData.menuItems) {
-                if (category.category.trim() && category.items.some(item => item.name.trim())) {
-                    hasMenuItems = true;
-                    break;
-                }
+            // Меню и часы работы теперь необязательны
+            // Проверяем только правильность заполнения, если есть данные
+
+            // Если есть заполненные элементы меню, проверяем их корректность
+            const hasMenuItems = formData.menuItems.some(category =>
+                category.category.trim() && category.items.some(item => item.name.trim())
+            );
+
+            // Если есть элементы меню, но все категории пустые - это ошибка
+            if (formData.menuItems.length > 0 && !hasMenuItems) {
+                console.warn('Предупреждение: есть категории меню, но нет заполненных элементов');
+                // Это не ошибка, просто предупреждение для отладки
             }
-            if (!hasMenuItems) newErrors['menuItems'] = 'Добавьте хотя бы одно блюдо в меню';
         } else if (currentStep === 4) {
             if (!formData.contactPerson.name.trim()) newErrors['contactPerson.name'] = 'Укажите имя контактного лица';
             if (!formData.contactPerson.email.trim()) {
@@ -718,16 +724,68 @@ const EditRestaurantPage: React.FC = () => {
                             {currentStep === 3 && (
                                 <div className={styles.formStep}>
                                     <h2 className={styles.stepTitle}>Меню и часы работы</h2>
+                                    {/* Добавляем новый компонент для автоматического распознавания */}
+                                    {/* <MenuImageProcessor
+                                        onMenuExtracted={(extractedItems) => {
+                                            // Преобразуем извлеченные элементы в формат для formData
+                                            const menuByCategory: Record<string, any[]> = {};
+
+                                            extractedItems.forEach(item => {
+                                                const category = item.category || 'Без категории';
+                                                if (!menuByCategory[category]) {
+                                                    menuByCategory[category] = [];
+                                                }
+                                                menuByCategory[category].push({
+                                                    name: item.name,
+                                                    description: item.description || '',
+                                                    price: item.price || ''
+                                                });
+                                            });
+                                            // Преобразуем в формат menuItems
+                                            const newMenuItems = Object.entries(menuByCategory).map(([category, items]) => ({
+                                                category,
+                                                items
+                                            }));
+
+                                            // Обновляем состояние формы, сохраняя существующие элементы
+                                            if (newMenuItems.length > 0) {
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    menuItems: [...prev.menuItems, ...newMenuItems]
+                                                }));
+                                            }
+                                        }}
+                                        onHoursExtracted={(extractedHours) => {
+                                            // Обновляем часы работы в форме
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                openingHours: extractedHours
+                                            }));
+                                        }}
+                                    /> */}
+
+
                                     <div className={styles.menuSection}>
                                         <h3 className={styles.sectionTitle}>Меню ресторана</h3>
-                                        <p className={styles.sectionDescription}>
-                                            Отредактируйте категории и блюда меню:
-                                        </p>
-                                        {errors['menuItems'] && (
-                                            <div className={`${styles.errorMessage} error-message`}>
-                                                {errors['menuItems']}
-                                            </div>
-                                        )}
+                                        <div className={styles.sectionDescription}>
+                                            <p>
+                                                Меню ресторана - необязательный раздел. Вы можете добавить его одним из способов:
+                                            </p>
+                                            {errors['menuItems'] && (
+                                                <div className={`${styles.errorMessage} error-message`}>
+                                                    {errors['menuItems']}
+                                                </div>
+                                            )}
+                                            <ul className={styles.instructionList}>
+                                                <li>Загрузите фото меню для автоматического распознавания (в разработке)</li>
+                                                <li>Добавьте категории и блюда вручную с помощью формы ниже</li>
+                                                <li>Пропустите этот шаг и добавите меню позже</li>
+                                            </ul>
+                                            <p className={styles.optionalNote}>
+                                                <span className={styles.optionalBadge}>Необязательно</span>
+                                                Без меню ресторан все равно будет отображаться на сайте.
+                                            </p>
+                                        </div>
                                         {formData.menuItems.map((category, categoryIndex) => (
                                             <div key={categoryIndex} className={styles.menuCategory}>
                                                 <div className={styles.categoryHeader}>
@@ -806,6 +864,22 @@ const EditRestaurantPage: React.FC = () => {
 
                                     <div className={styles.hoursSection}>
                                         <h3 className={styles.sectionTitle}>Часы работы</h3>
+
+                                        <div className={styles.sectionDescription}>
+                                            <p>
+                                                Часы работы ресторана - необязательный раздел. Вы можете добавить их:
+                                            </p>
+                                            <ul className={styles.instructionList}>
+                                                <li>Загрузите фото с часами работы для автоматического распознавания</li>
+                                                <li>Укажите вручную для каждого дня недели</li>
+                                                <li>Пропустите этот шаг, если информация недоступна</li>
+                                            </ul>
+                                            <p className={styles.optionalNote}>
+                                                <span className={styles.optionalBadge}>Необязательно</span>
+                                                Без указания часов работы ресторан все равно будет отображаться на сайте.
+                                            </p>
+                                        </div>
+
                                         <div className={styles.openingHoursGrid}>
                                             {Object.entries(formData.openingHours).map(([day, hours]) => (
                                                 <div key={day} className={styles.dayRow}>
