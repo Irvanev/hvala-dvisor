@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styles from './ReviewForm.module.css';
+import { useAppTranslation } from '../../hooks/useAppTranslation';
 
 interface ReviewFormProps {
   restaurantId: string;
@@ -21,6 +22,8 @@ interface ReviewFormErrors extends Partial<Record<keyof ReviewFormData, string>>
 }
 
 const ReviewForm: React.FC<ReviewFormProps> = ({ restaurantId, onReviewSubmit, onCancel }) => {
+  const { t } = useAppTranslation();
+  
   const [formData, setFormData] = useState<ReviewFormData>({
     rating: 0,
     title: '',
@@ -98,39 +101,39 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ restaurantId, onReviewSubmit, o
     const newErrors: ReviewFormErrors = {};
     
     if (!formData.rating || formData.rating < 1) {
-      newErrors.rating = 'Пожалуйста, выберите оценку';
+      newErrors.rating = t('reviewForm.ratingRequired');
     }
     
     if (!formData.title.trim()) {
-      newErrors.title = 'Пожалуйста, добавьте заголовок для вашего отзыва';
+      newErrors.title = t('reviewForm.titleRequired');
     } else if (formData.title.length > 100) {
-      newErrors.title = 'Заголовок не должен превышать 100 символов';
+      newErrors.title = t('reviewForm.titleTooLong');
     }
     
     if (!formData.content.trim()) {
-      newErrors.content = 'Пожалуйста, напишите отзыв';
+      newErrors.content = t('reviewForm.reviewRequired');
     } else if (formData.content.length < 50) {
-      newErrors.content = 'Отзыв должен содержать не менее 50 символов';
+      newErrors.content = t('reviewForm.reviewTooShort');
     } else if (formData.content.length > 2000) {
-      newErrors.content = 'Отзыв не должен превышать 2000 символов';
+      newErrors.content = t('reviewForm.reviewTooLong');
     }
     
     if (!formData.visitDate) {
-      newErrors.visitDate = 'Пожалуйста, укажите дату посещения';
+      newErrors.visitDate = t('reviewForm.visitDateRequired');
     } else {
       // Check if date is not in the future
       const selectedDate = new Date(formData.visitDate);
       const today = new Date();
       
       if (selectedDate > today) {
-        newErrors.visitDate = 'Дата посещения не может быть в будущем';
+        newErrors.visitDate = t('reviewForm.visitDateFuture');
       }
     }
     
     // Check for profanity or inappropriate content
     const profanityRegex = /\b(блять|хуй|пизда|ебать|сука)\b/i;
     if (profanityRegex.test(formData.title) || profanityRegex.test(formData.content)) {
-      newErrors.general = 'Пожалуйста, не используйте ненормативную лексику в отзыве';
+      newErrors.general = t('reviewForm.profanityError');
     }
     
     setErrors(newErrors);
@@ -161,14 +164,14 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ restaurantId, onReviewSubmit, o
         });
         setImagesPreviews([]);
       } else {
-        setErrors({ general: 'Не удалось отправить отзыв. Пожалуйста, попробуйте позже.' });
+        setErrors({ general: t('reviewForm.submitError') });
       }
     } catch (error) {
       console.error('Ошибка при отправке отзыва:', error);
       setErrors({ 
         general: error instanceof Error 
           ? error.message 
-          : 'Произошла ошибка при отправке отзыва. Попробуйте позже.' 
+          : t('reviewForm.generalError')
       });
     } finally {
       setIsSubmitting(false);
@@ -177,13 +180,13 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ restaurantId, onReviewSubmit, o
 
   return (
     <div className={styles.reviewFormContainer}>
-      <h2 className={styles.formTitle}>Оставить отзыв</h2>
+      <h2 className={styles.formTitle}>{t('reviewForm.title')}</h2>
       
       {errors.general && <div className={styles.errorMessage}>{errors.general}</div>}
       
       <form onSubmit={handleSubmit} className={styles.reviewForm}>
         <div className={styles.formGroup}>
-          <label className={styles.label}>Оценка*</label>
+          <label className={styles.label}>{t('reviewForm.rating')}*</label>
           <div className={styles.ratingContainer}>
             {[1, 2, 3, 4, 5].map((star) => (
               <button
@@ -191,7 +194,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ restaurantId, onReviewSubmit, o
                 type="button"
                 className={`${styles.starButton} ${formData.rating >= star ? styles.starActive : ''}`}
                 onClick={() => handleRatingChange(star)}
-                aria-label={`Оценить на ${star} из 5`}
+                aria-label={t('reviewForm.rateAria', { stars: star })}
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path 
@@ -206,7 +209,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ restaurantId, onReviewSubmit, o
         </div>
         
         <div className={styles.formGroup}>
-          <label htmlFor="title" className={styles.label}>Заголовок*</label>
+          <label htmlFor="title" className={styles.label}>{t('reviewForm.titleLabel')}*</label>
           <input
             type="text"
             id="title"
@@ -214,7 +217,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ restaurantId, onReviewSubmit, o
             className={`${styles.input} ${errors.title ? styles.inputError : ''}`}
             value={formData.title}
             onChange={handleInputChange}
-            placeholder="Краткое резюме вашего опыта"
+            placeholder={t('reviewForm.titlePlaceholder')}
             maxLength={100}
           />
           {errors.title && <p className={styles.errorText}>{errors.title}</p>}
@@ -222,14 +225,14 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ restaurantId, onReviewSubmit, o
         </div>
         
         <div className={styles.formGroup}>
-          <label htmlFor="content" className={styles.label}>Ваш отзыв*</label>
+          <label htmlFor="content" className={styles.label}>{t('reviewForm.reviewLabel')}*</label>
           <textarea
             id="content"
             name="content"
             className={`${styles.textarea} ${errors.content ? styles.inputError : ''}`}
             value={formData.content}
             onChange={handleInputChange}
-            placeholder="Расскажите о вашем опыте: что вам понравилось, что можно улучшить?"
+            placeholder={t('reviewForm.reviewPlaceholder')}
             rows={6}
             maxLength={2000}
           />
@@ -237,13 +240,13 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ restaurantId, onReviewSubmit, o
           <div className={styles.charCounter}>
             {formData.content.length}/2000
             {formData.content.length < 50 && (
-              <span className={styles.minCharsWarning}> (минимум 50 символов)</span>
+              <span className={styles.minCharsWarning}> ({t('reviewForm.minChars')})</span>
             )}
           </div>
         </div>
         
         <div className={styles.formGroup}>
-          <label htmlFor="visitDate" className={styles.label}>Дата посещения*</label>
+          <label htmlFor="visitDate" className={styles.label}>{t('reviewForm.visitDate')}*</label>
           <input
             type="date"
             id="visitDate"
@@ -257,18 +260,18 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ restaurantId, onReviewSubmit, o
         </div>
         
         <div className={styles.formGroup}>
-          <label className={styles.label}>Фотографии (необязательно)</label>
+          <label className={styles.label}>{t('reviewForm.photos')}</label>
           <div className={styles.imageUploadContainer}>
             {imagesPreviews.length > 0 && (
               <div className={styles.imagePreviewsContainer}>
                 {imagesPreviews.map((previewUrl, index) => (
                   <div key={index} className={styles.imagePreview}>
-                    <img src={previewUrl} alt={`Предпросмотр ${index + 1}`} />
+                    <img src={previewUrl} alt={`${t('reviewForm.preview')} ${index + 1}`} />
                     <button
                       type="button"
                       onClick={() => removeImage(index)}
                       className={styles.removeImageButton}
-                      aria-label="Удалить изображение"
+                      aria-label={t('reviewForm.removeImage')}
                     >
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
@@ -285,7 +288,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ restaurantId, onReviewSubmit, o
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M19 7V19H5V7H8L9 5H15L16 7H19ZM20 5H17L16 3H8L7 5H4C3.45 5 3 5.45 3 6V20C3 20.55 3.45 21 4 21H20C20.55 21 21 20.55 21 20V6C21 5.45 20.55 5 20 5ZM12 18C14.76 18 17 15.76 17 13C17 10.24 14.76 8 12 8C9.24 8 7 10.24 7 13C7 15.76 9.24 18 12 18ZM12 10C13.65 10 15 11.35 15 13C15 14.65 13.65 16 12 16C10.35 16 9 14.65 9 13C9 11.35 10.35 10 12 10Z" fill="currentColor"/>
                   </svg>
-                  Добавить фото
+                  {t('reviewForm.addPhoto')}
                 </label>
                 <input
                   type="file"
@@ -297,7 +300,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ restaurantId, onReviewSubmit, o
                   className={styles.fileInput}
                 />
                 <p className={styles.uploadHint}>
-                  Можно загрузить до 5 фото (макс. 5 МБ каждое)
+                  {t('reviewForm.uploadHint')}
                 </p>
               </div>
             )}
@@ -315,7 +318,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ restaurantId, onReviewSubmit, o
               className={styles.checkbox}
             />
             <label htmlFor="recommends" className={styles.checkboxLabel}>
-              Я рекомендую это заведение
+              {t('reviewForm.recommend')}
             </label>
           </div>
         </div>
@@ -328,7 +331,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ restaurantId, onReviewSubmit, o
               onClick={onCancel}
               disabled={isSubmitting}
             >
-              Отмена
+              {t('reviewForm.cancel')}
             </button>
           )}
           <button 
@@ -336,7 +339,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ restaurantId, onReviewSubmit, o
             className={styles.submitButton} 
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Отправка...' : 'Отправить отзыв'}
+            {isSubmitting ? t('reviewForm.submitting') : t('reviewForm.submit')}
           </button>
         </div>
       </form>

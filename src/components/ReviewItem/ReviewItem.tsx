@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './ReviewItem.module.css';
+import { useAppTranslation } from '../../hooks/useAppTranslation';
 
 interface ReviewProps {
   review: {
@@ -12,11 +13,13 @@ interface ReviewProps {
 }
 
 const ReviewItem: React.FC<ReviewProps> = ({ review }) => {
+  const { t } = useAppTranslation();
+
   const renderStars = (rating: number) => {
     const fullStars = Math.floor(rating);
     const halfStar = rating % 1 >= 0.5;
     const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
-    
+
     return (
       <div className={styles.starsContainer}>
         {[...Array(fullStars)].map((_, i) => (
@@ -29,7 +32,7 @@ const ReviewItem: React.FC<ReviewProps> = ({ review }) => {
       </div>
     );
   };
-  
+
   return (
     <div className={styles.reviewItem}>
       <div className={styles.reviewHeader}>
@@ -39,21 +42,19 @@ const ReviewItem: React.FC<ReviewProps> = ({ review }) => {
         </div>
         <span className={styles.reviewDate}>{review.date}</span>
       </div>
-      
       <p className={styles.reviewText}>{review.comment}</p>
-      
       <div className={styles.reviewActions}>
         <button className={styles.actionButton}>
           <span className={styles.actionIcon}>👍</span>
-          <span className={styles.actionText}>Полезно</span>
+          <span className={styles.actionText}>{t('reviewItem.helpful')}</span>
         </button>
         <button className={styles.actionButton}>
           <span className={styles.actionIcon}>💬</span>
-          <span className={styles.actionText}>Комментировать</span>
+          <span className={styles.actionText}>{t('reviewItem.comment')}</span>
         </button>
         <button className={styles.actionButton}>
           <span className={styles.actionIcon}>🔗</span>
-          <span className={styles.actionText}>Поделиться</span>
+          <span className={styles.actionText}>{t('reviewItem.share')}</span>
         </button>
       </div>
     </div>

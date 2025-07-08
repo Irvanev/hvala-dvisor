@@ -56,13 +56,13 @@
     "loading": "Učitavanje informacija o restoranu...",
     "notFound": "Restoran nije pronađen",
     "overview": "Pregled",
-    "photos": "Fotografije", 
+    "photos": "Fotografije",
     "photo": "fotografija"
   },
   "restaurantOverview": {
     "aboutRestaurant": "O restoranu",
     "features": "Karakteristike",
-    "information": "Informacije", 
+    "information": "Informacije",
     "address": "Adresa",
     "phone": "Telefon",
     "website": "Veb sajt",
@@ -105,7 +105,7 @@
       "restaurants": "Restorani"
     },
     "loading": "Učitavanje informacija o restoranu...",
-    "notFound": "Restoran nije pronađen", 
+    "notFound": "Restoran nije pronađen",
     "backToHome": "Nazad na početnu",
     "tabs": {
       "overview": "Pregled",
@@ -121,7 +121,7 @@
     },
     "share": "Podelite link restorana"
   },
-    "profile": {
+  "profile": {
     "personalInfo": "Lični podaci",
     "favoriteRestaurants": "Omiljeni restorani",
     "reviews": "Moje recenzije",
@@ -199,5 +199,68 @@
       "profileUpdated": "Profil je uspešno ažuriran!",
       "profileUpdatedPasswordFailed": "Profil je ažuriran, ali lozinka nije promenjena"
     }
+  },
+  "daysOfWeek": {
+    "monday": "Ponedeljak",
+    "tuesday": "Utorak",
+    "wednesday": "Sreda",
+    "thursday": "Četvrtak",
+    "friday": "Petak",
+    "saturday": "Subota",
+    "sunday": "Nedelja"
+  },
+  "features": {
+    "terrace": "Terasa",
+    "kidsMenu": "Dečji meni",
+    "parking": "Parking",
+    "wifi": "WiFi",
+    "liveMusic": "Živa muzika",
+    "takeaway": "Za poneti",
+    "delivery": "Dostava",
+    "petFriendly": "Dozvoljeni ljubimci",
+    "wheelchair": "Pristupačno za invalidska kolica",
+    "outdoorSeating": "Spoljašnje sedište",
+    "bar": "Bar",
+    "breakfast": "Doručak",
+    "lunch": "Ručak",
+    "dinner": "Večera",
+    "creditCards": "Kreditne kartice",
+    "reservation": "Rezervacija"
+  },
+  "reviewForm": {
+    "title": "Ostavite recenziju",
+    "rating": "Ocena",
+    "ratingRequired": "Molimo izaberite ocenu",
+    "rateAria": "Ocenite {{stars}} od 5",
+    "titleLabel": "Naslov",
+    "titleRequired": "Molimo dodajte naslov za vašu recenziju",
+    "titleTooLong": "Naslov ne sme biti duži od 100 karaktera",
+    "titlePlaceholder": "Kratki rezime vašeg iskustva",
+    "reviewLabel": "Vaša recenzija",
+    "reviewRequired": "Molimo napišite recenziju",
+    "reviewTooShort": "Recenzija mora sadržavati najmanje 50 karaktera",
+    "reviewTooLong": "Recenzija ne sme biti duža od 2000 karaktera",
+    "reviewPlaceholder": "Ispričajte nam o vašem iskustvu: šta vam se svidelo, šta bi moglo biti bolje?",
+    "visitDate": "Datum posete",
+    "visitDateRequired": "Molimo unesite datum posete",
+    "visitDateFuture": "Datum posete ne može biti u budućnosti",
+    "photos": "Fotografije (opciono)",
+    "addPhoto": "Dodaj fotografiju",
+    "uploadHint": "Možete otpremiti do 5 fotografija (maks. 5 MB svaka)",
+    "removeImage": "Ukloni sliku",
+    "preview": "Pregled",
+    "recommend": "Preporučujem ovo mesto",
+    "cancel": "Otkaži",
+    "submit": "Pošalji recenziju",
+    "submitting": "Šalje se...",
+    "submitError": "Nije moguće poslati recenziju. Molimo pokušajte kasnije.",
+    "profanityError": "Molimo ne koristite nepriličan jezik u recenziji",
+    "minChars": "minimum 50 karaktera",
+    "generalError": "Došlo je do greške prilikom slanja recenzije. Molimo pokušajte kasnije."
+  },
+  "reviewItem": {
+    "helpful": "Korisno",
+    "comment": "Komentariši",
+    "share": "Podeli"
   }
 }
