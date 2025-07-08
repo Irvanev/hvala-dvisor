@@ -14,14 +14,13 @@ import { Restaurant } from '../models/types';
 // Импортируем необходимые функции Firebase
 import { collection, getDocs, query, orderBy, limit, Timestamp, GeoPoint } from 'firebase/firestore';
 import { firestore } from '../firebase/config'; // Импортируем конфигурацию Firebase
-
+// 🆕 Добавляем хук для переводов
+import { useAppTranslation } from '../hooks/useAppTranslation';
 
 const CONSTANTS = {
   APP_NAME: 'HvalaDviser',
   CURRENT_YEAR: '2024',
   DEFAULT_LOCATION: 'Paris',
-  HERO_TITLE: 'EXPLORE MONTENEGRO',
-  SEARCH_PLACEHOLDER: 'Поиск',
 } as const;
 
 // Определяем отсутствующие типы локально
@@ -74,6 +73,9 @@ function adaptRestaurantForGrid(firestoreData: any, docId: string): Restaurant {
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
+  // 🆕 Добавляем хук для переводов
+  const { t } = useAppTranslation();
+  
   const [loading, setLoading] = useState<boolean>(true);
   const [userFavorites, setUserFavorites] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -84,27 +86,26 @@ const HomePage: React.FC = () => {
   const [searchSuggestions, setSearchSuggestions] = useState<{ id: string, title: string }[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
-
-  // Данные для секций
+  // 🆕 Обновленные данные для секций с переводами
   const featuredCards: FeaturedCard[] = [
     {
       id: 'feat1',
-      title: 'Лучшие Рестораны 2024 Года',
-      subtitle: 'Спланируй Посещение Победителей Премии',
+      title: t('homepage.featuredCards.bestRestaurants2024'),
+      subtitle: t('homepage.featuredCards.bestRestaurants2024Subtitle'),
       image: 'https://placehold.jp/800x400.png',
     },
     {
       id: 'feat2',
-      title: 'Лучшие Рестораны 2024 Года У Моря',
-      subtitle: 'Спланируй Посещение Победителей Премии',
+      title: t('homepage.featuredCards.bestSeaRestaurants2024'),
+      subtitle: t('homepage.featuredCards.bestSeaRestaurants2024Subtitle'),
       image: 'https://placehold.jp/800x400.png',
     },
   ];
 
   const countries: Country[] = [
-    { id: 'mne', title: 'Черногория', image: 'https://placehold.jp/400x300.png' },
-    { id: 'hrv', title: 'Хорватия', image: 'https://placehold.jp/400x300.png' },
-    { id: 'alb', title: 'Албания', image: 'https://placehold.jp/400x300.png' },
+    { id: 'mne', title: t('homepage.countries.montenegro'), image: 'https://placehold.jp/400x300.png' },
+    { id: 'hrv', title: t('homepage.countries.croatia'), image: 'https://placehold.jp/400x300.png' },
+    { id: 'alb', title: t('homepage.countries.albania'), image: 'https://placehold.jp/400x300.png' },
   ];
 
   const handleMainSearch = useCallback((searchQuery: string, location: string) => {
@@ -161,13 +162,13 @@ const HomePage: React.FC = () => {
         setLoading(false);
       } catch (err) {
         console.error('Ошибка при загрузке данных:', err);
-        setError(err instanceof Error ? err.message : 'Произошла ошибка при загрузке данных');
+        setError(err instanceof Error ? err.message : t('common.error'));
         setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [t]);
 
   // Восстановление позиции прокрутки и управление видимостью плавающей кнопки
   useEffect(() => {
@@ -209,9 +210,8 @@ const HomePage: React.FC = () => {
   );
 
   const handleNavBarSearch = useCallback((query: string) => {
-    console.log(`Поиск в NavBar: ${query}`);
-  }, []);
-
+    console.log(`${t('common.search')}: ${query}`);
+  }, [t]);
 
   const handleLanguageChange = (language: string) => {
     console.log(`Язык изменен на: ${language}`);
@@ -234,7 +234,7 @@ const HomePage: React.FC = () => {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.loadingSpinner}></div>
-        <p>Загрузка данных...</p>
+        <p>{t('homepage.loading')}</p>
       </div>
     );
   }
@@ -243,7 +243,7 @@ const HomePage: React.FC = () => {
     return (
       <div className={styles.errorContainer}>
         <p className={styles.errorMessage}>{error}</p>
-        <button onClick={() => window.location.reload()}>Попробовать снова</button>
+        <button onClick={() => window.location.reload()}>{t('homepage.tryAgain')}</button>
       </div>
     );
   }
@@ -252,8 +252,6 @@ const HomePage: React.FC = () => {
     <div className={styles.homePage}>
       <NavBar
         onSearch={handleNavBarSearch}
-        // onLanguageChange={handleLanguageChange}
-        // currentLanguage="ru"
         logoText={CONSTANTS.APP_NAME}
         onWelcomeClick={handleWelcomeClick}
       />
@@ -264,10 +262,11 @@ const HomePage: React.FC = () => {
           style={{ backgroundImage: `url(${backgroundImage})` }}
         ></div>
         <div className={styles.heroContent}>
-          <h1 className={styles.heroTitle}>{CONSTANTS.HERO_TITLE}</h1>
+          {/* 🆕 Переводим заголовок */}
+          <h1 className={styles.heroTitle}>{t('homepage.heroTitle')}</h1>
           <SearchBar
             onSearch={handleMainSearch}
-            placeholder={CONSTANTS.SEARCH_PLACEHOLDER}
+            placeholder={t('homepage.searchPlaceholder')}
             defaultLocation={CONSTANTS.DEFAULT_LOCATION}
           />
         </div>
@@ -277,10 +276,10 @@ const HomePage: React.FC = () => {
       <section className={styles.contentSection}>
         <div className={styles.contentContainer}>
           <div className={styles.sloganSection}>
-            <h2 className={styles.sloganTitle}>Откройте для себя аутентичные балканские вкусы</h2>
+            {/* 🆕 Переводим заголовок и описание */}
+            <h2 className={styles.sloganTitle}>{t('homepage.sloganTitle')}</h2>
             <p className={styles.sloganText}>
-              HvalaDviser — это ваш надежный путеводитель по лучшим ресторанам Балкан.
-              Мы помогаем путешественникам и местным жителям находить уникальные гастрономические впечатления, сохранять любимые места и делиться своими открытиями.
+              {t('homepage.sloganText')}
             </p>
             <div className={styles.sloganDivider}></div>
           </div>
@@ -294,12 +293,13 @@ const HomePage: React.FC = () => {
                 subtitle={card.subtitle}
                 image={card.image}
                 onClick={() => handleFeaturedCardClick(card.id)}
-                buttonText="Посмотреть Список"
+                buttonText={t('homepage.featuredCards.viewList')}
               />
             ))}
           </div>
 
-          <Section title="Новые рестораны">
+          {/* 🆕 Переводим заголовки секций */}
+          <Section title={t('homepage.sections.newRestaurants')}>
             {restaurants.length > 0 ? (
               <RestaurantGrid
                 restaurants={restaurants}
@@ -308,12 +308,12 @@ const HomePage: React.FC = () => {
               />
             ) : (
               <div className={styles.noDataMessage}>
-                <p>Пока нет доступных ресторанов. Станьте первым, кто добавит ресторан!</p>
+                <p>{t('homepage.noDataMessage')}</p>
               </div>
             )}
           </Section>
 
-          <Section title="Популярные Страны">
+          <Section title={t('homepage.sections.popularCountries')}>
             <div className={styles.countriesGrid}>
               {countries.map((country) => (
                 <Link
@@ -337,10 +337,10 @@ const HomePage: React.FC = () => {
             </div>
           </Section>
 
-          <Section title="Исследуйте Балканы">
+          <Section title={t('homepage.sections.exploreBalkan')}>
             <div className={styles.balkanMapSection}>
               <p className={styles.balkanDescription}>
-                Наведите курсор на страну, чтобы узнать больше, или нажмите для перехода к ресторанам
+                {t('homepage.balkanDescription')}
               </p>
               <div className={styles.interactiveMapContainer}>
                 <BalkanMap onCountryClick={(countryId) => navigate(`/country/${countryId}`)} />
@@ -353,7 +353,7 @@ const HomePage: React.FC = () => {
       <div className={styles.floatingAddButton} onClick={handleAddRestaurantClick}>
         <span className={styles.plusIcon}>+</span>
         {showFloatingButtonText && (
-          <span className={styles.buttonText}>Добавить ресторан</span>
+          <span className={styles.buttonText}>{t('homepage.addRestaurant')}</span>
         )}
       </div>
 

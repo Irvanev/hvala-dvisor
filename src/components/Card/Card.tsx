@@ -7,20 +7,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { User } from '../../models/types';
 import { useNotification } from '../../contexts/NotificationContext';
-
-
-const tagIcons: Record<string, string> = {
-  'Французская': '🍽️',
-  'Итальянская': '🍽️',
-  'Испанская': '🍽️',
-  'Веганское меню': '🌱',
-  'Фермерские продукты': '🌾',
-  'Детское меню': '🧒',
-  'Панорамный вид': '🪟',
-  'Терраса': '🪟',
-  'Винная карта': '🍷',
-  'Дровяная печь': '🔥',
-};
+import { useAppTranslation } from '../../hooks/useAppTranslation';
 
 interface CardProps {
   id: string;
@@ -59,6 +46,7 @@ const Card: React.FC<CardProps> = ({
   onSaveToggle,
   variant = 'default',
 }) => {
+  const { t } = useAppTranslation();
   const allImages = images.length > 0 ? images : image ? [image] : [];
   const [isSaved, setIsSaved] = useState(savedStatus || false);
   const [isLoading, setIsLoading] = useState(false);
@@ -68,6 +56,120 @@ const Card: React.FC<CardProps> = ({
   const navigate = useNavigate();
   const locationHook = useLocation();
   const { showNotification } = useNotification();
+
+ const translateFeature = (feature: string) => {
+  // 🆕 Добавляем отладку чтобы видеть что приходит из Firebase
+  console.log('Переводим тег:', feature);
+  
+  const featureMap: { [key: string]: string } = {
+    // WiFi варианты
+    'wifi': t('features.wifi'),
+    'wi-fi': t('features.wifi'),
+    'features.wifi': t('features.wifi'), // 🆕 Добавляем этот вариант
+    
+    // Основные особенности
+    'терраса': t('features.terrace'),
+    'детское меню': t('features.kidsMenu'),
+    'парковка': t('features.parking'),
+    'живая музыка': t('features.liveMusic'),
+    'навынос': t('features.takeaway'),
+    'доставка': t('features.delivery'),
+    'можно с питомцами': t('features.petFriendly'),
+    'доступно для инвалидов': t('features.wheelchair'),
+    'открытая терраса': t('features.outdoorSeating'),
+    'бар': t('features.bar'),
+    'завтрак': t('features.breakfast'),
+    'обед': t('features.lunch'),
+    'ужин': t('features.dinner'),
+    'банковские карты': t('features.creditCards'),
+    'бронирование': t('features.reservation'),
+    
+    // Английские варианты
+    'terrace': t('features.terrace'),
+    'kids menu': t('features.kidsMenu'),
+    'parking': t('features.parking'),
+    'live music': t('features.liveMusic'),
+    'takeaway': t('features.takeaway'),
+    'delivery': t('features.delivery'),
+    'pet friendly': t('features.petFriendly'),
+    'wheelchair accessible': t('features.wheelchair'),
+    'outdoor seating': t('features.outdoorSeating'),
+    'bar': t('features.bar'),
+    'breakfast': t('features.breakfast'),
+    'lunch': t('features.lunch'),
+    'dinner': t('features.dinner'),
+    'credit cards': t('features.creditCards'),
+    'reservation': t('features.reservation'),
+    
+    // Сербские варианты
+    'terasa': t('features.terrace'),
+    'dečji meni': t('features.kidsMenu'),
+    'živa muzika': t('features.liveMusic'),
+    'za poneti': t('features.takeaway'),
+    'dostava': t('features.delivery'),
+    'dozvoljeni ljubimci': t('features.petFriendly'),
+    'pristupačno za invalidska kolica': t('features.wheelchair'),
+    'spoljašnje sedište': t('features.outdoorSeating'),
+    'doručak': t('features.breakfast'),
+    'ručak': t('features.lunch'),
+    'večera': t('features.dinner'),
+    'kreditne kartice': t('features.creditCards'),
+    'rezervacija': t('features.reservation'),
+    
+    // Кухни - добавляем больше вариантов
+    'сербская': t('features.serbian'),
+    'черногорская': t('features.montenegrin'),
+    'боснийская': t('features.bosnian'),
+    'хорватская': t('features.croatian'),
+    'македонская': t('features.macedonian'),
+    'французская': t('features.french'),
+    'итальянская': t('features.italian'),
+    'испанская': t('features.spanish'),
+    
+    // Варианты на латинице
+    'srpska': t('features.serbian'),
+    'crnogorska': t('features.montenegrin'), 
+    'bosanska': t('features.bosnian'),
+    'hrvatska': t('features.croatian'),
+    'makedonska': t('features.macedonian'),
+    'francuska': t('features.french'),
+    'italijanska': t('features.italian'),
+    'španska': t('features.spanish'),
+    
+    // Английские варианты кухонь
+    'serbian': t('features.serbian'),
+    'montenegrin': t('features.montenegrin'),
+    'bosnian': t('features.bosnian'),
+    'croatian': t('features.croatian'),
+    'macedonian': t('features.macedonian'),
+    'french': t('features.french'),
+    'italian': t('features.italian'),
+    'spanish': t('features.spanish'),
+    
+    // 🆕 Дополнительные варианты которые могут быть в Firebase
+    'историческое здание': t('features.historicBuilding'),
+    'historic building': t('features.historicBuilding'),
+    'istorijska zgrada': t('features.historicBuilding'),
+    
+    'живописный вид': t('features.scenicView'),
+    'scenic view': t('features.scenicView'),
+    'slikovit pogled': t('features.scenicView'),
+    
+    'семейный ресторан': t('features.familyFriendly'),
+    'family friendly': t('features.familyFriendly'),
+    'porodično': t('features.familyFriendly'),
+  };
+  
+  const translated = featureMap[feature.toLowerCase()];
+  
+  if (!translated) {
+    console.warn('❌ Перевод не найден для тега:', feature);
+    return feature; // Возвращаем оригинал если перевод не найден
+  }
+  
+  console.log('✅ Переведено:', feature, '->', translated);
+  return translated;
+};
 
   // Проверяем статус избранного при монтировании
   useEffect(() => {
@@ -135,22 +237,23 @@ const Card: React.FC<CardProps> = ({
     );
   };
 
-  const renderIconTags = (tags: string[]) => {
-    const maxVisible = 3;
+  // Обновленная функция рендера тегов со стилизацией
+  const renderTags = (tags: string[]) => {
+    const maxVisible = 2; // Уменьшаем количество для лучшего вида
     const visibleTags = tags.slice(0, maxVisible);
     const hiddenCount = tags.length - maxVisible;
 
     return (
-      <>
+      <div className={styles.tagsContainer}>
         {visibleTags.map((tag, i) => (
-          <span key={i} className={styles.iconTag}>
-            {tagIcons[tag] || '🔹'} {tag}
+          <span key={i} className={styles.tag}>
+            {translateFeature(tag)}
           </span>
         ))}
         {hiddenCount > 0 && (
           <span className={styles.moreTag}>+{hiddenCount}</span>
         )}
-      </>
+      </div>
     );
   };
 
@@ -159,8 +262,7 @@ const Card: React.FC<CardProps> = ({
     e.preventDefault();
 
     if (!isAuthenticated || !typedUser) {
-      // Если пользователь не авторизован, перенаправляем на страницу входа
-      showNotification('Чтобы добавить ресторан в избранное, необходимо войти в систему', 'info');
+      showNotification(t('restaurantPage.favorites.loginRequired'), 'info');
       navigate('/login', { state: { from: locationHook.pathname } });
       return;
     }
@@ -171,28 +273,22 @@ const Card: React.FC<CardProps> = ({
       const newSavedState = !isSaved;
 
       if (newSavedState) {
-        // Добавляем в избранное
         await favoriteService.addToFavorites(typedUser.id, id);
-        showNotification('Ресторан добавлен в избранное', 'success');
+        showNotification(t('restaurantPage.favorites.added'), 'success');
       } else {
-        // Удаляем из избранного
         await favoriteService.removeFromFavorites(typedUser.id, id);
-        showNotification('Ресторан удален из избранного', 'success');
+        showNotification(t('restaurantPage.favorites.removed'), 'success');
       }
 
-      // Обновляем счетчик избранного у пользователя
       await favoriteService.updateUserFavoritesCount(typedUser.id);
-
-      // Обновляем состояние
       setIsSaved(newSavedState);
 
-      // Вызываем коллбэк, если он предоставлен
       if (onSaveToggle) {
         onSaveToggle(newSavedState, e);
       }
     } catch (error) {
       console.error('Ошибка при изменении избранного:', error);
-      showNotification('Произошла ошибка при изменении избранного', 'error');
+      showNotification(t('restaurantPage.favorites.error'), 'error');
     } finally {
       setIsLoading(false);
     }
@@ -290,7 +386,8 @@ const Card: React.FC<CardProps> = ({
           )}
         </div>
         {location && <p className={styles.cardLocation}>{formattedLocation()}</p>}
-        <div className={styles.iconTagsRow}>{renderIconTags([...cuisineTags, ...featureTags])}</div>
+        {/* Обновленные теги */}
+        {[...cuisineTags, ...featureTags].length > 0 && renderTags([...cuisineTags, ...featureTags])}
       </div>
     </div>
   );

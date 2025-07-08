@@ -24,7 +24,33 @@
     "subtitle": "Find authentic cuisine from the Balkan region",
     "featured": "Featured Restaurants",
     "popular": "Popular Dishes",
-    "explore": "Explore by Country"
+    "explore": "Explore by Country",
+    "heroTitle": "EXPLORE MONTENEGRO",
+    "searchPlaceholder": "Search",
+    "sloganTitle": "Discover authentic Balkan flavors",
+    "sloganText": "HvalaDviser is your trusted guide to the best restaurants in the Balkans. We help travelers and locals find unique gastronomic experiences, save favorite places and share their discoveries.",
+    "featuredCards": {
+      "bestRestaurants2024": "Best Restaurants of 2024",
+      "bestRestaurants2024Subtitle": "Plan Your Visit to Award Winners",
+      "bestSeaRestaurants2024": "Best Seaside Restaurants of 2024",
+      "bestSeaRestaurants2024Subtitle": "Plan Your Visit to Award Winners",
+      "viewList": "View List"
+    },
+    "sections": {
+      "newRestaurants": "New Restaurants",
+      "popularCountries": "Popular Countries",
+      "exploreBalkan": "Explore the Balkans"
+    },
+    "noDataMessage": "No restaurants available yet. Be the first to add a restaurant!",
+    "balkanDescription": "Hover over a country to learn more, or click to go to restaurants",
+    "addRestaurant": "Add Restaurant",
+    "loading": "Loading data...",
+    "tryAgain": "Try Again",
+    "countries": {
+      "montenegro": "Montenegro",
+      "croatia": "Croatia", 
+      "albania": "Albania"
+    }
   },
   "auth": {
     "email": "Email",
@@ -81,31 +107,6 @@
     },
     "share": "Share restaurant link"
   },
-  "profile": {
-    "personalInfo": "Personal Information",
-    "favoriteRestaurants": "Favorite Restaurants",
-    "reviews": "My Reviews",
-    "editProfile": "Edit Profile",
-    "changePassword": "Change Password",
-    "deleteAccount": "Delete Account",
-    "notAuthorized": "You are not authorized",
-    "loginRequired": "You need to log in to view your profile",
-    "defaultUser": "User",
-    "notSpecified": "Not specified",
-    "addressNotSpecified": "Address not specified",
-    "loadingReviews": "Loading reviews...",
-    "loadingFavorites": "Loading favorites...",
-    "noReviews": "You don't have any reviews yet",
-    "noFavorites": "You don't have any favorite restaurants yet",
-    "reviewsTab": "Reviews",
-    "favoritesTab": "Favorites",
-    "recentDate": "Recently",
-    "avatar": "User avatar",
-    "favorites": "Favorites",
-    "avatarAlt": "Avatar of {{name}}",
-    "reviewsCount": "Reviews",
-    "favoritesCount": "Favorites"
-  },
   "restaurantOverview": {
     "aboutRestaurant": "About Restaurant",
     "features": "Features",
@@ -146,15 +147,40 @@
     "noPhotos": "No Photos Available",
     "noPhotosText": "This restaurant has no photos yet. You can help other visitors by uploading photos after your visit."
   },
+  "profile": {
+    "personalInfo": "Personal Information",
+    "favoriteRestaurants": "Favorite Restaurants",
+    "reviews": "My Reviews",
+    "editProfile": "Edit Profile",
+    "changePassword": "Change Password",
+    "deleteAccount": "Delete Account",
+    "notAuthorized": "You are not authorized",
+    "loginRequired": "You need to log in to view your profile",
+    "defaultUser": "User",
+    "notSpecified": "Not specified",
+    "addressNotSpecified": "Address not specified",
+    "loadingReviews": "Loading reviews...",
+    "loadingFavorites": "Loading favorites...",
+    "noReviews": "You don't have any reviews yet",
+    "noFavorites": "You don't have any favorite restaurants yet",
+    "reviewsTab": "Reviews",
+    "favoritesTab": "Favorites",
+    "recentDate": "Recently",
+    "avatar": "User avatar",
+    "favorites": "Favorites",
+    "avatarAlt": "Avatar of {{name}}",
+    "reviewsCount": "Reviews",
+    "favoritesCount": "Favorites"
+  },
   "countries": {
     "serbia": "Serbia",
-    "croatia": "Croatia",
     "bosnia": "Bosnia and Herzegovina",
-    "montenegro": "Montenegro",
     "macedonia": "North Macedonia",
     "slovenia": "Slovenia",
     "bulgaria": "Bulgaria",
     "romania": "Romania",
+    "montenegro": "Montenegro",
+    "croatia": "Croatia", 
     "albania": "Albania"
   },
   "buttons": {
@@ -225,7 +251,18 @@
     "lunch": "Lunch",
     "dinner": "Dinner",
     "creditCards": "Credit Cards",
-    "reservation": "Reservation"
+    "reservation": "Reservation",
+    "serbian": "Serbian",
+    "montenegrin": "Montenegrin", 
+    "bosnian": "Bosnian",
+    "croatian": "Croatian",
+    "macedonian": "Macedonian",
+    "french": "French",
+    "italian": "Italian",
+    "spanish": "Spanish",
+    "historicBuilding": "Historic Building",
+    "scenicView": "Scenic View",
+    "familyFriendly": "Family Friendly"
   },
   "reviewForm": {
     "title": "Leave a Review",

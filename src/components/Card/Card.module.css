@@ -5,28 +5,28 @@
   overflow: hidden;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  width: 100%; /* Стандартная ширина для default */
-  height: 100%; /* Стандартная высота для default */
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
 
 .squareCard {
-  width: 300px; /* Фиксированная ширина для квадратного варианта */
-  height: 400px; /* Фиксированная высота для квадратного варианта */
+  width: 300px;
+  height: 400px;
   min-width: 300px;
 }
 
 .cardImageContainer {
   position: relative;
   width: 100%;
-  height: 200px; /* Стандартная высота изображения для default */
+  height: 200px;
   background-color: #f0f0f0;
   overflow: hidden;
 }
 
 .squareImageContainer {
-  height: 250px; /* Для square */
+  height: 250px;
 }
 
 .cardImage {
@@ -171,12 +171,12 @@
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  height: calc(100% - 200px); /* Для default */
+  height: calc(100% - 200px);
   padding-bottom: 20px;
 }
 
 .squareCard .cardContent {
-  height: calc(100% - 250px); /* Для square */
+  height: calc(100% - 250px);
   padding: 12px;
 }
 
@@ -223,34 +223,90 @@
   white-space: nowrap;
 }
 
-.iconTagsRow {
+/* 🆕 НОВЫЕ СТИЛИ ДЛЯ ТЕГОВ */
+.tagsContainer {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 6px;
   margin-top: auto;
-  font-size: 14px;
-  color: #444;
-  height: 28px;
-  overflow: hidden;
   align-items: center;
 }
 
-.iconTag {
+.tag {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  white-space: nowrap;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  color: #495057;
+  border: 1px solid #dee2e6;
+  border-radius: 16px;
+  font-size: 12px;
   font-weight: 500;
-  height: 24px;
-  padding: 0 6px;
-  border-radius: 12px;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.tag:hover {
+  background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+  border-color: #adb5bd;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .moreTag {
-  font-size: 14px;
-  color: #555;
-  font-weight: 500;
-  background-color: #f0f0f0;
+  display: inline-flex;
+  align-items: center;
   padding: 4px 8px;
-  border-radius: 12px;
+  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+}
+
+.moreTag:hover {
+  background: linear-gradient(135deg, #495057 0%, #343a40 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Удаляем старые стили */
+.iconTagsRow,
+.iconTag {
+  display: none;
+}
+
+.loadingSpinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.favoriteLoading {
+  pointer-events: none;
+}
+
+/* Отзывчивость */
+@media (max-width: 768px) {
+  .tag {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+  
+  .moreTag {
+    font-size: 11px;
+    padding: 3px 6px;
+  }
 }

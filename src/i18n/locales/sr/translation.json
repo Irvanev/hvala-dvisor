@@ -24,7 +24,33 @@
     "subtitle": "Pronađite autentičnu kuhinju sa Balkana",
     "featured": "Istaknuti restorani",
     "popular": "Popularna jela",
-    "explore": "Istražite po zemljama"
+    "explore": "Istražite po zemljama",
+    "heroTitle": "ISTRAŽITE CRNU GORU",
+    "searchPlaceholder": "Pretraga",
+    "sloganTitle": "Otkrijte autentične balkanske ukuse",
+    "sloganText": "HvalaDviser je vaš pouzdan vodič za najbolje restorane na Balkanu. Pomažemo putnicima i lokalnom stanovništvu da pronađu jedinstvena gastronomska iskustva, sačuvaju omiljena mesta i podele svoja otkrića.",
+    "featuredCards": {
+      "bestRestaurants2024": "Najbolji Restorani 2024. Godine",
+      "bestRestaurants2024Subtitle": "Planirajte Posetu Pobednicima Nagrade",
+      "bestSeaRestaurants2024": "Najbolji Primorski Restorani 2024. Godine",
+      "bestSeaRestaurants2024Subtitle": "Planirajte Posetu Pobednicima Nagrade",
+      "viewList": "Pogledaj Listu"
+    },
+    "sections": {
+      "newRestaurants": "Novi restorani",
+      "popularCountries": "Popularne Zemlje",
+      "exploreBalkan": "Istražite Balkan"
+    },
+    "noDataMessage": "Još nema dostupnih restorana. Budite prvi koji će dodati restoran!",
+    "balkanDescription": "Postavite miš na zemlju da saznate više, ili kliknite da idete na restorane",
+    "addRestaurant": "Dodaj Restoran",
+    "loading": "Učitavanje podataka...",
+    "tryAgain": "Pokušaj Ponovo",
+    "countries": {
+      "montenegro": "Crna Gora",
+      "croatia": "Hrvatska",
+      "albania": "Albanija"
+    }
   },
   "auth": {
     "email": "Email",
@@ -225,7 +251,18 @@
     "lunch": "Ručak",
     "dinner": "Večera",
     "creditCards": "Kreditne kartice",
-    "reservation": "Rezervacija"
+    "reservation": "Rezervacija",
+    "serbian": "Srpska",
+    "montenegrin": "Crnogorska",
+    "bosnian": "Bosanska",
+    "croatian": "Hrvatska",
+    "macedonian": "Makedonska",
+    "french": "Francuska",
+    "italian": "Italijanska",
+    "spanish": "Španska",
+    "historicBuilding": "Istorijska zgrada",
+    "scenicView": "Slikovit pogled",
+    "familyFriendly": "Porodično"
   },
   "reviewForm": {
     "title": "Ostavite recenziju",
