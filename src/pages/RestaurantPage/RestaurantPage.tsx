@@ -17,6 +17,7 @@ import { adaptRestaurantFromFirestore, adaptRestaurantForDetailsPage } from '../
 import { favoriteService } from '../../services/FavoriteService';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotification } from '../../contexts/NotificationContext';
+import { useAppTranslation } from '../../hooks/useAppTranslation';
 
 // Интерфейс для страницы ресторана с дополнительными полями
 interface RestaurantDetails {
@@ -73,8 +74,9 @@ const RestaurantPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isAuthenticated } = useAuth(); // Добавляем получение данных о пользователе
+  const { user, isAuthenticated } = useAuth();
   const typedUser = user as User | null;
+  const { t } = useAppTranslation();
 
   const [restaurant, setRestaurant] = useState<RestaurantDetails | null>(null);
   const [loading, setLoading] = useState(true);
@@ -83,87 +85,8 @@ const RestaurantPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [showPhotoModal, setShowPhotoModal] = useState(false);
-  const [favoritesLoading, setFavoritesLoading] = useState(false); // Состояние загрузки избранного
+  const [favoritesLoading, setFavoritesLoading] = useState(false);
   const { showNotification } = useNotification();
-
-  // Функция загрузки данных из fallback-мок-массива (на случай, если state не передан)
-  const loadMockRestaurant = (restaurantId: string): RestaurantDetails | null => {
-    // ... остаток функции без изменений
-    const mockRestaurants: RestaurantDetails[] = [
-      {
-        id: 'rest1',
-        title: 'Au Bourguignon Du Marais',
-        description: 'Изысканный ресторан с французской кухней',
-        location: 'Подгорица',
-        coordinates: { lat: 42.4300, lng: 19.2600 },
-        images: [
-          "https://placehold.jp/800x500.png",
-          "https://placehold.jp/900x500.png",
-          "https://placehold.jp/850x500.png",
-          "https://placehold.jp/950x500.png"
-        ],
-        contact: {
-          phone: "+38212345678",
-          website: "https://aubourguignon.example.com",
-          socialLinks: {
-            facebook: "https://facebook.com/restaurant",
-            instagram: "https://instagram.com/restaurant"
-          }
-        },
-        cuisineTags: ['Французская'],
-        featureTags: ['Терраса', 'Детское меню'],
-        priceRange: '€€€',
-        rating: 4.9,
-        moderationStatus: 'approved',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        openingHours: {
-          "Понедельник": "12:00 - 22:00",
-          "Вторник": "12:00 - 22:00",
-          "Среда": "12:00 - 22:00",
-          "Четверг": "12:00 - 22:00",
-          "Пятница": "12:00 - 23:00",
-          "Суббота": "12:00 - 23:00",
-          "Воскресенье": "12:00 - 21:00"
-        },
-        reviews: [
-          {
-            id: "rev1",
-            author: "Анна К.",
-            authorAvatar: "https://placehold.jp/80x80.png?text=AK",
-            rating: 5,
-            comment: "Отличный ресторан!",
-            date: "15.01.2024",
-            likes: 8
-          }
-        ],
-        groupedMenu: [
-          {
-            category: "Закуски",
-            items: [
-              {
-                id: "menu1",
-                name: "Салат Цезарь",
-                description: "Классический салат с курицей",
-                price: "12€",
-                isPopular: true
-              }
-            ]
-          }
-        ],
-        photos: [
-          "https://placehold.jp/400x300.png",
-          "https://placehold.jp/400x300.png"
-        ],
-        phoneNumber: "+38212345678",
-        website: "https://aubourguignon.example.com",
-        features: ["Уютная атмосфера", "Обслуживание на высшем уровне"],
-        cuisine: "Французская"
-      },
-    ];
-
-    return mockRestaurants.find(r => r.id === restaurantId) || null;
-  };
 
   // Функция для проверки, является ли ресторан избранным
   const checkIfFavorite = async () => {
@@ -200,16 +123,10 @@ const RestaurantPage: React.FC = () => {
               
               setRestaurant(displayRestaurant);
             } else {
-              // Используем fallback данные
-              const mockData = loadMockRestaurant(id);
-              if (mockData) {
-                setRestaurant(mockData);
-              } else {
-                setError('Ресторан не найден');
-              }
+              setError(t('restaurantPage.notFound'));
             }
           } else {
-            setError('ID ресторана не указан');
+            setError(t('restaurantPage.notFound'));
           }
         }
         
@@ -221,20 +138,16 @@ const RestaurantPage: React.FC = () => {
         await checkIfFavorite();
       } catch (e) {
         console.error('Ошибка при загрузке данных:', e);
-        setError(e instanceof Error ? e.message : 'Произошла ошибка при загрузке данных');
+        setError(e instanceof Error ? e.message : t('common.error'));
         setLoading(false);
       }
     };
 
     fetchRestaurantDetails();
-  }, [id, location.state, isAuthenticated, typedUser]);
+  }, [id, location.state, isAuthenticated, typedUser, t]);
 
   const handleNavBarSearch = (query: string) => {
-    console.log(`Поиск в NavBar: ${query}`);
-  };
-
-  const handleLanguageChange = (language: string) => {
-    console.log(`Язык изменен на: ${language}`);
+    console.log(`${t('common.search')}: ${query}`);
   };
 
   const handleWelcomeClick = () => {
@@ -244,8 +157,7 @@ const RestaurantPage: React.FC = () => {
   // Обновленная функция для добавления/удаления из избранного
   const handleFavoriteToggle = async () => {
     if (!isAuthenticated || !typedUser) {
-      // Если пользователь не авторизован, перенаправляем на страницу входа
-      showNotification('Чтобы добавить ресторан в избранное, необходимо войти в систему', 'info');
+      showNotification(t('restaurantPage.favorites.loginRequired'), 'info');
       navigate('/login', { state: { from: location.pathname } });
       return;
     }
@@ -256,23 +168,18 @@ const RestaurantPage: React.FC = () => {
     
     try {
       if (userFavorite) {
-        // Удаляем из избранного
         await favoriteService.removeFromFavorites(typedUser.id, id);
-        showNotification('Ресторан удален из избранного', 'success');
+        showNotification(t('restaurantPage.favorites.removed'), 'success');
       } else {
-        // Добавляем в избранное
         await favoriteService.addToFavorites(typedUser.id, id);
-        showNotification('Ресторан добавлен в избранное', 'success');
+        showNotification(t('restaurantPage.favorites.added'), 'success');
       }
       
-      // Обновляем счетчик избранного у пользователя
       await favoriteService.updateUserFavoritesCount(typedUser.id);
-      
-      // Обновляем состояние в компоненте
       setUserFavorite(!userFavorite);
     } catch (error) {
       console.error('Ошибка при изменении избранного:', error);
-      showNotification('Произошла ошибка при изменении избранного', 'error');
+      showNotification(t('restaurantPage.favorites.error'), 'error');
     } finally {
       setFavoritesLoading(false);
     }
@@ -283,7 +190,7 @@ const RestaurantPage: React.FC = () => {
   };
 
   const handleShare = () => {
-    console.log('Поделиться ссылкой на ресторан');
+    console.log(t('restaurantPage.share'));
   };
 
   const openPhotoModal = (index: number) => {
@@ -313,7 +220,7 @@ const RestaurantPage: React.FC = () => {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.loadingSpinner}></div>
-        <p>Загрузка информации о ресторане...</p>
+        <p>{t('restaurantPage.loading')}</p>
       </div>
     );
   }
@@ -321,27 +228,25 @@ const RestaurantPage: React.FC = () => {
   if (error || !restaurant) {
     return (
       <div className={styles.errorContainer}>
-        <p className={styles.errorMessage}>{error || 'Ресторан не найден'}</p>
+        <p className={styles.errorMessage}>{error || t('restaurantPage.notFound')}</p>
         <button onClick={() => navigate('/')} className={styles.backButton}>
-          Вернуться на главную
+          {t('common.backToHome')}
         </button>
       </div>
     );
   }
 
   const tabs = [
-    { id: 'overview', label: 'Обзор' },
-    { id: 'menu', label: 'Меню' },
-    { id: 'reviews', label: 'Отзывы', count: restaurant.reviews?.length || 0 },
-    { id: 'photos', label: 'Фото', count: restaurant.photos?.length || 0 }
+    { id: 'overview', label: t('restaurantPage.tabs.overview') },
+    { id: 'menu', label: t('restaurantPage.tabs.menu') },
+    { id: 'reviews', label: t('restaurantPage.tabs.reviews'), count: restaurant.reviews?.length || 0 },
+    { id: 'photos', label: t('restaurantPage.tabs.photos'), count: restaurant.photos?.length || 0 }
   ];
 
   return (
     <div className={styles.restaurantPage}>
       <NavBar
         onSearch={handleNavBarSearch}
-        // onLanguageChange={handleLanguageChange}
-        // currentLanguage="ru"
         logoText="HvalaDviser"
         onWelcomeClick={handleWelcomeClick}
         isStatic={true}
@@ -349,9 +254,13 @@ const RestaurantPage: React.FC = () => {
 
       <div className={styles.pageContainer}>
         <div className={styles.breadcrumbs}>
-          <span className={styles.breadcrumbLink} onClick={() => navigate('/')}>Главная</span>
+          <span className={styles.breadcrumbLink} onClick={() => navigate('/')}>
+            {t('restaurantPage.breadcrumbs.home')}
+          </span>
           <span className={styles.breadcrumbSeparator}>›</span>
-          <span className={styles.breadcrumbLink} onClick={() => navigate('/restaurants')}>Рестораны</span>
+          <span className={styles.breadcrumbLink} onClick={() => navigate('/restaurants')}>
+            {t('restaurantPage.breadcrumbs.restaurants')}
+          </span>
           <span className={styles.breadcrumbSeparator}>›</span>
           <span className={styles.breadcrumbCurrent}>{restaurant.title}</span>
         </div>
@@ -366,7 +275,6 @@ const RestaurantPage: React.FC = () => {
           isFavorite={userFavorite}
           onFavoriteToggle={handleFavoriteToggle}
           onViewAllPhotos={() => setActiveTab('photos')}
-          // Убрано свойство favoritesLoading, так как его нет в пропсах компонента
         />
 
         <RestaurantTabs
@@ -395,7 +303,7 @@ const RestaurantPage: React.FC = () => {
                 category: category.category,
                 items: category.items.map(item => ({
                   ...item,
-                  description: item.description || '' // Гарантируем, что description всегда строка
+                  description: item.description || ''
                 }))
               }))}
             />
@@ -426,7 +334,7 @@ const RestaurantPage: React.FC = () => {
             <div className={styles.photoModalImageContainer}>
               <img
                 src={restaurant.photos[currentPhotoIndex]}
-                alt={`${restaurant.title} - фото ${currentPhotoIndex + 1}`}
+                alt={`${restaurant.title} - ${t('restaurant.photo')} ${currentPhotoIndex + 1}`}
                 className={styles.photoModalImage}
               />
               <button

@@ -7,7 +7,8 @@
     "logout": "Odjava",
     "search": "Pretraga",
     "loading": "Učitavanje...",
-    "error": "Došlo je do greške"
+    "error": "Došlo je do greške",
+    "backToHome": "Nazad na početnu"
   },
   "navbar": {
     "welcome": "Dobrodošli",
@@ -51,9 +52,36 @@
     "menu": "Meni",
     "addToFavorites": "Dodaj u favorite",
     "removeFromFavorites": "Ukloni iz favorita",
-    "noName": "Restoran bez naziva"
+    "noName": "Restoran bez naziva",
+    "loading": "Učitavanje informacija o restoranu...",
+    "notFound": "Restoran nije pronađen",
+    "overview": "Pregled",
+    "photos": "Fotografije", 
+    "photo": "fotografija"
   },
-  "profile": {
+  "restaurantPage": {
+    "breadcrumbs": {
+      "home": "Početna",
+      "restaurants": "Restorani"
+    },
+    "loading": "Učitavanje informacija o restoranu...",
+    "notFound": "Restoran nije pronađen", 
+    "backToHome": "Nazad na početnu",
+    "tabs": {
+      "overview": "Pregled",
+      "menu": "Meni",
+      "reviews": "Recenzije",
+      "photos": "Fotografije"
+    },
+    "favorites": {
+      "loginRequired": "Morate se prijaviti da biste dodali restoran u favorite",
+      "removed": "Restoran je uklonjen iz favorita",
+      "added": "Restoran je dodat u favorite",
+      "error": "Došlo je do greške prilikom menjanja favorita"
+    },
+    "share": "Podelite link restorana"
+  },
+    "profile": {
     "personalInfo": "Lični podaci",
     "favoriteRestaurants": "Omiljeni restorani",
     "reviews": "Moje recenzije",

@@ -7,7 +7,8 @@
     "logout": "Logout",
     "search": "Search",
     "loading": "Loading...",
-    "error": "Error occurred"
+    "error": "Error occurred",
+    "backToHome": "Back to Home"
   },
   "navbar": {
     "welcome": "Welcome",
@@ -51,85 +52,112 @@
     "menu": "Menu",
     "addToFavorites": "Add to Favorites",
     "removeFromFavorites": "Remove from Favorites",
-    "noName": "Restaurant without name"
+    "noName": "Restaurant without name",
+    "loading": "Loading restaurant information...",
+    "notFound": "Restaurant not found",
+    "overview": "Overview",
+    "photos": "Photos",
+    "photo": "photo"
   },
-  "profile": {
-    "personalInfo": "Personal Information",
-    "favoriteRestaurants": "Favorite Restaurants",
-    "reviews": "My Reviews",
-    "editProfile": "Edit Profile",
-    "changePassword": "Change Password",
-    "deleteAccount": "Delete Account",
-    "notAuthorized": "You are not authorized",
-    "loginRequired": "You need to log in to view your profile",
-    "defaultUser": "User",
-    "notSpecified": "Not specified",
-    "addressNotSpecified": "Address not specified",
-    "loadingReviews": "Loading reviews...",
-    "loadingFavorites": "Loading favorites...",
-    "noReviews": "You don't have any reviews yet",
-    "noFavorites": "You don't have any favorite restaurants yet",
-    "reviewsTab": "Reviews",
-    "favoritesTab": "Favorites",
-    "recentDate": "Recently",
-    "avatar": "User avatar",
-    "favorites": "Favorites",
-    "avatarAlt": "Avatar of {{name}}",
-    "reviewsCount": "Reviews",
-    "favoritesCount": "Favorites"
-  },
-  "countries": {
-    "serbia": "Serbia",
-    "croatia": "Croatia",
-    "bosnia": "Bosnia and Herzegovina",
-    "montenegro": "Montenegro",
-    "macedonia": "North Macedonia",
-    "slovenia": "Slovenia",
-    "bulgaria": "Bulgaria",
-    "romania": "Romania",
-    "albania": "Albania"
-  },
-  "buttons": {
-    "submit": "Submit",
-    "cancel": "Cancel",
-    "save": "Save",
-    "delete": "Delete",
-    "edit": "Edit",
-    "view": "View",
-    "more": "Show More",
-    "back": "Back"
-  },
-  "editProfile": {
-    "title": "Edit Profile",
-    "basicInfo": "Basic Information",
-    "changePassword": "Change Password",
-    "passwordHint": "Leave the fields empty if you don't want to change your password",
-    "namePlaceholder": "Name and Surname",
-    "usernamePlaceholder": "Username",
-    "emailPlaceholder": "Email",
-    "cityPlaceholder": "City",
-    "currentPasswordPlaceholder": "Current Password",
-    "newPasswordPlaceholder": "New Password",
-    "confirmPasswordPlaceholder": "Confirm New Password",
-    "saveChanges": "SAVE CHANGES",
-    "saving": "SAVING...",
-    "changePhoto": "Change Photo",
-    "avatarAlt": "Avatar",
-    "errors": {
-      "nameRequired": "Name is required",
-      "usernameRequired": "Username is required",
-      "emailRequired": "Email is required",
-      "invalidEmail": "Invalid email format",
-      "currentPasswordRequired": "Enter your current password",
-      "passwordTooShort": "Password must be at least 8 characters",
-      "passwordsDoNotMatch": "Passwords do not match",
-      "passwordUpdateFailed": "Could not update password. You may need to login again.",
-      "updateFailed": "Failed to update profile",
-      "generalError": "An error occurred when updating the profile"
+  "restaurantPage": {
+    "breadcrumbs": {
+      "home": "Home",
+      "restaurants": "Restaurants"
     },
-    "success": {
-      "profileUpdated": "Profile successfully updated!",
-      "profileUpdatedPasswordFailed": "Profile updated, but password was not changed"
+    "loading": "Loading restaurant information...",
+    "notFound": "Restaurant not found",
+    "backToHome": "Back to Home",
+    "tabs": {
+      "overview": "Overview",
+      "menu": "Menu", 
+      "reviews": "Reviews",
+      "photos": "Photos"
+    },
+    "favorites": {
+      "loginRequired": "You need to log in to add restaurant to favorites",
+      "removed": "Restaurant removed from favorites",
+      "added": "Restaurant added to favorites", 
+      "error": "Error occurred while changing favorites"
+    },
+    "share": "Share restaurant link"
+  }, 
+  "profile": {
+      "personalInfo": "Personal Information",
+      "favoriteRestaurants": "Favorite Restaurants",
+      "reviews": "My Reviews",
+      "editProfile": "Edit Profile",
+      "changePassword": "Change Password",
+      "deleteAccount": "Delete Account",
+      "notAuthorized": "You are not authorized",
+      "loginRequired": "You need to log in to view your profile",
+      "defaultUser": "User",
+      "notSpecified": "Not specified",
+      "addressNotSpecified": "Address not specified",
+      "loadingReviews": "Loading reviews...",
+      "loadingFavorites": "Loading favorites...",
+      "noReviews": "You don't have any reviews yet",
+      "noFavorites": "You don't have any favorite restaurants yet",
+      "reviewsTab": "Reviews",
+      "favoritesTab": "Favorites",
+      "recentDate": "Recently",
+      "avatar": "User avatar",
+      "favorites": "Favorites",
+      "avatarAlt": "Avatar of {{name}}",
+      "reviewsCount": "Reviews",
+      "favoritesCount": "Favorites"
+    },
+    "countries": {
+      "serbia": "Serbia",
+      "croatia": "Croatia",
+      "bosnia": "Bosnia and Herzegovina",
+      "montenegro": "Montenegro",
+      "macedonia": "North Macedonia",
+      "slovenia": "Slovenia",
+      "bulgaria": "Bulgaria",
+      "romania": "Romania",
+      "albania": "Albania"
+    },
+    "buttons": {
+      "submit": "Submit",
+      "cancel": "Cancel",
+      "save": "Save",
+      "delete": "Delete",
+      "edit": "Edit",
+      "view": "View",
+      "more": "Show More",
+      "back": "Back"
+    },
+    "editProfile": {
+      "title": "Edit Profile",
+      "basicInfo": "Basic Information",
+      "changePassword": "Change Password",
+      "passwordHint": "Leave the fields empty if you don't want to change your password",
+      "namePlaceholder": "Name and Surname",
+      "usernamePlaceholder": "Username",
+      "emailPlaceholder": "Email",
+      "cityPlaceholder": "City",
+      "currentPasswordPlaceholder": "Current Password",
+      "newPasswordPlaceholder": "New Password",
+      "confirmPasswordPlaceholder": "Confirm New Password",
+      "saveChanges": "SAVE CHANGES",
+      "saving": "SAVING...",
+      "changePhoto": "Change Photo",
+      "avatarAlt": "Avatar",
+      "errors": {
+        "nameRequired": "Name is required",
+        "usernameRequired": "Username is required",
+        "emailRequired": "Email is required",
+        "invalidEmail": "Invalid email format",
+        "currentPasswordRequired": "Enter your current password",
+        "passwordTooShort": "Password must be at least 8 characters",
+        "passwordsDoNotMatch": "Passwords do not match",
+        "passwordUpdateFailed": "Could not update password. You may need to login again.",
+        "updateFailed": "Failed to update profile",
+        "generalError": "An error occurred when updating the profile"
+      },
+      "success": {
+        "profileUpdated": "Profile successfully updated!",
+        "profileUpdatedPasswordFailed": "Profile updated, but password was not changed"
+      }
     }
   }
-}
