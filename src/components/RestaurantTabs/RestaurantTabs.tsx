@@ -11,14 +11,12 @@ interface RestaurantTabsProps {
   tabs: Tab[];
   activeTab: string;
   onTabChange: (tabId: string) => void;
-  // Removed onShare prop
 }
 
 const RestaurantTabs: React.FC<RestaurantTabsProps> = ({
   tabs,
   activeTab,
   onTabChange
-  // Removed onShare parameter
 }) => {
   // Вычисляем позицию и ширину индикатора
   const getIndicatorPosition = () => {
@@ -53,7 +51,6 @@ const RestaurantTabs: React.FC<RestaurantTabsProps> = ({
           style={{ left: indicatorStyle.left, width: indicatorStyle.width }}
         ></div>
       </div>
-      {/* Removed share button */}
     </div>
   );
 };

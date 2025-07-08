@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './RestaurantHero.module.css';
+import { useAppTranslation } from '../../hooks/useAppTranslation';
 
 interface RestaurantHeroProps {
   title: string;
@@ -24,6 +25,8 @@ const RestaurantHero: React.FC<RestaurantHeroProps> = ({
   onFavoriteToggle,
   onViewAllPhotos
 }) => {
+  const { t } = useAppTranslation();
+
   // Рендер звездочек для рейтинга
   const renderStars = (rating: number) => {
     const stars = [];
@@ -33,22 +36,22 @@ const RestaurantHero: React.FC<RestaurantHeroProps> = ({
     const hasHalfStar = rating % 1 >= 0.5;
     // Количество пустых звезд
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-    
+
     // Добавляем полные звезды
     for (let i = 0; i < fullStars; i++) {
       stars.push(<span key={`full-${i}`} className={styles.star}>★</span>);
     }
-    
+
     // Добавляем половину звезды, если есть
     if (hasHalfStar) {
       stars.push(<span key="half" className={styles.halfStar}>★</span>);
     }
-    
+
     // Добавляем пустые звезды
     for (let i = 0; i < emptyStars; i++) {
       stars.push(<span key={`empty-${i}`} className={styles.emptyStar}>☆</span>);
     }
-    
+
     return stars;
   };
 
@@ -65,14 +68,13 @@ const RestaurantHero: React.FC<RestaurantHeroProps> = ({
             <div className={styles.heroOverlay}></div>
           </>
         ) : (
-          <div className={styles.noImage}>Изображение отсутствует</div>
+          <div className={styles.noImage}>{t('restaurantHero.noImage')}</div>
         )}
       </div>
       
       <div className={styles.heroContent}>
         <div className={styles.restaurantInfo}>
           <h1 className={styles.restaurantTitle}>{title}</h1>
-          
           <div className={styles.restaurantMeta}>
             <div className={styles.ratingSummary}>
               <div className={styles.ratingValue}>{rating.toFixed(1)}</div>
@@ -80,7 +82,7 @@ const RestaurantHero: React.FC<RestaurantHeroProps> = ({
                 {renderStars(rating)}
               </div>
               <span className={styles.reviewCount}>
-                ({reviewCount} отзывов)
+                ({reviewCount} {t('restaurantHero.reviews')})
               </span>
             </div>
             
@@ -89,7 +91,7 @@ const RestaurantHero: React.FC<RestaurantHeroProps> = ({
               {priceRange && <span className={styles.priceRange}>{priceRange}</span>}
             </div>
             
-            <button 
+            <button
               className={`${styles.favoriteButton} ${isFavorite ? styles.active : ''}`}
               onClick={onFavoriteToggle}
             >
@@ -97,7 +99,7 @@ const RestaurantHero: React.FC<RestaurantHeroProps> = ({
                 {isFavorite ? '❤️' : '🤍'}
               </span>
               <span className={styles.favoriteText}>
-                {isFavorite ? 'В избранном' : 'В избранное'}
+                {isFavorite ? t('restaurantHero.inFavorites') : t('restaurantHero.addToFavorites')}
               </span>
             </button>
           </div>

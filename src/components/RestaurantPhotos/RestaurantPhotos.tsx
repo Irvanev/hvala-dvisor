@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './RestaurantPhotos.module.css';
+import { useAppTranslation } from '../../hooks/useAppTranslation';
 
 interface RestaurantPhotosProps {
   photos: string[];
@@ -7,23 +8,25 @@ interface RestaurantPhotosProps {
 }
 
 const RestaurantPhotos: React.FC<RestaurantPhotosProps> = ({ photos, onPhotoClick }) => {
+  const { t } = useAppTranslation();
+
   return (
     <div className={styles.photosSection}>
-      <h2 className={styles.sectionTitle}>Фотогалерея</h2>
+      <h2 className={styles.sectionTitle}>{t('restaurantPhotos.title')}</h2>
       
       {photos.length > 0 ? (
         <>
           <div className={styles.photosGrid}>
             {photos.map((photo, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className={styles.photoCard}
                 onClick={() => onPhotoClick(index)}
               >
-                <img 
-                  src={photo} 
-                  alt={`Фото ${index + 1}`} 
-                  className={styles.photoImage} 
+                <img
+                  src={photo}
+                  alt={`${t('restaurantPhotos.photo')} ${index + 1}`}
+                  className={styles.photoImage}
                 />
                 <div className={styles.photoOverlay}>
                   <span className={styles.photoExpand}>🔍</span>
@@ -33,16 +36,15 @@ const RestaurantPhotos: React.FC<RestaurantPhotosProps> = ({ photos, onPhotoClic
           </div>
           
           <div className={styles.photosNote}>
-            <p>Нажмите на фото для просмотра в полном размере. Фотографии могут не отражать актуальный вид ресторана и блюд.</p>
+            <p>{t('restaurantPhotos.clickToView')}</p>
           </div>
         </>
       ) : (
         <div className={styles.noPhotos}>
           <div className={styles.noPhotosIcon}>📷</div>
-          <h3 className={styles.noPhotosTitle}>Фотографии отсутствуют</h3>
+          <h3 className={styles.noPhotosTitle}>{t('restaurantPhotos.noPhotos')}</h3>
           <p className={styles.noPhotosText}>
-            У этого ресторана пока нет фотографий. Вы можете помочь другим посетителям, 
-            загрузив фотографии после посещения.
+            {t('restaurantPhotos.noPhotosText')}
           </p>
         </div>
       )}

@@ -106,6 +106,46 @@
       "reviewsCount": "Reviews",
       "favoritesCount": "Favorites"
     },
+    "restaurantOverview": {
+    "aboutRestaurant": "About Restaurant",
+    "features": "Features",
+    "information": "Information",
+    "address": "Address",
+    "phone": "Phone",
+    "website": "Website",
+    "location": "Location",
+    "openingHours": "Opening Hours",
+    "recentReviews": "Recent Reviews",
+    "viewAllReviews": "View all reviews",
+    "addressNotSpecified": "Address not specified",
+    "mapAlt": "Restaurant location map"
+  },
+    "restaurantReviews": {
+    "title": "Visitor Reviews",
+    "writeReview": "Write Review",
+    "noReviews": "This restaurant has no reviews yet.",
+    "beFirst": "Be the first to share your opinion!",
+    "authRequired": "You need to log in to submit a review",
+    "submitError": "An error occurred while submitting the review. Please try again later."
+  },
+  "restaurantHero": {
+    "noImage": "Image not available",
+    "reviews": "reviews",
+    "inFavorites": "In Favorites",
+    "addToFavorites": "Add to Favorites"
+  },
+  "restaurantMenu": {
+    "title": "Restaurant Menu",
+    "popular": "Popular",
+    "note": "Menu may change depending on season and product availability. Please check current menu with waiters."
+  },
+  "restaurantPhotos": {
+    "title": "Photo Gallery",
+    "photo": "Photo",
+    "clickToView": "Click on photo to view in full size. Photos may not reflect current restaurant and dishes appearance.",
+    "noPhotos": "No Photos Available",
+    "noPhotosText": "This restaurant has no photos yet. You can help other visitors by uploading photos after your visit."
+  },
     "countries": {
       "serbia": "Serbia",
       "croatia": "Croatia",

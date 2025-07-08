@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './RestaurantOverview.module.css';
+import { useAppTranslation } from '../../hooks/useAppTranslation';
 
 interface Review {
   id: string;
@@ -36,6 +37,8 @@ const RestaurantOverview: React.FC<RestaurantOverviewProps> = ({
   reviews = [],
   onShowAllReviews
 }) => {
+  const { t } = useAppTranslation();
+
   // Функция для форматирования адреса независимо от его типа
   const formattedAddress = () => {
     if (typeof address === 'string') {
@@ -44,7 +47,7 @@ const RestaurantOverview: React.FC<RestaurantOverviewProps> = ({
       // Форматируем объект в строку адреса
       return `${address.street}, ${address.city}, ${address.postalCode}, ${address.country}`;
     }
-    return 'Адрес не указан';
+    return t('restaurantOverview.addressNotSpecified');
   };
 
   return (
@@ -53,14 +56,14 @@ const RestaurantOverview: React.FC<RestaurantOverviewProps> = ({
         <div className={styles.overviewMainColumn}>
           {description && (
             <section className={styles.descriptionSection}>
-              <h2 className={styles.sectionTitle}>О ресторане</h2>
+              <h2 className={styles.sectionTitle}>{t('restaurantOverview.aboutRestaurant')}</h2>
               <p className={styles.descriptionText}>{description}</p>
             </section>
           )}
           
           {features && features.length > 0 && (
             <section className={styles.featuresSection}>
-              <h2 className={styles.sectionTitle}>Особенности</h2>
+              <h2 className={styles.sectionTitle}>{t('restaurantOverview.features')}</h2>
               <div className={styles.featuresTags}>
                 {features.map((feature, index) => (
                   <span key={index} className={styles.featureTag}>
@@ -72,25 +75,25 @@ const RestaurantOverview: React.FC<RestaurantOverviewProps> = ({
           )}
           
           <section className={styles.infoSection}>
-            <h2 className={styles.sectionTitle}>Информация</h2>
+            <h2 className={styles.sectionTitle}>{t('restaurantOverview.information')}</h2>
             <div className={styles.infoList}>
               {address && (
                 <div className={styles.infoItem}>
-                  <h3 className={styles.infoTitle}>Адрес</h3>
+                  <h3 className={styles.infoTitle}>{t('restaurantOverview.address')}</h3>
                   <div className={styles.infoValue}>{formattedAddress()}</div>
                 </div>
               )}
               
               {phoneNumber && (
                 <div className={styles.infoItem}>
-                  <h3 className={styles.infoTitle}>Телефон</h3>
+                  <h3 className={styles.infoTitle}>{t('restaurantOverview.phone')}</h3>
                   <div className={styles.infoValue}>{phoneNumber}</div>
                 </div>
               )}
               
               {website && (
                 <div className={styles.infoItem}>
-                  <h3 className={styles.infoTitle}>Сайт</h3>
+                  <h3 className={styles.infoTitle}>{t('restaurantOverview.website')}</h3>
                   <div className={styles.infoValue}>
                     <a href={website} target="_blank" rel="noopener noreferrer" className={styles.infoLink}>
                       {website}
@@ -102,11 +105,11 @@ const RestaurantOverview: React.FC<RestaurantOverviewProps> = ({
           </section>
           
           <section className={styles.mapSection}>
-            <h2 className={styles.sectionTitle}>Местоположение</h2>
+            <h2 className={styles.sectionTitle}>{t('restaurantOverview.location')}</h2>
             <div className={styles.mapContainer}>
               <img
                 src="https://placehold.jp/1000x400.png"
-                alt="Карта расположения ресторана"
+                alt={t('restaurantOverview.mapAlt')}
                 className={styles.mapImage}
               />
             </div>
@@ -116,7 +119,7 @@ const RestaurantOverview: React.FC<RestaurantOverviewProps> = ({
         <div className={styles.overviewSidebar}>
           {openingHours && Object.keys(openingHours).length > 0 && (
             <div className={styles.sidebarCard}>
-              <h3 className={styles.sidebarTitle}>Часы работы</h3>
+              <h3 className={styles.sidebarTitle}>{t('restaurantOverview.openingHours')}</h3>
               <div className={styles.sidebarHours}>
                 {Object.entries(openingHours).map(([day, hours], index) => (
                   <div key={index} className={styles.sidebarHourRow}>
@@ -130,7 +133,7 @@ const RestaurantOverview: React.FC<RestaurantOverviewProps> = ({
           
           {reviews && reviews.length > 0 && (
             <div className={styles.sidebarCard}>
-              <h3 className={styles.sidebarTitle}>Последние отзывы</h3>
+              <h3 className={styles.sidebarTitle}>{t('restaurantOverview.recentReviews')}</h3>
               {reviews.slice(0, 2).map(review => (
                 <div key={review.id} className={styles.sidebarReview}>
                   <div className={styles.sidebarReviewHeader}>
@@ -157,7 +160,7 @@ const RestaurantOverview: React.FC<RestaurantOverviewProps> = ({
                 className={styles.sidebarShowMore}
                 onClick={onShowAllReviews}
               >
-                Смотреть все отзывы
+                {t('restaurantOverview.viewAllReviews')}
               </button>
             </div>
           )}

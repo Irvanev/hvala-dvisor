@@ -59,6 +59,46 @@
     "photos": "Fotografije", 
     "photo": "fotografija"
   },
+  "restaurantOverview": {
+    "aboutRestaurant": "O restoranu",
+    "features": "Karakteristike",
+    "information": "Informacije", 
+    "address": "Adresa",
+    "phone": "Telefon",
+    "website": "Veb sajt",
+    "location": "Lokacija",
+    "openingHours": "Radno vreme",
+    "recentReviews": "Najnovije recenzije",
+    "viewAllReviews": "Pogledaj sve recenzije",
+    "addressNotSpecified": "Adresa nije navedena",
+    "mapAlt": "Mapa lokacije restorana"
+  },
+  "restaurantReviews": {
+    "title": "Recenzije posetilaca",
+    "writeReview": "Napiši recenziju",
+    "noReviews": "Ovaj restoran još uvek nema recenzije.",
+    "beFirst": "Budite prvi koji će podeliti svoje mišljenje!",
+    "authRequired": "Morate se prijaviti da biste poslali recenziju",
+    "submitError": "Došlo je do greške prilikom slanja recenzije. Molimo pokušajte kasnije."
+  },
+  "restaurantHero": {
+    "noImage": "Slika nije dostupna",
+    "reviews": "recenzija",
+    "inFavorites": "U omiljenima",
+    "addToFavorites": "Dodaj u omiljene"
+  },
+  "restaurantMenu": {
+    "title": "Meni restorana",
+    "popular": "Popularno",
+    "note": "Meni se može menjati u zavisnosti od sezone i dostupnosti proizvoda. Molimo proverite aktuelni meni sa konobarima."
+  },
+  "restaurantPhotos": {
+    "title": "Galerija fotografija",
+    "photo": "Fotografija",
+    "clickToView": "Kliknite na fotografiju da je vidite u punoj veličini. Fotografije možda ne prikazuju aktuelni izgled restorana i jela.",
+    "noPhotos": "Nema dostupnih fotografija",
+    "noPhotosText": "Ovaj restoran još uvek nema fotografije. Možete pomoći drugim posetiocima tako što ćete okačiti fotografije nakon posete."
+  },
   "restaurantPage": {
     "breadcrumbs": {
       "home": "Početna",

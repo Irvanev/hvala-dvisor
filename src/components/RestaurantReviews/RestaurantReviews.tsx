@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './RestaurantReviews.module.css';
 import ReviewForm from '../ReviewForm/ReviewForm';
 import { useAuth } from '../../contexts/AuthContext';
+import { useAppTranslation } from '../../hooks/useAppTranslation';
 
 interface Review {
   id: string;
@@ -45,6 +46,7 @@ const RestaurantReviews: React.FC<RestaurantReviewsProps> = ({
   const { isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useAppTranslation();
 
   // Обработчик клика на кнопку "Написать отзыв"
   const handleWriteReviewClick = () => {
@@ -76,7 +78,7 @@ const RestaurantReviews: React.FC<RestaurantReviewsProps> = ({
   const handleReviewSubmit = async (formData: ReviewFormData): Promise<boolean> => {
     // Дополнительная проверка авторизации при отправке
     if (!isAuthenticated) {
-      setSubmitError('Для отправки отзыва необходимо авторизоваться');
+      setSubmitError(t('restaurantReviews.authRequired'));
       return false;
     }
     
@@ -94,7 +96,7 @@ const RestaurantReviews: React.FC<RestaurantReviewsProps> = ({
       return success;
     } catch (error) {
       console.error('Error submitting review:', error);
-      setSubmitError('Произошла ошибка при отправке отзыва. Пожалуйста, попробуйте позже.');
+      setSubmitError(t('restaurantReviews.submitError'));
       return false;
     } finally {
       setIsSubmitting(false);
@@ -129,12 +131,12 @@ const RestaurantReviews: React.FC<RestaurantReviewsProps> = ({
       ) : (
         <>
           <div className={styles.reviewsHeader}>
-            <h2 className={styles.reviewsTitle}>Отзывы посетителей</h2>
+            <h2 className={styles.reviewsTitle}>{t('restaurantReviews.title')}</h2>
             <button 
               className={styles.writeReviewButton} 
               onClick={handleWriteReviewClick}
             >
-              Написать отзыв
+              {t('restaurantReviews.writeReview')}
             </button>
           </div>
           
@@ -191,8 +193,8 @@ const RestaurantReviews: React.FC<RestaurantReviewsProps> = ({
             </div>
           ) : (
             <div className={styles.noReviews}>
-              <p>У данного ресторана пока нет отзывов.</p>
-              <p>Станьте первым, кто поделится своим мнением!</p>
+              <p>{t('restaurantReviews.noReviews')}</p>
+              <p>{t('restaurantReviews.beFirst')}</p>
             </div>
           )}
         </>
