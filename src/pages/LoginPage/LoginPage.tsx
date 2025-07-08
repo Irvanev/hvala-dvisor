@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom'; // Добавлен импорт Link
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import NavBar from '../../components/NavBar';
 import Footer from '../../components/Footer/Footer';
 import styles from './LoginPage.module.css';
+import { useAppTranslation } from '../../hooks/useAppTranslation';
 
 interface LoginFormData {
   email: string;
@@ -19,6 +20,7 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { login, loginWithGoogle, isLoading: authLoading } = useAuth();
+  const { t } = useAppTranslation();
 
   // Получаем URL для перенаправления из location.state
   const state = location.state as LocationState;
@@ -49,9 +51,18 @@ const LoginPage: React.FC = () => {
 
   const validateForm = (): boolean => {
     const newErrors: Partial<LoginFormData> = {};
-    if (!formData.email) newErrors.email = 'Электронная почта обязательна';
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Неверный формат электронной почты';
-    if (!formData.password) newErrors.password = 'Пароль обязателен';
+    
+    // 🆕 Используем переводы для валидации
+    if (!formData.email) {
+      newErrors.email = t('loginPage.errors.emailRequired');
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = t('loginPage.errors.emailInvalid');
+    }
+    
+    if (!formData.password) {
+      newErrors.password = t('loginPage.errors.passwordRequired');
+    }
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -67,11 +78,13 @@ const LoginPage: React.FC = () => {
         // Перенаправляем пользователя на предыдущую страницу или профиль по умолчанию
         navigate(redirectUrl);
       } else {
-        setGeneralError('Неверный email или пароль');
+        // 🆕 Используем перевод для ошибки
+        setGeneralError(t('loginPage.errors.invalidCredentials'));
       }
     } catch (error) {
       console.error('Ошибка при входе:', error);
-      setGeneralError(error instanceof Error ? error.message : 'Произошла ошибка при входе. Попробуйте позже.');
+      // 🆕 Используем перевод для ошибки
+      setGeneralError(error instanceof Error ? error.message : t('loginPage.errors.loginError'));
     } finally {
       setIsSubmitting(false);
     }
@@ -85,11 +98,12 @@ const LoginPage: React.FC = () => {
       if (success) {
         // Перенаправляем пользователя на предыдущую страницу или профиль по умолчанию
         navigate(redirectUrl);
+      } else {
+        setGeneralError(t('loginPage.errors.googleError'));
       }
-      else setGeneralError('Не удалось войти через Google. Попробуйте другой способ.');
     } catch (error) {
       console.error('Ошибка при входе через Google:', error);
-      setGeneralError(error instanceof Error ? error.message : 'Произошла ошибка при входе через Google. Попробуйте позже.');
+      setGeneralError(error instanceof Error ? error.message : t('loginPage.errors.googleErrorGeneral'));
     } finally {
       setIsGoogleSubmitting(false);
     }
@@ -102,16 +116,15 @@ const LoginPage: React.FC = () => {
   return (
     <div className={styles.loginPage}>
       <NavBar
-        onSearch={(query) => console.log(`Поиск: ${query}`)}
-        // onLanguageChange={(language) => console.log(`Язык: ${language}`)}
-        // currentLanguage="ru"
+        onSearch={(query) => console.log(`${t('common.search')}: ${query}`)}
         logoText="HvalaDviser"
         onWelcomeClick={() => console.log('Клик на Welcome')}
         isStatic={true}
       />
       <div className={styles.loginContainer}>
         <div className={styles.formWrapper}>
-          <h1 className={styles.pageTitle}>Вход в аккаунт</h1>
+          {/* 🆕 Используем перевод для заголовка */}
+          <h1 className={styles.pageTitle}>{t('loginPage.title')}</h1>
           {generalError && <div className={styles.errorMessage}>{generalError}</div>}
           <form onSubmit={handleSubmit} className={styles.loginForm}>
             <div className={styles.formGroup}>
@@ -128,7 +141,7 @@ const LoginPage: React.FC = () => {
                   className={`${styles.input} ${errors.email ? styles.inputError : ''}`}
                   value={formData.email}
                   onChange={handleInputChange}
-                  placeholder="Электронная почта"
+                  placeholder={t('loginPage.emailPlaceholder')} 
                   autoComplete="email"
                 />
               </div>
@@ -148,7 +161,7 @@ const LoginPage: React.FC = () => {
                   className={`${styles.input} ${errors.password ? styles.inputError : ''}`}
                   value={formData.password}
                   onChange={handleInputChange}
-                  placeholder="Пароль (минимум 8 символов)"
+                  placeholder={t('loginPage.passwordPlaceholder')} // 🆕 Перевод
                   autoComplete="new-password"
                 />
               </div>
@@ -165,18 +178,25 @@ const LoginPage: React.FC = () => {
                   className={styles.checkbox}
                 />
                 <label htmlFor="rememberMe" className={styles.checkboxLabel}>
-                  Запомнить меня
+                  {/* 🆕 Перевод */}
+                  {t('loginPage.rememberMe')}
                 </label>
               </div>
               <button type="button" className={styles.forgotPasswordLink} onClick={handleForgotPassword}>
-                Забыли пароль?
+                {/* 🆕 Перевод */}
+                {t('loginPage.forgotPassword')}
               </button>
             </div>
             <button type="submit" className={styles.submitButton} disabled={isSubmitting || authLoading || isGoogleSubmitting}>
-              {isSubmitting || (authLoading && !isGoogleSubmitting) ? 'Выполняется вход...' : 'ВОЙТИ'}
+              {/* 🆕 Перевод */}
+              {isSubmitting || (authLoading && !isGoogleSubmitting) 
+                ? t('loginPage.submitting') 
+                : t('loginPage.signInButton')
+              }
             </button>
             <div className={styles.divider}>
-              <span>или</span>
+              {/* 🆕 Перевод */}
+              <span>{t('loginPage.or')}</span>
             </div>
             <button type="button" className={styles.googleButton} onClick={handleGoogleLogin} disabled={isSubmitting || authLoading || isGoogleSubmitting}>
               <span className={styles.googleIcon}>
@@ -187,11 +207,12 @@ const LoginPage: React.FC = () => {
                   <path d="M9.1 2.93413C10.7956 2.93413 11.9307 3.6468 12.5766 4.25127L15.1429 1.76608C13.5708 0.312498 11.54 -0.00195312 9.1 -0.00195312C5.61974 -0.00195312 2.58541 2.21232 1.04114 5.32523L3.97611 7.58814C4.70107 5.43451 6.71643 2.93413 9.1 2.93413Z" fill="#EB4335"/>
                 </svg>
               </span>
-              {isGoogleSubmitting ? 'Выполняется вход...' : 'Войти через Google'}
+              {/* 🆕 Перевод */}
+              {isGoogleSubmitting ? t('loginPage.submitting') : t('loginPage.googleButton')}
             </button>
             <div className={styles.registerLink}>
-              {/* Заменяем тег <a> на компонент <Link> */}
-              Нет аккаунта? <Link to={`/register${location.search}`} state={{ from: redirectUrl }}>Зарегистрироваться</Link>
+              {/* 🆕 Перевод */}
+              {t('loginPage.noAccount')} <Link to={`/register${location.search}`} state={{ from: redirectUrl }}>{t('loginPage.registerLink')}</Link>
             </div>
           </form>
         </div>

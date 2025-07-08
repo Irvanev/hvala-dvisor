@@ -3,8 +3,8 @@ import NavBar from '../../components/NavBar';
 import Footer from '../../components/Footer/Footer';
 import styles from './RegistrationPage.module.css';
 import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate, useLocation, Link } from 'react-router-dom'; // Добавлен импорт Link
-
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next'; // Добавлен импорт для переводов
 
 interface RegistrationFormData {
   name: string;
@@ -29,6 +29,7 @@ const RegistrationPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { register, registerWithGoogle, isLoading } = useAuth();
+  const { t } = useTranslation(); // Добавлен хук для переводов
 
   // Получаем URL для перенаправления из location.state
   const state = location.state as LocationState;
@@ -75,18 +76,18 @@ const RegistrationPage: React.FC = () => {
   const validateForm = (): boolean => {
     const newErrors: RegistrationFormErrors = {};
     if (registrationStep === 1) {
-      if (!formData.email) newErrors.email = 'Электронная почта обязательна';
-      else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Неверный формат электронной почты';
-      if (!formData.password) newErrors.password = 'Пароль обязателен';
-      else if (formData.password.length < 8) newErrors.password = 'Пароль должен содержать не менее 8 символов';
-      if (!formData.confirmPassword) newErrors.confirmPassword = 'Подтверждение пароля обязательно';
-      else if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Пароли не совпадают';
+      if (!formData.email) newErrors.email = t('registrationPage.errors.emailRequired');
+      else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = t('registrationPage.errors.emailInvalid');
+      if (!formData.password) newErrors.password = t('registrationPage.errors.passwordRequired');
+      else if (formData.password.length < 8) newErrors.password = t('registrationPage.errors.passwordTooShort');
+      if (!formData.confirmPassword) newErrors.confirmPassword = t('registrationPage.errors.confirmPasswordRequired');
+      else if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = t('registrationPage.errors.passwordsDoNotMatch');
     }
     if (registrationStep === 2) {
-      if (!formData.name) newErrors.name = 'Имя обязательно';
-      if (!formData.username) newErrors.username = 'Имя пользователя обязательно';
-      if (!formData.city) newErrors.city = 'Город обязателен';
-      if (!formData.acceptTerms) newErrors.acceptTerms = 'Необходимо принять условия использования';
+      if (!formData.name) newErrors.name = t('registrationPage.errors.nameRequired');
+      if (!formData.username) newErrors.username = t('registrationPage.errors.usernameRequired');
+      if (!formData.city) newErrors.city = t('registrationPage.errors.cityRequired');
+      if (!formData.acceptTerms) newErrors.acceptTerms = t('registrationPage.errors.acceptTermsRequired');
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -119,10 +120,10 @@ const RegistrationPage: React.FC = () => {
         // Перенаправляем пользователя на страницу ресторана или профиль
         navigate(redirectUrl);
       }
-      else setErrors({ general: 'Не удалось зарегистрироваться. Возможно, такой email уже используется.' });
+      else setErrors({ general: t('registrationPage.errors.registrationFailed') });
     } catch (error) {
       console.error('Ошибка при регистрации:', error);
-      setErrors({ general: 'Произошла ошибка при регистрации. Попробуйте позже.' });
+      setErrors({ general: t('registrationPage.errors.registrationError') });
     } finally {
       setIsSubmitting(false);
     }
@@ -136,14 +137,14 @@ const RegistrationPage: React.FC = () => {
         // Перенаправляем пользователя на страницу ресторана или профиль
         navigate(redirectUrl);
       } else {
-        setErrors({ general: 'Не удалось зарегистрироваться через Google. Попробуйте другой способ.' });
+        setErrors({ general: t('registrationPage.errors.googleRegistrationFailed') });
       }
     } catch (error) {
       console.error('Ошибка при регистрации через Google:', error);
       setErrors({
         general: error instanceof Error
           ? error.message
-          : 'Произошла ошибка при регистрации через Google. Попробуйте позже.'
+          : t('registrationPage.errors.googleRegistrationError')
       });
     } finally {
       setIsGoogleSubmitting(false);
@@ -163,7 +164,7 @@ const RegistrationPage: React.FC = () => {
       <div className={styles.registrationContainer}>
         <div className={styles.formWrapper}>
           <h1 className={styles.pageTitle}>
-            {registrationStep === 1 ? 'Создать аккаунт' : 'Завершите регистрацию'}
+            {registrationStep === 1 ? t('registrationPage.titleStep1') : t('registrationPage.titleStep2')}
           </h1>
           {errors.general && <div className={styles.errorMessage}>{errors.general}</div>}
 
@@ -183,11 +184,11 @@ const RegistrationPage: React.FC = () => {
                     <path d="M9.1 2.93413C10.7956 2.93413 11.9307 3.6468 12.5766 4.25127L15.1429 1.76608C13.5708 0.312498 11.54 -0.00195312 9.1 -0.00195312C5.61974 -0.00195312 2.58541 2.21232 1.04114 5.32523L3.97611 7.58814C4.70107 5.43451 6.71643 2.93413 9.1 2.93413Z" fill="#EB4335" />
                   </svg>
                 </span>
-                {isGoogleSubmitting ? 'Регистрация...' : 'Зарегистрироваться через Google'}
+                {isGoogleSubmitting ? t('registrationPage.googleButtonLoading') : t('registrationPage.googleButton')}
               </button>
 
               <div className={styles.divider}>
-                <span>или</span>
+                <span>{t('registrationPage.or')}</span>
               </div>
             </>
           )}
@@ -209,7 +210,7 @@ const RegistrationPage: React.FC = () => {
                       className={`${styles.input} ${errors.email ? styles.inputError : ''}`}
                       value={formData.email}
                       onChange={handleInputChange}
-                      placeholder="Электронная почта"
+                      placeholder={t('registrationPage.emailPlaceholder')}
                       autoComplete="email"
                     />
                   </div>
@@ -229,7 +230,7 @@ const RegistrationPage: React.FC = () => {
                       className={`${styles.input} ${errors.password ? styles.inputError : ''}`}
                       value={formData.password}
                       onChange={handleInputChange}
-                      placeholder="Пароль (минимум 8 символов)"
+                      placeholder={t('registrationPage.passwordPlaceholder')}
                       autoComplete="new-password"
                     />
                   </div>
@@ -249,17 +250,17 @@ const RegistrationPage: React.FC = () => {
                       className={`${styles.input} ${errors.confirmPassword ? styles.inputError : ''}`}
                       value={formData.confirmPassword}
                       onChange={handleInputChange}
-                      placeholder="Подтвердите пароль"
+                      placeholder={t('registrationPage.confirmPasswordPlaceholder')}
                       autoComplete="new-password"
                     />
                   </div>
                   {errors.confirmPassword && <p className={styles.errorText}>{errors.confirmPassword}</p>}
                 </div>
                 <button type="button" className={styles.nextButton} onClick={handleNextStep} disabled={isSubmitting || isGoogleSubmitting}>
-                  ДАЛЕЕ
+                  {t('registrationPage.nextButton')}
                 </button>
                 <div className={styles.loginLink}>
-                  Уже есть аккаунт? <Link to={`/login${location.search}`} state={{ from: redirectUrl }}>Войти</Link>
+                  {t('registrationPage.loginLink')} <Link to={`/login${location.search}`} state={{ from: redirectUrl }}>{t('registrationPage.loginLinkText')}</Link>
                 </div>
               </>
             ) : (
@@ -272,7 +273,7 @@ const RegistrationPage: React.FC = () => {
                     <svg viewBox="0 0 24 24" width="18" height="18" className={styles.uploadIcon}>
                       <path fill="currentColor" d="M19 7v11H5V7h3l1-2h6l1 2h3zm-8 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
                     </svg>
-                    Загрузить фото
+                    {t('registrationPage.uploadPhoto')}
                   </label>
                   <input
                     type="file"
@@ -297,7 +298,7 @@ const RegistrationPage: React.FC = () => {
                       className={`${styles.input} ${errors.name ? styles.inputError : ''}`}
                       value={formData.name}
                       onChange={handleInputChange}
-                      placeholder="Имя и Фамилия"
+                      placeholder={t('registrationPage.namePlaceholder')}
                       autoComplete="name"
                     />
                   </div>
@@ -317,7 +318,7 @@ const RegistrationPage: React.FC = () => {
                       className={`${styles.input} ${errors.username ? styles.inputError : ''}`}
                       value={formData.username}
                       onChange={handleInputChange}
-                      placeholder="Имя пользователя"
+                      placeholder={t('registrationPage.usernamePlaceholder')}
                       autoComplete="username"
                     />
                   </div>
@@ -337,7 +338,7 @@ const RegistrationPage: React.FC = () => {
                       className={`${styles.input} ${errors.city ? styles.inputError : ''}`}
                       value={formData.city}
                       onChange={handleInputChange}
-                      placeholder="Город"
+                      placeholder={t('registrationPage.cityPlaceholder')}
                       autoComplete="address-level2"
                     />
                   </div>
@@ -354,17 +355,17 @@ const RegistrationPage: React.FC = () => {
                       className={styles.checkbox}
                     />
                     <label htmlFor="acceptTerms" className={styles.checkboxLabel}>
-                      Я принимаю <a href="/terms" className={styles.termsLink}>условия использования</a>
+                      {t('registrationPage.acceptTerms')} <a href="/terms" className={styles.termsLink}>{t('registrationPage.termsLink')}</a>
                     </label>
                   </div>
                   {errors.acceptTerms && <p className={styles.errorText}>{errors.acceptTerms}</p>}
                 </div>
                 <div className={styles.buttonGroup}>
                   <button type="button" className={styles.backButton} onClick={handlePrevStep}>
-                    НАЗАД
+                    {t('registrationPage.backButton')}
                   </button>
                   <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
-                    {isSubmitting ? 'Регистрация...' : 'ЗАВЕРШИТЬ'}
+                    {isSubmitting ? t('registrationPage.submitting') : t('registrationPage.submitButton')}
                   </button>
                 </div>
               </>
