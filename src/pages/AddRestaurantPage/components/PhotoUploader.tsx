@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import addStyles from '../AddRestaurantPage.module.css';
 import editStyles from '../../EditRestaurantPage/EditRestaurantPage.module.css';
 
@@ -7,7 +8,7 @@ interface PhotoUploaderProps {
   onPhotoUpload: (files: File[]) => void;
   onPhotoRemove: (index: number) => void;
   error?: string;
-  isEdit?: boolean; // Новый параметр для выбора стилей
+  isEdit?: boolean;
 }
 
 const PhotoUploader: React.FC<PhotoUploaderProps> = ({
@@ -15,37 +16,19 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
   onPhotoUpload,
   onPhotoRemove,
   error,
-  isEdit = false // По умолчанию - режим добавления
+  isEdit = false
 }) => {
-  // Выбираем нужный стиль в зависимости от контекста
+  const { t } = useTranslation();
   const styles = isEdit ? editStyles : addStyles;
-  
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const newFiles = Array.from(e.target.files);
       onPhotoUpload(newFiles);
-
-      // Сбрасываем input чтобы можно было выбрать те же файлы повторно
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const droppedFiles = Array.from(e.dataTransfer.files);
-      onPhotoUpload(droppedFiles);
     }
   };
 
@@ -57,20 +40,14 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
 
   return (
     <div className={styles.photoUploaderSection}>
-      <h3 className={styles.sectionTitle}>Фотографии ресторана</h3>
+      <h3 className={styles.sectionTitle}>{t('addRestaurantPage.photoUploader.title')}</h3>
       <p className={styles.sectionDescription}>
-        Загрузите фотографии ресторана, которые помогут посетителям получить представление о заведении.
-        Рекомендуем загрузить фото интерьера, экстерьера, фирменных блюд и атмосферы.
+        {t('addRestaurantPage.photoUploader.description')}
       </p>
 
       {error && <div className={`${styles.errorMessage} error-message`}>{error}</div>}
 
-      <div
-        className={styles.dropZone}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
-        onClick={handleUploadClick}
-      >
+      <div className={styles.dropZone} onClick={handleUploadClick}>
         <div className={styles.dropZoneContent}>
           <div className={styles.uploadIcon}>
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -78,13 +55,12 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
             </svg>
           </div>
           <p className={styles.dropZoneText}>
-            Перетащите фотографии сюда или нажмите для выбора
+            {t('addRestaurantPage.photoUploader.dropZone')}
           </p>
           <span className={styles.dropZoneHint}>
-            Поддерживаются JPG, PNG, WEBP. Максимальный размер файла: 10 МБ
+            {t('addRestaurantPage.photoUploader.supportedFormats')}
           </span>
         </div>
-
         <input
           type="file"
           ref={fileInputRef}
@@ -97,15 +73,16 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
 
       {photos.length > 0 && (
         <div className={styles.photoPreviewContainer}>
-          <h4 className={styles.previewTitle}>Загруженные фотографии ({photos.length})</h4>
-
+          <h4 className={styles.previewTitle}>
+            {t('addRestaurantPage.photoUploader.uploadedPhotos')} ({photos.length})
+          </h4>
           <div className={styles.photoGrid}>
             {photos.map((photo, index) => (
               <div key={`${photo.name}-${index}`} className={styles.photoItem}>
                 <div className={styles.photoPreview}>
                   <img
                     src={URL.createObjectURL(photo)}
-                    alt={`Фото ${index + 1}`}
+                    alt={`${t('addRestaurantPage.photoUploader.photo')} ${index + 1}`}
                   />
                 </div>
                 <div className={styles.photoInfo}>
@@ -115,7 +92,7 @@ const PhotoUploader: React.FC<PhotoUploaderProps> = ({
                     onClick={() => onPhotoRemove(index)}
                     className={styles.removePhotoButton}
                   >
-                    Удалить
+                    {t('addRestaurantPage.photoUploader.remove')}
                   </button>
                 </div>
               </div>

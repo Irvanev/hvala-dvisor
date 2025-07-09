@@ -1,59 +1,59 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import addStyles from '../AddRestaurantPage.module.css';
 import editStyles from '../../EditRestaurantPage/EditRestaurantPage.module.css';
 
 interface SubmissionStepsProps {
   currentStep: number;
   totalSteps: number;
-  isEdit?: boolean; // Новый параметр для выбора стилей
+  isEdit?: boolean;
 }
 
-const SubmissionSteps: React.FC<SubmissionStepsProps> = ({ 
-  currentStep, 
+const SubmissionSteps: React.FC<SubmissionStepsProps> = ({
+  currentStep,
   totalSteps,
-  isEdit = false // По умолчанию - режим добавления
+  isEdit = false
 }) => {
-  // Выбираем нужный стиль в зависимости от контекста
+  const { t } = useTranslation();
   const styles = isEdit ? editStyles : addStyles;
-  
+
   const steps = [
     {
       number: 1,
-      title: 'Основная информация'
+      title: t('addRestaurantPage.steps.basicInfo')
     },
     {
       number: 2,
-      title: 'Фотографии и особенности'
+      title: t('addRestaurantPage.steps.photosAndFeatures')
     },
     {
       number: 3,
-      title: 'Меню и часы работы'
+      title: t('addRestaurantPage.steps.menuAndHours')
     },
     {
       number: 4,
-      title: 'Контактная информация'
+      title: t('addRestaurantPage.steps.contactInfo')
     }
   ];
 
   return (
     <div className={styles.stepsContainer}>
       <div className={styles.stepsProgressBar}>
-        <div 
-          className={styles.progressFill} 
+        <div
+          className={styles.progressFill}
           style={{ width: `${((currentStep - 1) / (totalSteps - 1)) * 100}%` }}
         />
       </div>
-      
       <div className={styles.stepsList}>
         {steps.map((step) => (
-          <div 
+          <div
             key={step.number}
             className={`${styles.stepItem} ${
-              currentStep === step.number 
-                ? styles.active 
-                : currentStep > step.number 
-                  ? styles.completed 
-                  : ''
+              currentStep === step.number
+                ? styles.active
+                : currentStep > step.number
+                ? styles.completed
+                : ''
             }`}
           >
             <div className={styles.stepNumber}>

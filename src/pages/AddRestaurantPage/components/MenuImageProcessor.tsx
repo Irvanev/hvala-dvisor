@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from '../AddRestaurantPage.module.css';
 
 interface MenuImageProcessorProps {
@@ -10,6 +11,7 @@ const MenuImageProcessor: React.FC<MenuImageProcessorProps> = ({
   onMenuExtracted,
   onHoursExtracted
 }) => {
+  const { t } = useTranslation();
   const menuFileInputRef = useRef<HTMLInputElement>(null);
   const hoursFileInputRef = useRef<HTMLInputElement>(null);
   const [menuImage, setMenuImage] = useState<File | null>(null);
@@ -18,7 +20,6 @@ const MenuImageProcessor: React.FC<MenuImageProcessorProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // Обработчик выбора файла для меню
   const handleMenuFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setMenuImage(e.target.files[0]);
@@ -26,7 +27,6 @@ const MenuImageProcessor: React.FC<MenuImageProcessorProps> = ({
     }
   };
 
-  // Обработчик выбора файла для часов работы
   const handleHoursFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setHoursImage(e.target.files[0]);
@@ -34,10 +34,9 @@ const MenuImageProcessor: React.FC<MenuImageProcessorProps> = ({
     }
   };
 
-  // Функция для обработки фото меню
   const processMenuImage = async () => {
     if (!menuImage) {
-      setError('Пожалуйста, загрузите фотографию меню');
+      setError(t('addRestaurantPage.errors.selectMenuImage'));
       return;
     }
 
@@ -46,61 +45,53 @@ const MenuImageProcessor: React.FC<MenuImageProcessorProps> = ({
     setSuccess(null);
 
     try {
-      // В реальном приложении здесь был бы код для отправки изображения в API для OCR
-      // и обработки результатов. Для демонстрации мы имитируем процесс.
-      
-      // Имитация задержки обработки
       await new Promise(resolve => setTimeout(resolve, 1500));
 
-      // Имитация результатов обработки изображения меню
+      // ИСПРАВЛЕНИЕ: Используем переводы для категорий
       const extractedMenuItems = [
         {
-          category: 'Закуски',
-          name: 'Брускетта с томатами',
-          description: 'Хрустящие тосты с томатами, базиликом и оливковым маслом',
+          category: t('addRestaurantPage.menuImageProcessor.demoData.appetizers'),
+          name: t('addRestaurantPage.menuImageProcessor.demoData.bruschetta'),
+          description: t('addRestaurantPage.menuImageProcessor.demoData.bruschettaDesc'),
           price: '250 ₽'
         },
         {
-          category: 'Закуски',
-          name: 'Карпаччо из говядины',
-          description: 'Тонко нарезанная маринованная говядина с рукколой и пармезаном',
+          category: t('addRestaurantPage.menuImageProcessor.demoData.appetizers'),
+          name: t('addRestaurantPage.menuImageProcessor.demoData.carpaccio'),
+          description: t('addRestaurantPage.menuImageProcessor.demoData.carpaccioDesc'),
           price: '380 ₽'
         },
         {
-          category: 'Основные блюда',
-          name: 'Паста Карбонара',
-          description: 'Классическая итальянская паста с беконом и сливочным соусом',
+          category: t('addRestaurantPage.menuImageProcessor.demoData.mainDishes'),
+          name: t('addRestaurantPage.menuImageProcessor.demoData.carbonara'),
+          description: t('addRestaurantPage.menuImageProcessor.demoData.carbonaraDesc'),
           price: '420 ₽'
         },
         {
-          category: 'Основные блюда',
-          name: 'Стейк из лосося',
-          description: 'Стейк из лосося с овощами на гриле и лимонным соусом',
+          category: t('addRestaurantPage.menuImageProcessor.demoData.mainDishes'),
+          name: t('addRestaurantPage.menuImageProcessor.demoData.salmon'),
+          description: t('addRestaurantPage.menuImageProcessor.demoData.salmonDesc'),
           price: '650 ₽'
         }
       ];
 
-      // Отправляем результаты родительскому компоненту
       onMenuExtracted(extractedMenuItems);
+      setSuccess(t('addRestaurantPage.success.menuProcessed'));
       
-      setSuccess('Меню успешно обработано и добавлено');
-      
-      // Сбрасываем выбранный файл, чтобы можно было выбрать тот же файл снова при необходимости
       if (menuFileInputRef.current) {
         menuFileInputRef.current.value = '';
       }
     } catch (error) {
-      setError('Произошла ошибка при обработке изображения меню');
+      setError(t('addRestaurantPage.errors.processingMenuImage'));
       console.error('Ошибка при обработке меню:', error);
     } finally {
       setProcessing(false);
     }
   };
 
-  // Функция для обработки фото часов работы
   const processHoursImage = async () => {
     if (!hoursImage) {
-      setError('Пожалуйста, загрузите фотографию часов работы');
+      setError(t('addRestaurantPage.errors.selectHoursImage'));
       return;
     }
 
@@ -109,31 +100,26 @@ const MenuImageProcessor: React.FC<MenuImageProcessorProps> = ({
     setSuccess(null);
 
     try {
-      // Имитация задержки обработки
       await new Promise(resolve => setTimeout(resolve, 1500));
 
-      // Имитация результатов обработки изображения часов работы
       const extractedHours = {
-        'Понедельник': { open: '09:00', close: '22:00', closed: false },
-        'Вторник': { open: '09:00', close: '22:00', closed: false },
-        'Среда': { open: '09:00', close: '22:00', closed: false },
-        'Четверг': { open: '09:00', close: '22:00', closed: false },
-        'Пятница': { open: '09:00', close: '23:00', closed: false },
-        'Суббота': { open: '10:00', close: '23:00', closed: false },
-        'Воскресенье': { open: '10:00', close: '21:00', closed: false }
+        [t('addRestaurantPage.openingHours.monday')]: { open: '09:00', close: '22:00', closed: false },
+        [t('addRestaurantPage.openingHours.tuesday')]: { open: '09:00', close: '22:00', closed: false },
+        [t('addRestaurantPage.openingHours.wednesday')]: { open: '09:00', close: '22:00', closed: false },
+        [t('addRestaurantPage.openingHours.thursday')]: { open: '09:00', close: '22:00', closed: false },
+        [t('addRestaurantPage.openingHours.friday')]: { open: '09:00', close: '23:00', closed: false },
+        [t('addRestaurantPage.openingHours.saturday')]: { open: '10:00', close: '23:00', closed: false },
+        [t('addRestaurantPage.openingHours.sunday')]: { open: '10:00', close: '21:00', closed: false }
       };
 
-      // Отправляем результаты родительскому компоненту
       onHoursExtracted(extractedHours);
+      setSuccess(t('addRestaurantPage.success.hoursProcessed'));
       
-      setSuccess('Часы работы успешно обработаны и добавлены');
-      
-      // Сбрасываем выбранный файл
       if (hoursFileInputRef.current) {
         hoursFileInputRef.current.value = '';
       }
     } catch (error) {
-      setError('Произошла ошибка при обработке изображения часов работы');
+      setError(t('addRestaurantPage.errors.processingHoursImage'));
       console.error('Ошибка при обработке часов работы:', error);
     } finally {
       setProcessing(false);
@@ -142,10 +128,9 @@ const MenuImageProcessor: React.FC<MenuImageProcessorProps> = ({
 
   return (
     <div className={styles.menuImageProcessor}>
-      <h3 className={styles.sectionTitle}>Автоматическое заполнение по фото</h3>
+      <h3 className={styles.sectionTitle}>{t('addRestaurantPage.menuImageProcessor.title')}</h3>
       <p className={styles.sectionDescription}>
-        Вы можете сфотографировать меню и часы работы ресторана, и мы автоматически 
-        распознаем и добавим эту информацию.
+        {t('addRestaurantPage.menuImageProcessor.description')}
       </p>
 
       {error && (
@@ -158,8 +143,10 @@ const MenuImageProcessor: React.FC<MenuImageProcessorProps> = ({
 
       <div className={styles.imageProcessorContainer}>
         <div className={styles.processorSection}>
-          <h4 className={styles.subSectionTitle}>Обработка меню</h4>
-          <p>Загрузите фотографию меню ресторана, и мы распознаем блюда, описания и цены.</p>
+          <h4 className={styles.subSectionTitle}>
+            {t('addRestaurantPage.menuImageProcessor.menuProcessing.title')}
+          </h4>
+          <p>{t('addRestaurantPage.menuImageProcessor.menuProcessing.description')}</p>
           
           <div className={styles.imageUploader}>
             <input
@@ -171,12 +158,12 @@ const MenuImageProcessor: React.FC<MenuImageProcessorProps> = ({
               className={styles.fileInput}
             />
             <label htmlFor="menu-image-edit" className={styles.uploadButton}>
-              Выбрать фото меню
+              {t('addRestaurantPage.menuImageProcessor.menuProcessing.selectPhoto')}
             </label>
             
             {menuImage && (
               <div className={styles.selectedFile}>
-                Выбран файл: {menuImage.name}
+                {t('common.selectedFile')}: {menuImage.name}
               </div>
             )}
             
@@ -186,23 +173,25 @@ const MenuImageProcessor: React.FC<MenuImageProcessorProps> = ({
               disabled={!menuImage || processing}
               className={styles.processButton}
             >
-              {processing ? 'Обработка...' : 'Обработать фото меню'}
+              {processing ? t('addRestaurantPage.menuImageProcessor.menuProcessing.processing') : t('addRestaurantPage.menuImageProcessor.menuProcessing.process')}
             </button>
           </div>
           
           <div className={styles.tipBox}>
-            <h5>Советы для лучшего распознавания:</h5>
+            <h5>{t('addRestaurantPage.menuImageProcessor.tips.title')}</h5>
             <ul>
-              <li>Убедитесь, что фото четкое, с хорошим освещением</li>
-              <li>Текст должен быть легко читаем</li>
-              <li>Старайтесь фотографировать прямо, без искажений</li>
+              <li>{t('addRestaurantPage.menuImageProcessor.tips.clearPhoto')}</li>
+              <li>{t('addRestaurantPage.menuImageProcessor.tips.readableText')}</li>
+              <li>{t('addRestaurantPage.menuImageProcessor.tips.straightPhoto')}</li>
             </ul>
           </div>
         </div>
         
         <div className={styles.processorSection}>
-          <h4 className={styles.subSectionTitle}>Обработка часов работы</h4>
-          <p>Загрузите фотографию с часами работы, и мы автоматически добавим их в информацию о ресторане.</p>
+          <h4 className={styles.subSectionTitle}>
+            {t('addRestaurantPage.menuImageProcessor.hoursProcessing.title')}
+          </h4>
+          <p>{t('addRestaurantPage.menuImageProcessor.hoursProcessing.description')}</p>
           
           <div className={styles.imageUploader}>
             <input
@@ -214,12 +203,12 @@ const MenuImageProcessor: React.FC<MenuImageProcessorProps> = ({
               className={styles.fileInput}
             />
             <label htmlFor="hours-image-edit" className={styles.uploadButton}>
-              Выбрать фото часов работы
+              {t('addRestaurantPage.menuImageProcessor.hoursProcessing.selectPhoto')}
             </label>
             
             {hoursImage && (
               <div className={styles.selectedFile}>
-                Выбран файл: {hoursImage.name}
+                {t('common.selectedFile')}: {hoursImage.name}
               </div>
             )}
             
@@ -229,7 +218,8 @@ const MenuImageProcessor: React.FC<MenuImageProcessorProps> = ({
               disabled={!hoursImage || processing}
               className={styles.processButton}
             >
-              {processing ? 'Обработка...' : 'Обработать фото часов работы'}
+              {/* ИСПРАВЛЕНИЕ: Используем правильный перевод */}
+              {processing ? t('addRestaurantPage.menuImageProcessor.hoursProcessing.processing') : t('addRestaurantPage.menuImageProcessor.hoursProcessing.process')}
             </button>
           </div>
         </div>
@@ -237,8 +227,7 @@ const MenuImageProcessor: React.FC<MenuImageProcessorProps> = ({
       
       <div className={styles.note}>
         <p>
-          <strong>Примечание:</strong> Вы всегда сможете отредактировать или дополнить 
-          автоматически распознанную информацию вручную.
+          <strong>{t('common.note')}:</strong> {t('addRestaurantPage.menuImageProcessor.note')}
         </p>
       </div>
     </div>

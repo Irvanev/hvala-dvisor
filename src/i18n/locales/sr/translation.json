@@ -359,5 +359,136 @@
       "googleRegistrationFailed": "Nije moguće registrovati se preko Google-a. Molimo pokušajte drugi način.",
       "googleRegistrationError": "Došlo je do greške prilikom Google registracije. Molimo pokušajte kasnije."
     }
+  },
+  "addRestaurantPage": {
+    "title": "Dodaj Restoran",
+    "description": "Popunite informacije o restoranu koji želite da dodate u našu bazu podataka. Nakon provere moderatora, restoran će biti objavljen na sajtu.",
+    "navigationButtons": {
+      "back": "Nazad",
+      "next": "Dalje",
+      "submit": "Pošalji na moderaciju",
+      "submitting": "Šalje se..."
+    },
+    "steps": {
+      "basicInfo": "Osnovne informacije",
+      "photosAndFeatures": "Fotografije i karakteristike",
+      "menuAndHours": "Meni i radno vreme",
+      "contactInfo": "Kontakt informacije"
+    },
+    "basicInfo": {
+      "title": "Osnovne informacije",
+      "restaurantName": "Naziv restorana",
+      "description": "Opis restorana",
+      "cuisineType": "Tip kuhinje",
+      "priceRange": "Cenovni opseg",
+      "address": "Adresa",
+      "street": "Ulica",
+      "city": "Grad",
+      "postalCode": "Poštanski broj",
+      "country": "Zemlja",
+      "phone": "Broj telefona",
+      "website": "Veb sajt"
+    },
+    "locationPicker": {
+      "title": "Lokacija na mapi",
+      "description": "Navedite tačnu lokaciju restorana na mapi. Kliknite na mapu da označite poziciju.",
+      "instruction": "Kliknite na mapu da izaberete lokaciju restorana",
+      "selectedLocation": "Izabrana lokacija:",
+      "latitude": "Geografska širina:",
+      "longitude": "Geografska dužina:",
+      "note": "Napomena: Tačna lokacija je važna za ispravno prikazivanje restorana na mapi i planiranje ruta za posetioce.",
+      "mapAlt": "Mapa"
+    },
+    "photoUploader": {
+      "title": "Fotografije restorana",
+      "description": "Otpremite fotografije restorana koje će pomoći posetiocima da steknu predstavu o objektu. Preporučujemo otpremanje fotografija enterijera, eksterijera, specijaliteta i atmosfere.",
+      "dropZone": "Prevucite fotografije ovde ili kliknite da izaberete",
+      "supportedFormats": "Podržani su JPG, PNG, WEBP. Maksimalna veličina datoteke: 10 MB",
+      "uploadedPhotos": "Otpremljene fotografije",
+      "photo": "Fotografija",
+      "remove": "Ukloni"
+    },
+    "features": {
+      "title": "Karakteristike restorana",
+      "description": "Izaberite karakteristike koje opisuju vaš restoran:",
+      "wifi": "Wi-Fi",
+      "terrace": "Terasa",
+      "airConditioning": "Klima uređaj",
+      "parking": "Parking",
+      "delivery": "Dostava",
+      "reservation": "Rezervacija",
+      "liveMusic": "Živa muzika",
+      "veganMenu": "Veganski meni",
+      "playground": "Dečje igralište",
+      "sportsViewing": "Gledanje sportskih prenosa",
+      "cashless": "Bezgotovinski račun",
+      "seaView": "Pogled na more",
+      "largeGroups": "Pogodno za velike grupe",
+      "romantic": "Romantična atmosfera",
+      "wineList": "Vinska karta"
+    },
+    "menu": {
+      "title": "Meni restorana",
+      "description": "Dodajte kategorije i jela vašeg menija:",
+      "categoryPlaceholder": "Naziv kategorije",
+      "dishNamePlaceholder": "Naziv jela",
+      "dishDescriptionPlaceholder": "Opis jela",
+      "pricePlaceholder": "Cena",
+      "addDish": "+ Dodaj jelo",
+      "addCategory": "+ Dodaj kategoriju menija",
+      "removeCategory": "Ukloni kategoriju",
+      "removeItem": "✕"
+    },
+    "openingHours": {
+      "title": "Radno vreme",
+      "monday": "Ponedeljak",
+      "tuesday": "Utorak",
+      "wednesday": "Sreda",
+      "thursday": "Četvrtak",
+      "friday": "Petak",
+      "saturday": "Subota",
+      "sunday": "Nedelja",
+      "closed": "Zatvoreno"
+    },
+    "contactInfo": {
+      "title": "Kontakt informacije",
+      "restaurantContacts": "Kontakt podaci restorana",
+      "ownerNote": "Kontakti se automatski popunjavaju iz podataka kontakt osobe, jer je izabrano \"Vlasnik sam\"",
+      "phoneLabel": "Telefon restorana",
+      "autoFilled": "(automatsko popunjavanje)",
+      "websiteLabel": "Veb sajt restorana (ako postoji)",
+      "helpText": "Popunjavanje ovog polja uklanja oznaku \"Vlasnik sam\"",
+      "contactPerson": "Kontakt osoba",
+      "contactDescription": "Navedite kontakt informacije za komunikaciju sa vama u vezi sa moderacijom:",
+      "nameLabel": "Ime i prezime *",
+      "namePlaceholder": "Marko Marković",
+      "emailLabel": "Email *",
+      "emailPlaceholder": "example@example.com",
+      "phoneContactLabel": "Telefon *",
+      "phoneContactPlaceholder": "+381 __ ___-____",
+      "isOwner": "Ja sam vlasnik/predstavnik restorana",
+      "termsAgreement": "Slanjem forme, slažete se sa uslovima korišćenja i potvrđujete da su prosleđene informacije tačne."
+    },
+    "validation": {
+      "nameRequired": "Naziv restorana je obavezan",
+      "descriptionRequired": "Opis restorana je obavezan",
+      "cuisineRequired": "Navedite tip kuhinje",
+      "streetRequired": "Navedite ulicu",
+      "cityRequired": "Navedite grad",
+      "countryRequired": "Navedite zemlju",
+      "positionRequired": "Navedite lokaciju na mapi",
+      "photosRequired": "Otpremite barem jednu fotografiju",
+      "menuRequired": "Dodajte barem jedno jelo u meni",
+      "contactNameRequired": "Navedite ime kontakt osobe",
+      "contactEmailRequired": "Navedite email kontakt osobe",
+      "contactEmailInvalid": "Neispravan format email-a",
+      "contactPhoneRequired": "Navedite telefon kontakt osobe"
+    },
+    "modal": {
+      "title": "Restoran je uspešno poslat na moderaciju",
+      "description": "Hvala što ste dodali restoran! Naši moderatori će uskoro proveriti informacije. Kontaktiraćemo vas putem navedenih kontakt podataka ako bude potrebno dodatnih informacija.",
+      "info": "Provera obično traje od 1 do 3 radna dana. Nakon uspešne provere, restoran će se pojaviti na sajtu.",
+      "backToHome": "Nazad na početnu"
+    }
   }
 }

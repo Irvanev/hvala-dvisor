@@ -48,7 +48,7 @@
     "tryAgain": "Try Again",
     "countries": {
       "montenegro": "Montenegro",
-      "croatia": "Croatia", 
+      "croatia": "Croatia",
       "albania": "Albania"
     }
   },
@@ -180,7 +180,7 @@
     "bulgaria": "Bulgaria",
     "romania": "Romania",
     "montenegro": "Montenegro",
-    "croatia": "Croatia", 
+    "croatia": "Croatia",
     "albania": "Albania"
   },
   "buttons": {
@@ -253,7 +253,7 @@
     "creditCards": "Credit Cards",
     "reservation": "Reservation",
     "serbian": "Serbian",
-    "montenegrin": "Montenegrin", 
+    "montenegrin": "Montenegrin",
     "bosnian": "Bosnian",
     "croatian": "Croatian",
     "macedonian": "Macedonian",
@@ -358,6 +358,137 @@
       "registrationError": "An error occurred during registration. Please try again later.",
       "googleRegistrationFailed": "Could not register with Google. Please try another method.",
       "googleRegistrationError": "An error occurred during Google registration. Please try again later."
+    }
+  },
+  "addRestaurantPage": {
+    "title": "Add Restaurant",
+    "description": "Fill out the restaurant information you want to add to our database. After review by moderators, the restaurant will be published on the site.",
+    "navigationButtons": {
+      "back": "Back",
+      "next": "Next",
+      "submit": "Submit for Review",
+      "submitting": "Submitting..."
+    },
+    "steps": {
+      "basicInfo": "Basic Information",
+      "photosAndFeatures": "Photos and Features",
+      "menuAndHours": "Menu and Hours",
+      "contactInfo": "Contact Information"
+    },
+    "basicInfo": {
+      "title": "Basic Information",
+      "restaurantName": "Restaurant Name",
+      "description": "Restaurant Description",
+      "cuisineType": "Cuisine Type",
+      "priceRange": "Price Range",
+      "address": "Address",
+      "street": "Street",
+      "city": "City",
+      "postalCode": "Postal Code",
+      "country": "Country",
+      "phone": "Phone Number",
+      "website": "Website"
+    },
+    "locationPicker": {
+      "title": "Location on Map",
+      "description": "Specify the exact location of the restaurant on the map. Click on the map to mark the position.",
+      "instruction": "Click on the map to select the restaurant location",
+      "selectedLocation": "Selected Location:",
+      "latitude": "Latitude:",
+      "longitude": "Longitude:",
+      "note": "Note: The exact location is important for correctly displaying the restaurant on the map and building routes for visitors.",
+      "mapAlt": "Map"
+    },
+    "photoUploader": {
+      "title": "Restaurant Photos",
+      "description": "Upload restaurant photos that will help visitors get an idea of the establishment. We recommend uploading photos of the interior, exterior, signature dishes and atmosphere.",
+      "dropZone": "Drag photos here or click to select",
+      "supportedFormats": "JPG, PNG, WEBP supported. Maximum file size: 10 MB",
+      "uploadedPhotos": "Uploaded Photos",
+      "photo": "Photo",
+      "remove": "Remove"
+    },
+    "features": {
+      "title": "Restaurant Features",
+      "description": "Select features that characterize your restaurant:",
+      "wifi": "Wi-Fi",
+      "terrace": "Terrace",
+      "airConditioning": "Air Conditioning",
+      "parking": "Parking",
+      "delivery": "Delivery",
+      "reservation": "Reservation",
+      "liveMusic": "Live Music",
+      "veganMenu": "Vegan Menu",
+      "playground": "Playground",
+      "sportsViewing": "Sports Viewing",
+      "cashless": "Cashless Payment",
+      "seaView": "Sea View",
+      "largeGroups": "Suitable for Large Groups",
+      "romantic": "Romantic Atmosphere",
+      "wineList": "Wine List"
+    },
+    "menu": {
+      "title": "Restaurant Menu",
+      "description": "Add categories and dishes of your menu:",
+      "categoryPlaceholder": "Category name",
+      "dishNamePlaceholder": "Dish name",
+      "dishDescriptionPlaceholder": "Dish description",
+      "pricePlaceholder": "Price",
+      "addDish": "+ Add Dish",
+      "addCategory": "+ Add Menu Category",
+      "removeCategory": "Remove Category",
+      "removeItem": "✕"
+    },
+    "openingHours": {
+      "title": "Opening Hours",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday",
+      "closed": "Closed"
+    },
+    "contactInfo": {
+      "title": "Contact Information",
+      "restaurantContacts": "Restaurant Contact Details",
+      "ownerNote": "Contacts are automatically filled from contact person data, as 'Is Owner' is selected",
+      "phoneLabel": "Restaurant Phone",
+      "autoFilled": "(auto-filled)",
+      "websiteLabel": "Restaurant Website (if any)",
+      "helpText": "Filling this field removes the 'Is Owner' mark",
+      "contactPerson": "Contact Person",
+      "contactDescription": "Specify contact information to reach you regarding moderation:",
+      "nameLabel": "Name and Surname *",
+      "namePlaceholder": "John Doe",
+      "emailLabel": "Email *",
+      "emailPlaceholder": "example@example.com",
+      "phoneContactLabel": "Phone *",
+      "phoneContactPlaceholder": "+1 (___) ___-____",
+      "isOwner": "I am the owner/representative of the restaurant",
+      "termsAgreement": "By submitting the form, you agree to the terms of use and confirm that the information provided is accurate."
+    },
+    "validation": {
+      "nameRequired": "Restaurant name is required",
+      "descriptionRequired": "Restaurant description is required",
+      "cuisineRequired": "Specify cuisine type",
+      "streetRequired": "Specify street",
+      "cityRequired": "Specify city",
+      "countryRequired": "Specify country",
+      "positionRequired": "Specify location on map",
+      "photosRequired": "Upload at least one photo",
+      "menuRequired": "Add at least one dish to the menu",
+      "contactNameRequired": "Specify contact person name",
+      "contactEmailRequired": "Specify contact person email",
+      "contactEmailInvalid": "Invalid email format",
+      "contactPhoneRequired": "Specify contact person phone"
+    },
+    "modal": {
+      "title": "Restaurant successfully submitted for review",
+      "description": "Thank you for adding the restaurant! Our moderators will review the information shortly. We will contact you using the provided contact details if additional information is needed.",
+      "info": "Review usually takes 1 to 3 business days. After successful review, the restaurant will appear on the site.",
+      "backToHome": "Back to Home"
     }
   }
 }
