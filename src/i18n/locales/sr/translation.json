@@ -8,7 +8,9 @@
     "search": "Pretraga",
     "loading": "Učitavanje...",
     "error": "Došlo je do greške",
-    "backToHome": "Nazad na početnu"
+    "backToHome": "Nazad na početnu",
+    "selectedFile": "Izabrani fajl",
+    "note": "Napomena"
   },
   "navbar": {
     "welcome": "Dobrodošli",
@@ -489,6 +491,157 @@
       "description": "Hvala što ste dodali restoran! Naši moderatori će uskoro proveriti informacije. Kontaktiraćemo vas putem navedenih kontakt podataka ako bude potrebno dodatnih informacija.",
       "info": "Provera obično traje od 1 do 3 radna dana. Nakon uspešne provere, restoran će se pojaviti na sajtu.",
       "backToHome": "Nazad na početnu"
+    },
+    "menuImageProcessor": {
+      "title": "AI obrada menija i radnog vremena",
+      "description": "Otpremite fotografije vašeg menija i radnog vremena za automatsko izvlačenje informacija pomoću veštačke inteligencije.",
+      "menuProcessing": {
+        "title": "Obrada fotografije menija",
+        "description": "Otpremite fotografiju vašeg menija za automatsko izvlačenje jela, opisa i cena.",
+        "selectPhoto": "Izaberite fotografiju menija",
+        "process": "Obradi meni",
+        "processing": "Obrađuje se..."
+      },
+      "hoursProcessing": {
+        "title": "Obrada radnog vremena",
+        "description": "Otpremite fotografiju sa informacijama o radnom vremenu za automatsko izvlačenje rasporeda.",
+        "selectPhoto": "Izaberite fotografiju vremena",
+        "process": "Obradi vreme",
+        "processing": "Obrađuje se..."
+      },
+      "demoData": {
+        "appetizers": "Predjela",
+        "mainDishes": "Glavna jela",
+        "bruschetta": "Brusketa sa paradajzom",
+        "bruschettaDesc": "Tost hleb sa svežim paradajzom, bosiljkom i mocarelom",
+        "carpaccio": "Goveđi karpačo",
+        "carpaccioDesc": "Tanko sečena govedina sa rukolom, parmezanom i limunom",
+        "carbonara": "Pasta Karbonara",
+        "carbonaraDesc": "Klasična italijanska pasta sa jajima, sirom, pančetom i crnim biberom",
+        "salmon": "Losos na roštilju",
+        "salmonDesc": "Svež losos sa povrćem i začinskim sosom"
+      },
+      "tips": {
+        "title": "Saveti za bolje rezultate:",
+        "clearPhoto": "Napravite jasnu, dobro osvetljenu fotografiju",
+        "readableText": "Postarajte se da je tekst čitljiv",
+        "straightPhoto": "Držite kameru pravo"
+      },
+      "note": "Ovo je demo funkcija. U stvarnoj verziji AI će obraditi vaše fotografije i izvući informacije o meniju."
+    },
+    "errors": {
+      "selectMenuImage": "Molimo izaberite sliku menija",
+      "selectHoursImage": "Molimo izaberite sliku radnog vremena",
+      "processingMenuImage": "Greška pri obradi slike menija",
+      "processingHoursImage": "Greška pri obradi slike radnog vremena"
+    },
+    "success": {
+      "menuProcessed": "Meni je uspešno obrađen!",
+      "hoursProcessed": "Radno vreme je uspešno obrađeno!"
     }
-  }
+  },
+  "restaurantForm": {
+    "labels": {
+      "name": "Naziv restorana *",
+      "namePlaceholder": "Unesite naziv restorana",
+      "description": "Opis restorana *",
+      "descriptionPlaceholder": "Ispričajte nam o restoranu, njegovom konceptu, atmosferi i kuhinji",
+      "cuisine": "Tip kuhinje *",
+      "cuisinePlaceholder": "Izaberite tip kuhinje",
+      "priceRange": "Cenovni opseg",
+      "addressSection": "Adresa restorana",
+      "street": "Ulica i broj kuće *",
+      "streetPlaceholder": "Na primer: Ulica Primera, 123",
+      "city": "Grad *",
+      "cityPlaceholder": "Na primer: Dubrovnik",
+      "postalCode": "Poštanski broj",
+      "postalCodePlaceholder": "Na primer: 20000",
+      "country": "Zemlja *",
+      "countryPlaceholder": "Izaberite zemlju"
+    },
+    "cuisineOptions": {
+      "balkan": "Balkanska",
+      "croatian": "Hrvatska",
+      "serbian": "Srpska",
+      "bosnian": "Bosanska",
+      "montenegrin": "Crnogorska",
+      "macedonian": "Makedonska",
+      "slovenian": "Slovenska",
+      "albanian": "Albanska",
+      "greek": "Grčka",
+      "bulgarian": "Bugarska",
+      "romanian": "Rumunska",
+      "mediterranean": "Mediteranska",
+      "italian": "Italijanska",
+      "international": "Internacionalna",
+      "other": "Druga"
+    },
+    "priceRangeOptions": {
+      "budget": "€ (Budžetno)",
+      "moderate": "€€ (Umereno)",
+      "expensive": "€€€ (Skupo)",
+      "veryExpensive": "€€€€ (Veoma skupo)"
+    },
+    "countryOptions": {
+      "croatia": "Hrvatska",
+      "serbia": "Srbija",
+      "montenegro": "Crna Gora",
+      "bosnia": "Bosna i Hercegovina",
+      "slovenia": "Slovenija",
+      "northMacedonia": "Severna Makedonija",
+      "albania": "Albanija",
+      "greece": "Grčka",
+      "bulgaria": "Bugarska",
+      "romania": "Rumunija"
+    }
+  },
+  "menuImageProcessor": {
+    "title": "AI obrada menija i radnog vremena",
+    "description": "Otpremite fotografije vašeg menija i radnog vremena za automatsko izvlačenje informacija pomoću veštačke inteligencije.",
+    "menuProcessing": {
+      "title": "Obrada fotografije menija",
+      "description": "Otpremite fotografiju vašeg menija za automatsko izvlačenje jela, opisa i cena.",
+      "selectPhoto": "Izaberite fotografiju menija",
+      "process": "Obradi meni",
+      "processing": "Obrađuje se..."
+    },
+    "hoursProcessing": {
+      "title": "Obrada radnog vremena",
+      "description": "Otpremite fotografiju sa informacijama o radnom vremenu za automatsko izvlačenje rasporeda.",
+      "selectPhoto": "Izaberite fotografiju vremena",
+      "process": "Obradi vreme",
+      "processing": "Obrađuje se..."
+    },
+    "demoData": {
+      "appetizers": "Predjela",
+      "mainDishes": "Glavna jela",
+      "bruschetta": "Brusketa sa paradajzom",
+      "bruschettaDesc": "Tost hleb sa svežim paradajzom, bosiljkom i mocarelom",
+      "carpaccio": "Goveđi karpačo",
+      "carpaccioDesc": "Tanko sečena govedina sa rukolom, parmezanom i limunom",
+      "carbonara": "Pasta Karbonara",
+      "carbonaraDesc": "Klasična italijanska pasta sa jajima, sirom, pančetom i crnim biberom",
+      "salmon": "Losos na roštilju",
+      "salmonDesc": "Svež losos sa povrćem i začinskim sosom"
+    },
+    "tips": {
+      "title": "Saveti za bolje rezultate:",
+      "clearPhoto": "Napravite jasnu, dobro osvetljenu fotografiju",
+      "readableText": "Postarajte se da je tekst čitljiv",
+      "straightPhoto": "Držite kameru pravo"
+    },
+    "note": "Ovo je demo funkcija. U stvarnoj verziji AI će obraditi vaše fotografije i izvući informacije o meniju."
+  },
+  "errors": {
+    "selectMenuImage": "Molimo izaberite sliku menija",
+    "selectHoursImage": "Molimo izaberite sliku radnog vremena",
+    "processingMenuImage": "Greška pri obradi slike menija",
+    "processingHoursImage": "Greška pri obradi slike radnog vremena"
+  },
+  "success": {
+    "menuProcessed": "Meni je uspešno obrađen!",
+    "hoursProcessed": "Radno vreme je uspešno obrađeno!"
+  },
+  "selectedFile": "Izabrani fajl",
+  "note": "Napomena"
 }

@@ -8,7 +8,6 @@ import PhotoUploader from '../../pages/AddRestaurantPage/components/PhotoUploade
 import LocationPicker from '../../pages/AddRestaurantPage/components/LocationPicker';
 import SubmissionSteps from '../../pages/AddRestaurantPage/components/SubmissionSteps';
 import SuccessModal from '../../pages/AddRestaurantPage/components/SuccessModal';
-import MenuImageProcessor from '../../pages/AddRestaurantPage/components/MenuImageProcessor';
 import styles from './AddRestaurantPage.module.css';
 import { Restaurant, MenuItem } from '../../models/types';
 import { db, storage } from '../../firebase/config';
@@ -79,13 +78,13 @@ const AddRestaurantPage: React.FC = () => {
     phoneNumber: '',
     website: '',
     openingHours: {
-      [t('addRestaurantPage.openingHours.monday')]: { open: '09:00', close: '22:00', closed: false },
-      [t('addRestaurantPage.openingHours.tuesday')]: { open: '09:00', close: '22:00', closed: false },
-      [t('addRestaurantPage.openingHours.wednesday')]: { open: '09:00', close: '22:00', closed: false },
-      [t('addRestaurantPage.openingHours.thursday')]: { open: '09:00', close: '22:00', closed: false },
-      [t('addRestaurantPage.openingHours.friday')]: { open: '09:00', close: '23:00', closed: false },
-      [t('addRestaurantPage.openingHours.saturday')]: { open: '09:00', close: '23:00', closed: false },
-      [t('addRestaurantPage.openingHours.sunday')]: { open: '10:00', close: '21:00', closed: false }
+      [t('daysOfWeek.monday')]: { open: '09:00', close: '22:00', closed: false },
+      [t('daysOfWeek.tuesday')]: { open: '09:00', close: '22:00', closed: false },
+      [t('daysOfWeek.wednesday')]: { open: '09:00', close: '22:00', closed: false },
+      [t('daysOfWeek.thursday')]: { open: '09:00', close: '22:00', closed: false },
+      [t('daysOfWeek.friday')]: { open: '09:00', close: '23:00', closed: false },
+      [t('daysOfWeek.saturday')]: { open: '09:00', close: '23:00', closed: false },
+      [t('daysOfWeek.sunday')]: { open: '10:00', close: '21:00', closed: false }
     },
     features: [],
     photos: [],
@@ -132,16 +131,15 @@ const AddRestaurantPage: React.FC = () => {
   ];
 
   const daysData = [
-    { key: 'monday', label: t('addRestaurantPage.openingHours.monday') },
-    { key: 'tuesday', label: t('addRestaurantPage.openingHours.tuesday') },
-    { key: 'wednesday', label: t('addRestaurantPage.openingHours.wednesday') },
-    { key: 'thursday', label: t('addRestaurantPage.openingHours.thursday') },
-    { key: 'friday', label: t('addRestaurantPage.openingHours.friday') },
-    { key: 'saturday', label: t('addRestaurantPage.openingHours.saturday') },
-    { key: 'sunday', label: t('addRestaurantPage.openingHours.sunday') }
+    { key: 'monday', label: t('daysOfWeek.monday') },
+    { key: 'tuesday', label: t('daysOfWeek.tuesday') },
+    { key: 'wednesday', label: t('daysOfWeek.wednesday') },
+    { key: 'thursday', label: t('daysOfWeek.thursday') },
+    { key: 'friday', label: t('daysOfWeek.friday') },
+    { key: 'saturday', label: t('daysOfWeek.saturday') },
+    { key: 'sunday', label: t('daysOfWeek.sunday') }
   ];
 
-  // ИСПРАВЛЕНИЕ: Добавляем недостающую функцию
   const handleContactPersonChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
@@ -172,40 +170,6 @@ const AddRestaurantPage: React.FC = () => {
         [name]: ''
       });
     }
-  };
-
-  // ИСПРАВЛЕНИЕ: Добавляем обработчики для MenuImageProcessor
-  const handleMenuExtracted = (extractedItems: Array<{name: string; description: string; price: string; category?: string}>) => {
-    const menuByCategory: { [key: string]: Array<{name: string; description: string; price: string}> } = {};
-    
-    extractedItems.forEach(item => {
-      const category = item.category || t('addRestaurantPage.menu.categoryPlaceholder');
-      if (!menuByCategory[category]) {
-        menuByCategory[category] = [];
-      }
-      menuByCategory[category].push({
-        name: item.name,
-        description: item.description,
-        price: item.price
-      });
-    });
-
-    const newMenuItems = Object.entries(menuByCategory).map(([category, items]) => ({
-      category,
-      items
-    }));
-
-    setFormData(prev => ({
-      ...prev,
-      menuItems: newMenuItems
-    }));
-  };
-
-  const handleHoursExtracted = (extractedHours: {[key: string]: {open: string; close: string; closed: boolean}}) => {
-    setFormData(prev => ({
-      ...prev,
-      openingHours: extractedHours
-    }));
   };
 
   const handleInputChange = (
@@ -379,7 +343,6 @@ const AddRestaurantPage: React.FC = () => {
     setFormData({ ...formData, position: position });
   };
 
-  // ИСПРАВЛЕНИЕ: Оставляем только одну функцию валидации с переводами
   const validateCurrentStep = (): boolean => {
     const newErrors: FormErrors = {};
 
@@ -394,14 +357,7 @@ const AddRestaurantPage: React.FC = () => {
     } else if (currentStep === 2) {
       if (formData.photos.length === 0) newErrors['photos'] = t('addRestaurantPage.validation.photosRequired');
     } else if (currentStep === 3) {
-      let hasMenuItems = false;
-      for (const category of formData.menuItems) {
-        if (category.category.trim() && category.items.some(item => item.name.trim())) {
-          hasMenuItems = true;
-          break;
-        }
-      }
-      if (!hasMenuItems) newErrors['menuItems'] = t('addRestaurantPage.validation.menuRequired');
+      // УБРАНА ВАЛИДАЦИЯ МЕНЮ
     } else if (currentStep === 4) {
       if (!formData.contactPerson.name.trim()) newErrors['contactPerson.name'] = t('addRestaurantPage.validation.contactNameRequired');
       if (!formData.contactPerson.email.trim()) {
@@ -633,21 +589,11 @@ const AddRestaurantPage: React.FC = () => {
                 <div className={styles.formStep}>
                   <h2 className={styles.stepTitle}>{t('addRestaurantPage.steps.menuAndHours')}</h2>
                   
-                  <MenuImageProcessor 
-                    onMenuExtracted={handleMenuExtracted}
-                    onHoursExtracted={handleHoursExtracted}
-                  />
-                  
                   <div className={styles.menuSection}>
                     <h3 className={styles.sectionTitle}>{t('addRestaurantPage.menu.title')}</h3>
                     <p className={styles.sectionDescription}>
                       {t('addRestaurantPage.menu.description')}
                     </p>
-                    {errors['menuItems'] && (
-                      <div className={`${styles.errorMessage} error-message`}>
-                        {errors['menuItems']}
-                      </div>
-                    )}
                     {formData.menuItems.map((category, categoryIndex) => (
                       <div key={categoryIndex} className={styles.menuCategory}>
                         <div className={styles.categoryHeader}>

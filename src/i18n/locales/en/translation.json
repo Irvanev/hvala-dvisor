@@ -8,7 +8,9 @@
     "search": "Search",
     "loading": "Loading...",
     "error": "Error occurred",
-    "backToHome": "Back to Home"
+    "backToHome": "Back to Home",
+    "selectedFile": "Selected file",
+    "note": "Note"
   },
   "navbar": {
     "welcome": "Welcome",
@@ -489,6 +491,157 @@
       "description": "Thank you for adding the restaurant! Our moderators will review the information shortly. We will contact you using the provided contact details if additional information is needed.",
       "info": "Review usually takes 1 to 3 business days. After successful review, the restaurant will appear on the site.",
       "backToHome": "Back to Home"
+    },
+    "menuImageProcessor": {
+      "title": "AI Menu and Hours Processing",
+      "description": "Upload photos of your menu and opening hours to automatically extract information using artificial intelligence.",
+      "menuProcessing": {
+        "title": "Menu Photo Processing",
+        "description": "Upload a photo of your menu to automatically extract dishes, descriptions, and prices.",
+        "selectPhoto": "Select Menu Photo",
+        "process": "Process Menu",
+        "processing": "Processing..."
+      },
+      "hoursProcessing": {
+        "title": "Opening Hours Processing",
+        "description": "Upload a photo with opening hours information to automatically extract the schedule.",
+        "selectPhoto": "Select Hours Photo",
+        "process": "Process Hours",
+        "processing": "Processing..."
+      },
+      "demoData": {
+        "appetizers": "Appetizers",
+        "mainDishes": "Main Dishes",
+        "bruschetta": "Bruschetta with Tomatoes",
+        "bruschettaDesc": "Toasted bread with fresh tomatoes, basil and mozzarella",
+        "carpaccio": "Beef Carpaccio",
+        "carpaccioDesc": "Thinly sliced beef with arugula, parmesan and lemon",
+        "carbonara": "Pasta Carbonara",
+        "carbonaraDesc": "Classic Italian pasta with eggs, cheese, pancetta and black pepper",
+        "salmon": "Grilled Salmon",
+        "salmonDesc": "Fresh salmon with vegetables and herb sauce"
+      },
+      "tips": {
+        "title": "Tips for better results:",
+        "clearPhoto": "Take a clear, well-lit photo",
+        "readableText": "Make sure the text is readable",
+        "straightPhoto": "Hold the camera straight"
+      },
+      "note": "This is a demo feature. In the real version, AI will process your photos and extract menu information."
+    },
+    "errors": {
+      "selectMenuImage": "Please select a menu image",
+      "selectHoursImage": "Please select an hours image",
+      "processingMenuImage": "Error processing menu image",
+      "processingHoursImage": "Error processing hours image"
+    },
+    "success": {
+      "menuProcessed": "Menu successfully processed!",
+      "hoursProcessed": "Hours successfully processed!"
     }
-  }
+  },
+  "restaurantForm": {
+    "labels": {
+      "name": "Restaurant Name *",
+      "namePlaceholder": "Enter restaurant name",
+      "description": "Restaurant Description *",
+      "descriptionPlaceholder": "Tell us about the restaurant, its concept, atmosphere and cuisine",
+      "cuisine": "Cuisine Type *",
+      "cuisinePlaceholder": "Select cuisine type",
+      "priceRange": "Price Range",
+      "addressSection": "Restaurant Address",
+      "street": "Street and House Number *",
+      "streetPlaceholder": "For example: Example Street, 123",
+      "city": "City *",
+      "cityPlaceholder": "For example: Dubrovnik",
+      "postalCode": "Postal Code",
+      "postalCodePlaceholder": "For example: 20000",
+      "country": "Country *",
+      "countryPlaceholder": "Select country"
+    },
+    "cuisineOptions": {
+      "balkan": "Balkan",
+      "croatian": "Croatian",
+      "serbian": "Serbian",
+      "bosnian": "Bosnian",
+      "montenegrin": "Montenegrin",
+      "macedonian": "Macedonian",
+      "slovenian": "Slovenian",
+      "albanian": "Albanian",
+      "greek": "Greek",
+      "bulgarian": "Bulgarian",
+      "romanian": "Romanian",
+      "mediterranean": "Mediterranean",
+      "italian": "Italian",
+      "international": "International",
+      "other": "Other"
+    },
+    "priceRangeOptions": {
+      "budget": "€ (Budget)",
+      "moderate": "€€ (Moderate)",
+      "expensive": "€€€ (Expensive)",
+      "veryExpensive": "€€€€ (Very Expensive)"
+    },
+    "countryOptions": {
+      "croatia": "Croatia",
+      "serbia": "Serbia",
+      "montenegro": "Montenegro",
+      "bosnia": "Bosnia and Herzegovina",
+      "slovenia": "Slovenia",
+      "northMacedonia": "North Macedonia",
+      "albania": "Albania",
+      "greece": "Greece",
+      "bulgaria": "Bulgaria",
+      "romania": "Romania"
+    }
+  },
+  "menuImageProcessor": {
+    "title": "AI Menu and Hours Processing",
+    "description": "Upload photos of your menu and opening hours to automatically extract information using artificial intelligence.",
+    "menuProcessing": {
+      "title": "Menu Photo Processing",
+      "description": "Upload a photo of your menu to automatically extract dishes, descriptions, and prices.",
+      "selectPhoto": "Select Menu Photo",
+      "process": "Process Menu",
+      "processing": "Processing..."
+    },
+    "hoursProcessing": {
+      "title": "Opening Hours Processing",
+      "description": "Upload a photo with opening hours information to automatically extract the schedule.",
+      "selectPhoto": "Select Hours Photo",
+      "process": "Process Hours",
+      "processing": "Processing..."
+    },
+    "demoData": {
+      "appetizers": "Appetizers",
+      "mainDishes": "Main Dishes",
+      "bruschetta": "Bruschetta with Tomatoes",
+      "bruschettaDesc": "Toasted bread with fresh tomatoes, basil and mozzarella",
+      "carpaccio": "Beef Carpaccio",
+      "carpaccioDesc": "Thinly sliced beef with arugula, parmesan and lemon",
+      "carbonara": "Pasta Carbonara",
+      "carbonaraDesc": "Classic Italian pasta with eggs, cheese, pancetta and black pepper",
+      "salmon": "Grilled Salmon",
+      "salmonDesc": "Fresh salmon with vegetables and herb sauce"
+    },
+    "tips": {
+      "title": "Tips for better results:",
+      "clearPhoto": "Take a clear, well-lit photo",
+      "readableText": "Make sure the text is readable",
+      "straightPhoto": "Hold the camera straight"
+    },
+    "note": "This is a demo feature. In the real version, AI will process your photos and extract menu information."
+  },
+  "errors": {
+    "selectMenuImage": "Please select a menu image",
+    "selectHoursImage": "Please select an hours image",
+    "processingMenuImage": "Error processing menu image",
+    "processingHoursImage": "Error processing hours image"
+  },
+  "success": {
+    "menuProcessed": "Menu successfully processed!",
+    "hoursProcessed": "Hours successfully processed!"
+  },
+  "selectedFile": "Selected file",
+  "note": "Note"
 }

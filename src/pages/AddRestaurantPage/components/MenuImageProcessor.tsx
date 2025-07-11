@@ -103,13 +103,13 @@ const MenuImageProcessor: React.FC<MenuImageProcessorProps> = ({
       await new Promise(resolve => setTimeout(resolve, 1500));
 
       const extractedHours = {
-        [t('addRestaurantPage.openingHours.monday')]: { open: '09:00', close: '22:00', closed: false },
-        [t('addRestaurantPage.openingHours.tuesday')]: { open: '09:00', close: '22:00', closed: false },
-        [t('addRestaurantPage.openingHours.wednesday')]: { open: '09:00', close: '22:00', closed: false },
-        [t('addRestaurantPage.openingHours.thursday')]: { open: '09:00', close: '22:00', closed: false },
-        [t('addRestaurantPage.openingHours.friday')]: { open: '09:00', close: '23:00', closed: false },
-        [t('addRestaurantPage.openingHours.saturday')]: { open: '10:00', close: '23:00', closed: false },
-        [t('addRestaurantPage.openingHours.sunday')]: { open: '10:00', close: '21:00', closed: false }
+        [t('daysOfWeek.monday')]: { open: '09:00', close: '22:00', closed: false },
+        [t('daysOfWeek.tuesday')]: { open: '09:00', close: '22:00', closed: false },
+        [t('daysOfWeek.wednesday')]: { open: '09:00', close: '22:00', closed: false },
+        [t('daysOfWeek.thursday')]: { open: '09:00', close: '22:00', closed: false },
+        [t('daysOfWeek.friday')]: { open: '09:00', close: '23:00', closed: false },
+        [t('daysOfWeek.saturday')]: { open: '10:00', close: '23:00', closed: false },
+        [t('daysOfWeek.sunday')]: { open: '10:00', close: '21:00', closed: false }
       };
 
       onHoursExtracted(extractedHours);
