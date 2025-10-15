@@ -1368,3 +1368,299 @@
     width: 100%;
   }
 }
+
+/* Добавьте эти стили в AddRestaurantPage.module.css */
+
+/* Location Picker Section */
+.locationPickerSection {
+  margin-bottom: 32px;
+}
+
+.quickLocationButtons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.quickLocationButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  color: #495057;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.quickLocationButton:hover {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.quickLocationButton:active {
+  background-color: #dee2e6;
+}
+
+/* Map Container */
+.mapContainer {
+  position: relative;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #f8f9fa;
+  margin-bottom: 16px;
+}
+
+.mapLoading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  color: #6c757d;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e9ecef;
+  border-top: 3px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.mapError {
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+}
+
+.mapErrorContent {
+  text-align: center;
+  padding: 24px;
+  max-width: 400px;
+}
+
+.mapErrorContent h4 {
+  margin: 0 0 8px 0;
+  color: #856404;
+  font-size: 18px;
+}
+
+.mapErrorContent p {
+  margin: 0 0 16px 0;
+  color: #856404;
+  font-size: 14px;
+}
+
+.locationButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.locationButton {
+  padding: 10px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.locationButton:hover {
+  background-color: #0056b3;
+}
+
+/* Map Instructions */
+.mapInstructions {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+  max-width: 250px;
+  z-index: 1;
+}
+
+.instructionItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  font-size: 12px;
+  color: #495057;
+}
+
+.instructionItem:last-child {
+  margin-bottom: 0;
+}
+
+.instructionIcon {
+  font-size: 14px;
+  min-width: 16px;
+}
+
+/* Selected Location Info */
+.selectedLocationInfo {
+  margin-top: 16px;
+}
+
+.selectedLocation {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.selectedLocation h4 {
+  margin: 0 0 12px 0;
+  color: #155724;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.coordinates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.coordinateItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.coordinateLabel {
+  font-size: 12px;
+  color: #155724;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.coordinateValue {
+  font-size: 14px;
+  color: #155724;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  background-color: rgba(21, 87, 36, 0.1);
+  padding: 4px 6px;
+  border-radius: 4px;
+  border: 1px solid #c3e6cb;
+}
+
+.verifyLocationButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background-color: #155724;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.verifyLocationButton:hover {
+  background-color: #0d4018;
+}
+
+/* Location Note */
+.locationNote {
+  margin-top: 16px;
+  padding: 12px;
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 6px;
+}
+
+.locationNote p {
+  margin: 0;
+  font-size: 13px;
+  color: #856404;
+  line-height: 1.4;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .quickLocationButtons {
+    flex-direction: column;
+  }
+  
+  .quickLocationButton {
+    justify-content: center;
+  }
+  
+  .mapContainer {
+    margin: 0 -16px 16px -16px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+  
+  .mapInstructions {
+    position: static;
+    margin: 12px;
+    margin-bottom: 0;
+  }
+  
+  .coordinates {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .coordinateItem {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .coordinateLabel {
+    font-size: 11px;
+    min-width: 60px;
+  }
+  
+  .coordinateValue {
+    font-size: 12px;
+    flex: 1;
+    text-align: right;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .loadingSpinner {
+    animation: none;
+  }
+  
+  .quickLocationButton,
+  .locationButton,
+  .verifyLocationButton {
+    transition: none;
+  }
+}

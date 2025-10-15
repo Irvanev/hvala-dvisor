@@ -399,7 +399,13 @@
       "latitude": "Geografska širina:",
       "longitude": "Geografska dužina:",
       "note": "Napomena: Tačna lokacija je važna za ispravno prikazivanje restorana na mapi i planiranje ruta za posetioce.",
-      "mapAlt": "Mapa"
+      "mapAlt": "Mapa",
+      "loadingMap": "Učitavanje mape...",
+      "useMyLocation": "Koristi Moju Lokaciju",
+      "useDubrovnik": "Prikaži Dubrovnik",
+      "clickInstruction": "Kliknite na mapu da izaberete lokaciju",
+      "dragInstruction": "Prevucite marker za precizno podešavanje",
+      "verifyLocation": "Proveri u Google Maps"
     },
     "photoUploader": {
       "title": "Fotografije restorana",

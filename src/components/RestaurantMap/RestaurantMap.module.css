@@ -1,0 +1,209 @@
+/* src/components/RestaurantMap/RestaurantMap.module.css */
+
+.mapContainer {
+  position: relative;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.mapLoading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  background-color: #f9fafb;
+  color: #6b7280;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e5e7eb;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.mapError {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  color: #dc2626;
+}
+
+.errorContent {
+  text-align: center;
+  padding: 24px;
+}
+
+.errorContent h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.errorContent p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.infoWindow {
+  padding: 12px;
+  min-width: 250px;
+  max-width: 300px;
+}
+
+.infoWindow h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.address {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+.contact {
+  margin: 0 0 4px 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.contact a {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.contact a:hover {
+  text-decoration: underline;
+}
+
+.restaurantInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.rating {
+  font-size: 13px;
+  font-weight: 500;
+  color: #f59e0b;
+}
+
+.priceRange {
+  font-size: 13px;
+  font-weight: 500;
+  color: #059669;
+}
+
+.cuisineTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 8px 0;
+}
+
+.cuisineTag {
+  background-color: #f3f4f6;
+  color: #374151;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.mapPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  color: #6b7280;
+}
+
+.placeholderContent {
+  text-align: center;
+  padding: 24px;
+}
+
+.placeholderContent h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.placeholderContent p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.infoActions {
+  display: flex;
+  gap: 8px;
+}
+
+.directionsLink {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  background-color: #3b82f6;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.directionsLink:hover {
+  background-color: #2563eb;
+}
+
+/* Медиа-запросы для адаптивности */
+@media (max-width: 768px) {
+  .mapContainer {
+    margin: 0 -16px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+  
+  .infoWindow {
+    min-width: 180px;
+  }
+  
+  .infoWindow h4 {
+    font-size: 14px;
+  }
+  
+  .infoWindow p {
+    font-size: 12px;
+  }
+  
+  .directionsLink {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+}

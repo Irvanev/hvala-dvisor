@@ -399,7 +399,13 @@
       "latitude": "Latitude:",
       "longitude": "Longitude:",
       "note": "Note: The exact location is important for correctly displaying the restaurant on the map and building routes for visitors.",
-      "mapAlt": "Map"
+      "mapAlt": "Map",
+      "loadingMap": "Loading map...",
+      "useMyLocation": "Use My Location",
+      "useDubrovnik": "Show Dubrovnik",
+      "clickInstruction": "Click on the map to select location",
+      "dragInstruction": "Drag marker to fine-tune position",
+      "verifyLocation": "Verify in Google Maps"
     },
     "photoUploader": {
       "title": "Restaurant Photos",

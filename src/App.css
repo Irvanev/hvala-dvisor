@@ -38,3 +38,58 @@ input {
   max-width: 100%;
   height: auto;
 }
+
+/* Добавьте в src/App.css */
+
+/* Анимация для спиннера загрузки Google Maps */
+@keyframes spin {
+  0% { 
+    transform: rotate(0deg); 
+  }
+  100% { 
+    transform: rotate(360deg); 
+  }
+}
+
+/* Глобальные стили для карт */
+.google-maps-loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.9);
+  z-index: 9999;
+}
+
+.google-maps-loading-content {
+  text-align: center;
+}
+
+.google-maps-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  .google-maps-loading {
+    position: fixed;
+    background-color: rgba(255, 255, 255, 0.95);
+  }
+  
+  .google-maps-spinner {
+    width: 32px;
+    height: 32px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+  }
+}

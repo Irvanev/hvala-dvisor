@@ -9,12 +9,9 @@ import styles from './HomePage.module.css';
 import backgroundImage from '../assets/background.webp';
 import Footer from '../components/Footer/Footer';
 import RestaurantGrid from '../components/RestaurantGrid/RestaurantGrid';
-// Импортируем только тип Restaurant
 import { Restaurant } from '../models/types';
-// Импортируем необходимые функции Firebase
 import { collection, getDocs, query, orderBy, limit, Timestamp, GeoPoint } from 'firebase/firestore';
-import { firestore } from '../firebase/config'; // Импортируем конфигурацию Firebase
-// 🆕 Добавляем хук для переводов
+import { firestore } from '../firebase/config';
 import { useAppTranslation } from '../hooks/useAppTranslation';
 
 const CONSTANTS = {
