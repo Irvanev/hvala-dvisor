@@ -9,18 +9,19 @@ import styles from './HomePage.module.css';
 import backgroundImage from '../assets/background.webp';
 import Footer from '../components/Footer/Footer';
 import RestaurantGrid from '../components/RestaurantGrid/RestaurantGrid';
+import RestaurantSearch from '../services/RestaurantSearch';
 // Импортируем только тип Restaurant
 import { Restaurant } from '../models/types';
 // Импортируем необходимые функции Firebase
 import { collection, getDocs, query, orderBy, limit, Timestamp, GeoPoint } from 'firebase/firestore';
-import { firestore } from '../firebase/config'; // Импортируем конфигурацию Firebase
+import { db, firestore } from '../firebase/config'; // Импортируем конфигурацию Firebase
 // 🆕 Добавляем хук для переводов
 import { useAppTranslation } from '../hooks/useAppTranslation';
 
 const CONSTANTS = {
   APP_NAME: 'HvalaDviser',
   CURRENT_YEAR: '2024',
-  DEFAULT_LOCATION: 'Paris',
+  DEFAULT_LOCATION: 'All',
 } as const;
 
 // Определяем отсутствующие типы локально
@@ -115,6 +116,8 @@ const HomePage: React.FC = () => {
       localStorage.setItem('lastSearchQuery', searchQuery);
       localStorage.setItem('lastSearchLocation', location);
     }
+    
+    handleNavBarSearch(searchQuery, location);
 
     console.log(`Поиск: ${searchQuery} в ${location}`);
 
@@ -209,7 +212,11 @@ const HomePage: React.FC = () => {
     []
   );
 
-  const handleNavBarSearch = useCallback((query: string) => {
+  const handleNavBarSearch = useCallback((query: string, location?: string) => {
+    const searchService = new RestaurantSearch(db);
+    searchService.updateAllRestaurantsKeywords();
+    searchService.searchRestaurants(query.toString(), location).then((results) => console.log(query, location, "Найдены такие результаты: ", results));
+
     console.log(`${t('common.search')}: ${query}`);
   }, [t]);
 

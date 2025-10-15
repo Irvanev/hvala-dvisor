@@ -65,7 +65,7 @@ interface SearchResult {
 }
 
 interface NavBarProps {
-  onSearch?: (query: string) => void;
+  onSearch?: (query: string, location?: string) => void;
   logoText?: string;
   onWelcomeClick?: () => void;
   isStatic?: boolean;
