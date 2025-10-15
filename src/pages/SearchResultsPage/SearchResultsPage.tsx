@@ -11,6 +11,7 @@ import { Restaurant } from '../../models/types';
 
 import { collection, getDocs, query as firestoreQuery, where, orderBy, Timestamp, GeoPoint } from 'firebase/firestore';
 import { firestore } from '../../firebase/config';
+import RestaurantSearch from "../../services/RestaurantSearch.ts";
 
 // Функция-адаптер для преобразования данных из Firestore в модель Restaurant
 function adaptRestaurantFromFirestore(docId: string, data: any): Restaurant {
@@ -77,116 +78,153 @@ const SearchResultsPage: React.FC = () => {
   const searchQuery = searchParams.get('query') || '';
   const locationParam = searchParams.get('location') || '';
 
-  useEffect(() => {
-    // Updated fetchRestaurants function for SearchResultsPage.tsx
-    // This should replace the existing fetchRestaurants function
+  // useEffect(() => {
+  //   // Updated fetchRestaurants function for SearchResultsPage.tsx
+  //   // This should replace the existing fetchRestaurants function
+  //
+  //   const fetchRestaurants = async () => {
+  //     setLoading(true);
+  //     try {
+  //       // Create a reference to the restaurants collection
+  //       const restaurantsCollection = collection(firestore, 'restaurants');
+  //       let querySnapshot;
+  //       let queryBuilder;
+  //
+  //       // Start with a base query
+  //       queryBuilder = firestoreQuery(restaurantsCollection);
+  //
+  //       // If we have location param, try to filter by it in Firestore
+  //       // Note: For optimal performance, you may need to create composite indexes in Firebase
+  //       if (locationParam) {
+  //         try {
+  //           // Try different location fields - adjust based on your data structure
+  //           queryBuilder = firestoreQuery(
+  //             restaurantsCollection,
+  //             where('address.country', '==', locationParam)
+  //           );
+  //           querySnapshot = await getDocs(queryBuilder);
+  //
+  //           // If no results with country, try city
+  //           if (querySnapshot.empty) {
+  //             queryBuilder = firestoreQuery(
+  //               restaurantsCollection,
+  //               where('address.city', '==', locationParam)
+  //             );
+  //             querySnapshot = await getDocs(queryBuilder);
+  //           }
+  //         } catch (indexError) {
+  //           console.warn("Index error for location query, falling back to client-side filtering", indexError);
+  //           // If we hit an index error, fall back to basic query
+  //           queryBuilder = firestoreQuery(restaurantsCollection);
+  //           querySnapshot = await getDocs(queryBuilder);
+  //         }
+  //       } else {
+  //         // If no location specified, get all restaurants
+  //         querySnapshot = await getDocs(queryBuilder);
+  //       }
+  //
+  //       // Convert Firestore documents to Restaurant objects
+  //       const fetchedRestaurants: Restaurant[] = [];
+  //       querySnapshot.forEach(doc => {
+  //         const data = doc.data();
+  //         // Use adapter function to convert to Restaurant type
+  //         const restaurant = adaptRestaurantFromFirestore(doc.id, data);
+  //
+  //         // Filter approved restaurants only (or where moderation is not defined)
+  //         const moderationStatus =
+  //           data.moderation?.status ||
+  //           data.moderationStatus ||
+  //           'pending';
+  //
+  //         if (moderationStatus === 'approved' || moderationStatus === undefined) {
+  //           fetchedRestaurants.push(restaurant);
+  //         }
+  //       });
+  //
+  //       // Client-side filtering for search query and further location refinement
+  //       let filtered = [...fetchedRestaurants];
+  //
+  //       // Filter by search query if provided
+  //       if (searchQuery) {
+  //         const searchTermLower = searchQuery.toLowerCase();
+  //         filtered = filtered.filter(restaurant =>
+  //           // Check title, description and tags
+  //           restaurant.title.toLowerCase().includes(searchTermLower) ||
+  //           restaurant.description.toLowerCase().includes(searchTermLower) ||
+  //           (restaurant.cuisineTags && restaurant.cuisineTags.some(tag =>
+  //             tag.toLowerCase().includes(searchTermLower)
+  //           )) ||
+  //           (restaurant.featureTags && restaurant.featureTags.some(tag =>
+  //             tag.toLowerCase().includes(searchTermLower)
+  //           )) ||
+  //           (restaurant.tagsSearchable && restaurant.tagsSearchable.some(tag =>
+  //             tag.toLowerCase().includes(searchTermLower)
+  //           ))
+  //         );
+  //       }
+  //
+  //       // Further filter by location (case insensitive and partial matching)
+  //       if (locationParam) {
+  //         const locationLower = locationParam.toLowerCase();
+  //         filtered = filtered.filter(restaurant => {
+  //           // Check all address fields
+  //           if (restaurant.address) {
+  //             const { street, city, country } = restaurant.address;
+  //             return (
+  //               (street && street.toLowerCase().includes(locationLower)) ||
+  //               (city && city.toLowerCase().includes(locationLower)) ||
+  //               (country && country.toLowerCase().includes(locationLower))
+  //             );
+  //           }
+  //           return false;
+  //         });
+  //       }
+  //
+  //       // Set state with fetched and filtered restaurants
+  //       setRestaurants(fetchedRestaurants);
+  //       setFilteredRestaurants(filtered);
+  //
+  //       // Set favorites (in a real app, load this from user profile in Firebase)
+  //       setUserFavorites(['rest1', 'rest3']);
+  //
+  //       setLoading(false);
+  //     } catch (err) {
+  //       console.error('Error loading restaurants:', err);
+  //       setError("An error occurred while loading data. Please try again later.");
+  //       setLoading(false);
+  //     }
+  //   };
+  //
+  //   fetchRestaurants();
+  // }, [searchQuery, locationParam]);
 
+
+
+  useEffect(() => {
     const fetchRestaurants = async () => {
       setLoading(true);
+      console.log('SearchResultsPage: начинаем загрузку', { searchQuery, locationParam });
+
       try {
-        // Create a reference to the restaurants collection
-        const restaurantsCollection = collection(firestore, 'restaurants');
-        let querySnapshot;
-        let queryBuilder;
+        const searchService = new RestaurantSearch(firestore);
 
-        // Start with a base query
-        queryBuilder = firestoreQuery(restaurantsCollection);
+        let results: Restaurant[] = [];
 
-        // If we have location param, try to filter by it in Firestore
-        // Note: For optimal performance, you may need to create composite indexes in Firebase
-        if (locationParam) {
-          try {
-            // Try different location fields - adjust based on your data structure
-            queryBuilder = firestoreQuery(
-              restaurantsCollection,
-              where('address.country', '==', locationParam)
-            );
-            querySnapshot = await getDocs(queryBuilder);
-
-            // If no results with country, try city
-            if (querySnapshot.empty) {
-              queryBuilder = firestoreQuery(
-                restaurantsCollection,
-                where('address.city', '==', locationParam)
-              );
-              querySnapshot = await getDocs(queryBuilder);
-            }
-          } catch (indexError) {
-            console.warn("Index error for location query, falling back to client-side filtering", indexError);
-            // If we hit an index error, fall back to basic query
-            queryBuilder = firestoreQuery(restaurantsCollection);
-            querySnapshot = await getDocs(queryBuilder);
-          }
+        if (searchQuery.trim() || locationParam.trim()) {
+          console.log('Выполняем поиск...');
+          results = await searchService.searchRestaurants(searchQuery, locationParam);
         } else {
-          // If no location specified, get all restaurants
-          querySnapshot = await getDocs(queryBuilder);
+          console.log('Загружаем все рестораны...');
+          results = await searchService.getAllApprovedRestaurants();
         }
 
-        // Convert Firestore documents to Restaurant objects
-        const fetchedRestaurants: Restaurant[] = [];
-        querySnapshot.forEach(doc => {
-          const data = doc.data();
-          // Use adapter function to convert to Restaurant type
-          const restaurant = adaptRestaurantFromFirestore(doc.id, data);
+        console.log('SearchResultsPage: получены результаты', results);
 
-          // Filter approved restaurants only (or where moderation is not defined)
-          const moderationStatus =
-            data.moderation?.status ||
-            data.moderationStatus ||
-            'pending';
-
-          if (moderationStatus === 'approved' || moderationStatus === undefined) {
-            fetchedRestaurants.push(restaurant);
-          }
-        });
-
-        // Client-side filtering for search query and further location refinement
-        let filtered = [...fetchedRestaurants];
-
-        // Filter by search query if provided
-        if (searchQuery) {
-          const searchTermLower = searchQuery.toLowerCase();
-          filtered = filtered.filter(restaurant =>
-            // Check title, description and tags
-            restaurant.title.toLowerCase().includes(searchTermLower) ||
-            restaurant.description.toLowerCase().includes(searchTermLower) ||
-            (restaurant.cuisineTags && restaurant.cuisineTags.some(tag =>
-              tag.toLowerCase().includes(searchTermLower)
-            )) ||
-            (restaurant.featureTags && restaurant.featureTags.some(tag =>
-              tag.toLowerCase().includes(searchTermLower)
-            )) ||
-            (restaurant.tagsSearchable && restaurant.tagsSearchable.some(tag =>
-              tag.toLowerCase().includes(searchTermLower)
-            ))
-          );
-        }
-
-        // Further filter by location (case insensitive and partial matching)
-        if (locationParam) {
-          const locationLower = locationParam.toLowerCase();
-          filtered = filtered.filter(restaurant => {
-            // Check all address fields
-            if (restaurant.address) {
-              const { street, city, country } = restaurant.address;
-              return (
-                (street && street.toLowerCase().includes(locationLower)) ||
-                (city && city.toLowerCase().includes(locationLower)) ||
-                (country && country.toLowerCase().includes(locationLower))
-              );
-            }
-            return false;
-          });
-        }
-
-        // Set state with fetched and filtered restaurants
-        setRestaurants(fetchedRestaurants);
-        setFilteredRestaurants(filtered);
-
-        // Set favorites (in a real app, load this from user profile in Firebase)
-        setUserFavorites(['rest1', 'rest3']);
-
+        setRestaurants(results);
+        setFilteredRestaurants(results);
+        setUserFavorites([]);
         setLoading(false);
+
       } catch (err) {
         console.error('Error loading restaurants:', err);
         setError("An error occurred while loading data. Please try again later.");

@@ -62,6 +62,7 @@ const RestaurantForm: React.FC<RestaurantFormProps> = ({
   ];
 
   const countryOptions = [
+    { key: 'all', value: 'Все'},
     { key: 'croatia', value: 'Хорватия' },
     { key: 'serbia', value: 'Сербия' },
     { key: 'montenegro', value: 'Черногория' },
